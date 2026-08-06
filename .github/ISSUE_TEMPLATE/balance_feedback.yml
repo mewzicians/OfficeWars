@@ -1,0 +1,65 @@
+name: Balance or playtest feedback
+description: Share a run, repeated pattern, or supported balance concern.
+title: "[Balance] "
+labels:
+  - balance
+body:
+  - type: input
+    id: version
+    attributes:
+      label: Version or game hash
+    validations:
+      required: true
+  - type: dropdown
+    id: source
+    attributes:
+      label: Evidence source
+      options:
+        - Human playtest
+        - Seeded simulation
+        - Random policy
+        - Scripted policy
+        - Rules analysis
+    validations:
+      required: true
+  - type: textarea
+    id: run
+    attributes:
+      label: Run context
+      description: Include floor, day, traits, capstone, important cards, Homes, and result.
+    validations:
+      required: true
+  - type: dropdown
+    id: concern
+    attributes:
+      label: Primary concern
+      options:
+        - Too strong
+        - Too weak
+        - Too reliable
+        - Too inconsistent
+        - Unclear
+        - Too much tracking
+        - Not enjoyable
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: observation
+    attributes:
+      label: What happened?
+      description: Separate the observation from the proposed solution.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Possible change
+      description: Optional. Proposals remain Draft until explicitly approved.
+  - type: checkboxes
+    id: repeated
+    attributes:
+      label: Evidence check
+      options:
+        - label: I have seen this in more than one run.
+        - label: I included the main loss or success condition.

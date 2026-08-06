@@ -1,0 +1,56 @@
+name: Bug report
+description: Report incorrect behavior, broken UI, or a reproducible rules issue.
+title: "[Bug] "
+labels:
+  - bug
+body:
+  - type: input
+    id: version
+    attributes:
+      label: Version or game hash
+      placeholder: Release tag or SHA-256
+    validations:
+      required: true
+  - type: dropdown
+    id: phase
+    attributes:
+      label: Phase
+      options:
+        - Title or setup
+        - Morning
+        - Workday
+        - Clock Out
+        - Night
+        - Weekend
+        - Promotion
+        - Game over
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Reproduction steps
+      description: Include seed, floor, cards, traits, and playback speed when known.
+    validations:
+      required: true
+  - type: input
+    id: browser
+    attributes:
+      label: Browser and device
+      placeholder: Chrome 140, Windows 11, 1440x900
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Logs or screenshots

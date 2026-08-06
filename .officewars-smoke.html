@@ -1,0 +1,1435 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>WAITING</title>
+<iframe id="game" src="officewarsautobattler.html"></iframe>
+<script>
+document.getElementById('game').addEventListener('load', function () {
+  setTimeout(async function () {
+    try {
+      var frame = document.getElementById('game');
+      var root = frame.contentDocument.documentElement;
+      if (root.dataset.officewarsReady !== 'true') {
+        document.title = 'NOT_READY';
+        return;
+      }
+      var result = await frame.contentWindow.eval(`(async function () {
+        startRun({seed: 41017});
+        R.today = {log: [], cardFlags: {}, automationCombo: 0};
+        R.brandStrategyUnlocked = true;
+        R.brandStrategy = {
+          active: true,
+          blocked: false,
+          finalRewardActive: false,
+          campaignsCompleted: 0,
+          campaignIndex: 0,
+          step: 2,
+          dailyRerolls: 0,
+          stepRewardsUnlocked: false
+        };
+        var cards = [
+          rollTaskCard({family: 'Design', rarity: 'common'}),
+          rollTaskCard({family: 'Coding', rarity: 'common'}),
+          rollTaskCard({family: 'Sales', rarity: 'common'})
+        ];
+        owApplyCampaignReplacement(cards);
+        var protectedTask = cards.some(function (card) {
+          return card.task.id === 'campaignCreativeBrief' && card.campaignProtected;
+        });
+
+        var before = R.project.progress;
+        await owAdvanceBrandCampaign({
+          task: TASK_BY_ID.get('campaignCreativeBrief'),
+          rarity: 'campaign',
+          modifiers: {}
+        });
+        var firstReward = R.brandStrategy.campaignsCompleted === 1 &&
+          R.brandStrategy.campaignIndex === 1 &&
+          R.brandStrategy.dailyRerolls === 1 &&
+          R.project.progress - before === 30;
+
+        var campaignCoding = {
+          task: TASK_BY_ID.get('campaignWebsiteRefresh'),
+          rarity: 'campaign',
+          modifiers: {}
+        };
+        var doubledBonus = owCampaignMultiplier() === 2 &&
+          owCardPreview(campaignCoding, {primary: true}).progress === 20;
+
+        R.brandStrategy.finalRewardActive = true;
+        var ordinary = rollTaskCard({family: 'Coding', rarity: 'common'});
+        var capstoneTag = owIsCampaignCard(ordinary) &&
+          owCardPreview(ordinary, {primary: true}).progress >= ordinary.task.progress + 20;
+
+        R.brandStrategy.finalRewardActive = false;
+        R.capstone = null;
+        R.capstoneBatch = [];
+        owRegisterCapstoneCandidate('Design', 'brandStrategy');
+        await owResolveCapstoneBatch();
+        var capstone = R.capstone && R.capstone.path === 'brandStrategy' &&
+          R.capstone.status === 'active' && R.brandStrategy.finalRewardActive;
+
+        R.capstone = null;
+        R.paths.Sales = 'closing';
+        R.milestones.Sales = 3;
+        R.closingRewards = [];
+        R.salesCycle = null;
+        var hotLeadCard = rollTaskCard({family: 'Sales', rarity: 'common'});
+        owStartSalesCycle(hotLeadCard);
+        var cycleStart = R.salesCycle.actualChain === 0 &&
+          R.salesCycle.representedFamilies[0] === 'Sales' &&
+          owCycleBaseStress(1, false) === 2;
+
+        R.closingRewards = ['cleanCrm'];
+        var cleanStress = owCycleBaseStress(1, false) === 1;
+        R.closingRewards = ['seasonedCloser'];
+        var seasonedStress = owCycleBaseStress(5, false) === 4;
+
+        R.closingRewards = ['preferredAccount'];
+        R.salesCycle.actualChain = 0;
+        R.salesCycle.selectedCount = 0;
+        var preferred = owRewardChain(R.salesCycle) === 1;
+        R.closingRewards = ['keyAccountStatus'];
+        owStartSalesCycle(hotLeadCard);
+        var keyAccount = R.salesCycle.actualChain === 4 &&
+          owRewardChain(R.salesCycle) === 4;
+
+        R.closingRewards = [];
+        var nurturingOne = owEligibleCloseRewards('nurturing', 1)
+          .every(function (reward) { return reward.id !== 'cleanCrm'; });
+        var nurturingTwo = owEligibleCloseRewards('nurturing', 2)
+          .some(function (reward) { return reward.id === 'cleanCrm'; });
+
+        R.morningCards = [
+          rollTaskCard({family: 'Coding', rarity: 'common'}),
+          rollTaskCard({family: 'Management', rarity: 'common'}),
+          rollTaskCard({family: 'Operations', rarity: 'common'})
+        ];
+        R.salesCycle = null;
+        owMarkHotLead();
+        var hotLead = R.morningCards.filter(function (card) { return card.hotLead; }).length === 1;
+        var cycleOffer = owGenerateSalesCycleOffer();
+        var cycleCards = cycleOffer.length === 2 &&
+          cycleOffer.every(function (card) { return card.rarity === 'cycle'; });
+
+        R.closingRewards = [];
+        R.guardianAngel = 0;
+        await owResolveCloseReward(
+          OW_CLOSE_REWARD_BY_ID.get('burnoutInsurance'),
+          {actualChain: 8, representedFamilies: ['Sales']}
+        );
+        var insurance = owHasClosingReward('burnoutInsurance') && R.guardianAngel === 1;
+
+        R.today = {
+          log: [],
+          cardFlags: {contingencyPlan: 1},
+          backupQueue: [{kind: 'work', outcome: true}]
+        };
+        R.closingRewards = ['executiveAirCover'];
+        R.escalationCharges = 1;
+        OW_currentEntry = null;
+        var airOutcome = owResolveOutcome('meeting', false, function () { return true; });
+        var airPriority = airOutcome.replacement === 'executiveSupport' &&
+          !R.today.cardFlags.contingencyUsed &&
+          R.today.backupQueue.length === 1 &&
+          R.escalationCharges === 1;
+
+        R.closingRewards = [];
+        var contingencyOutcome = owResolveOutcome('meeting', false, function () { return true; });
+        var contingency = contingencyOutcome.favorable &&
+          R.today.cardFlags.contingencyUsed === 1 &&
+          R.today.backupQueue.length === 1;
+
+        R.today.cardFlags.contingencyUsed = 1;
+        var failoverOutcome = owResolveOutcome('meeting', false, function () { return false; });
+        var failover = failoverOutcome.replacement === 'work' &&
+          R.today.backupQueue.length === 0 &&
+          R.escalationCharges === 1;
+
+        var escalationOutcome = owResolveOutcome('meeting', false, function () { return false; });
+        var escalation = escalationOutcome.neutralized && R.escalationCharges === 0;
+
+        R.today.cardFlags = {preventiveMaintenance: 1, perfectExecution: 1};
+        R.today.backupQueue = [{kind: 'work', outcome: true}];
+        var slumpEntry = {kind: 'slump'};
+        var slumpPriority = owResolvedEntryKind(slumpEntry) === 'cooler' &&
+          R.today.backupQueue.length === 1;
+
+        R.effects = [
+          {type: 'conceptSelection', nextMorning: true},
+          {type: 'buildScript', nextMorning: true},
+          {type: 'marketIntelligence', nextMorning: true},
+          {type: 'qualifiedReferral', nextMorning: true},
+          {type: 'prototypeTest', nextMorning: true},
+          {type: 'apiFollowup', nextWorkday: true}
+        ];
+        owConsumeOverriddenMorningWindowEffects();
+        var cycleConsumesMorning = R.effects.length === 2 &&
+          R.effects.some(function (effect) { return effect.type === 'prototypeTest'; }) &&
+          R.effects.some(function (effect) { return effect.type === 'apiFollowup'; });
+
+        var originalChooseOne = owChooseOne;
+        var originalChoose = owChoose;
+        owChooseOne = async function (title, prompt, options) {
+          return options[0].value;
+        };
+        owChoose = async function (title, prompt, options, min, max) {
+          return options.slice(0, max).map(function (option) { return option.value; });
+        };
+        R.completedTaskIds = ['oneOnOne'];
+        R.today.naturalSlots = ['work', 'lunch', 'cooler', 'mad', 'slump'];
+        R.morningCards = [
+          rollTaskCard({family: 'Coding', rarity: 'common'}),
+          rollTaskCard({family: 'Sales', rarity: 'common'}),
+          rollTaskCard({family: 'Operations', rarity: 'common'})
+        ];
+        var hostCard = {
+          task: TASK_BY_ID.get('rapidPrototype'),
+          rarity: 'rare',
+          modifiers: {}
+        };
+        var forkContext = await owPrepareCopiedEffectContext(
+          {task: TASK_BY_ID.get('repositoryFork'), rarity: 'rare', modifiers: {}},
+          hostCard,
+          ['rapidPrototype', 'repositoryFork']
+        );
+        var hackathonContext = await owPrepareCopiedEffectContext(
+          {task: TASK_BY_ID.get('hackathon'), rarity: 'legendary', modifiers: {}},
+          hostCard,
+          ['rapidPrototype', 'hackathon']
+        );
+        var scheduleContext = await owPrepareCopiedEffectContext(
+          {task: TASK_BY_ID.get('scheduleAdjustment'), rarity: 'uncommon', modifiers: {}},
+          hostCard,
+          ['rapidPrototype', 'scheduleAdjustment']
+        );
+        var designContext = await owPrepareCopiedEffectContext(
+          {task: TASK_BY_ID.get('designSystem'), rarity: 'legendary', modifiers: {}},
+          hostCard,
+          ['rapidPrototype', 'designSystem']
+        );
+        owChooseOne = originalChooseOne;
+        owChoose = originalChoose;
+        var copiedChoices = !!forkContext.setup.targetTask &&
+          hackathonContext.setup.additional.length === 2 &&
+          scheduleContext.setup.scheduleIndex !== undefined &&
+          !!designContext.setup.copySource;
+
+        R.effects = [];
+        R.today.cardFlags = {};
+        var apiHostContext = {primary: true, selection: true, setup: {}};
+        await owResolvePrintedEffect(
+          TASK_BY_ID.get('apiIntegration'),
+          hostCard,
+          {
+            primary: true,
+            setup: {xpFamily: 'Sales'},
+            hostContext: apiHostContext,
+            applyCampaignBonus: false
+          },
+          ['rapidPrototype', 'apiIntegration']
+        );
+        var copiedApiRedirect = apiHostContext.xpFamily === 'Sales';
+
+        R.effects = [];
+        var designSystemCard = {
+          task: TASK_BY_ID.get('designSystem'),
+          rarity: 'legendary',
+          modifiers: {}
+        };
+        var readmeSource = {
+          task: TASK_BY_ID.get('readmeUpdate'),
+          rarity: 'common',
+          modifiers: {}
+        };
+        await owResolvePrintedEffect(
+          designSystemCard.task,
+          designSystemCard,
+          {primary: false, selection: false, setup: {copySource: readmeSource}},
+          ['designSystem']
+        );
+        var additionalDesignDefers = R.effects.some(function (effect) {
+          return effect.type === 'designSystemBorrow' &&
+            effect.sourceAncestry.join(',') === 'designSystem,readmeUpdate';
+        }) && !R.effects.some(function (effect) {
+          return effect.type === 'readmeFollowup';
+        });
+
+        R.today = {
+          log: [],
+          cardFlags: {},
+          backupQueue: [],
+          standardBonusUsed: {},
+          activatedCoworkers: [],
+          positiveActionTypes: [],
+          actionHistory: [],
+          currentMeetingSummary: {
+            participants: [
+              {pid: 'karen', name: 'Karen', bonus: ''},
+              {pid: 'dave', name: 'Dave', bonus: ''},
+              {pid: 'bob', name: 'Bob', bonus: ''}
+            ]
+          },
+          pts: 0,
+          pay: 0,
+          stressGain: 0,
+          stressRelief: 0,
+          meetingsToday: 0
+        };
+        R.closingRewards = ['executiveAirCover'];
+        OW_currentEntry = {kind: 'meeting', participants: []};
+        var originalRandom = random;
+        var meetingRolls = [.99, .01];
+        random = function () {
+          return meetingRolls.length ? meetingRolls.shift() : .01;
+        };
+        actionDef('meeting').resolve();
+        random = originalRandom;
+        var replacementDefersBonuses =
+          !R.today.standardBonusUsed.karen &&
+          !R.today.standardBonusUsed.dave &&
+          !R.today.standardBonusUsed.bob &&
+          R.today.currentMeetingSummary.participants.every(function (person) {
+            return !person.bonus;
+          });
+
+        function resetSmokeToday() {
+          R.today = {
+            log: [],
+            cardFlags: {},
+            taskPlays: [],
+            backupQueue: [],
+            standardBonusUsed: {},
+            activatedCoworkers: [],
+          positiveActionTypes: [],
+          actionHistory: [],
+          dayProgress: [],
+          activeProgressIndex: -1,
+          pts: 0,
+            pay: 0,
+            stressGain: 0,
+            stressRelief: 0,
+            startProjectProgress: R.project.progress,
+            previewActive: false
+          };
+        }
+
+        window.__smokeStage = 'readme';
+        startRun({seed: 51001});
+        resetSmokeToday();
+        R.phase = 'morningResolution';
+        R.effects = [
+          {id: 'readme-a', type: 'readmeFollowup', amount: 2},
+          {id: 'readme-b', type: 'readmeFollowup', amount: 3}
+        ];
+        var readmeTarget = {
+          task: TASK_BY_ID.get('actionPlan'),
+          rarity: 'common',
+          modifiers: {}
+        };
+        var readmeBase = owBaseProgress(readmeTarget);
+        var readmePreview = owCardPreview(readmeTarget, {primary: true});
+        await owCompletePlay(readmeTarget, {
+          primary: true,
+          selection: true,
+          setup: {},
+          sourceAncestors: ['actionPlan']
+        });
+        var readmeStacks = readmePreview.progress === readmeBase + 5 &&
+          effectsOf('readmeFollowup').length === 0;
+
+        window.__smokeStage = 'pilot';
+        startRun({seed: 51002});
+        resetSmokeToday();
+        R.phase = 'morning';
+        var pilotTarget = {
+          task: TASK_BY_ID.get('actionPlan'),
+          rarity: 'common',
+          source: 'offer',
+          modifiers: {}
+        };
+        R.morningCards = [pilotTarget];
+        pendingMorning = {index: 0, source: 'offer'};
+        R.effects = [
+          {id: 'pilot-a', type: 'pilotApproved', nextOrdinaryPrimary: true},
+          {id: 'pilot-b', type: 'pilotApproved', nextOrdinaryPrimary: true}
+        ];
+        var originalRunWorkDay = runWorkDay;
+        runWorkDay = async function () {};
+        await confirmMorning();
+        runWorkDay = originalRunWorkDay;
+        var pilotStacks = R.today.taskPlays.length === 3 &&
+          R.familyXP.Management === 3 &&
+          R.stress === 10 &&
+          effectsOf('pilotApproved').length === 0;
+
+        window.__smokeStage = 'additional';
+        startRun({seed: 51003});
+        resetSmokeToday();
+        R.morningCards = [{
+          task: TASK_BY_ID.get('actionPlan'),
+          rarity: 'common',
+          source: 'offer',
+          modifiers: {}
+        }];
+        var queuedCard = {
+          task: TASK_BY_ID.get('versionControl'),
+          rarity: 'uncommon',
+          source: 'generated',
+          modifiers: {}
+        };
+        var queuedChooseOne = owChooseOne;
+        var queuedCompletePlay = owCompletePlay;
+        var queuedContext = null;
+        owChooseOne = async function (title, prompt, options) {
+          return options[0].value;
+        };
+        owCompletePlay = async function (card, context) {
+          queuedContext = context;
+          return true;
+        };
+        await owResolveQueuedPlay({card: queuedCard, prepareAdditional: true});
+        owChooseOne = queuedChooseOne;
+        owCompletePlay = queuedCompletePlay;
+        var additionalPreparation = queuedContext &&
+          queuedContext.setup.target.task.id === 'actionPlan' &&
+          queuedContext.primary === false &&
+          queuedContext.selection === false &&
+          queuedContext.sourceAncestors.join(',') === 'versionControl';
+
+        window.__smokeStage = 'merged';
+        startRun({seed: 51004});
+        resetSmokeToday();
+        R.phase = 'morningResolution';
+        var mergedPin = owAddPin('readmeUpdate', 'Version Control', {commitOnPlay: 1}, 1);
+        owAddPin('readmeUpdate', 'Version Control Replay', {commitOnPlay: 1}, 1);
+        var mergedCard = owPinToCard(mergedPin);
+        var mergedBefore = R.project.progress;
+        await owCompletePlay(mergedCard, {
+          primary: true,
+          selection: true,
+          setup: {},
+          sourceAncestors: ['readmeUpdate']
+        });
+        var mergedCommits = mergedPin.sources.length === 2 &&
+          R.commit === 2 &&
+          R.project.progress - mergedBefore === 12;
+
+        window.__smokeStage = 'fork';
+        startRun({seed: 51005});
+        resetSmokeToday();
+        R.phase = 'morningResolution';
+        var forkedCard = {
+          task: TASK_BY_ID.get('actionPlan'),
+          rarity: 'common',
+          source: 'pin',
+          modifiers: {
+            temporaryFamily: 'Coding',
+            xpFamily: 'Coding',
+            commitOnPlay: 1
+          }
+        };
+        await owCompletePlay(forkedCard, {
+          primary: true,
+          selection: true,
+          setup: {},
+          sourceAncestors: ['actionPlan']
+        });
+        await owCompletePlay(owReplayCard(forkedCard), {
+          primary: false,
+          selection: false,
+          replay: true,
+          setup: {},
+          sourceAncestors: ['actionPlan']
+        });
+        var forkReplayScope = R.commit === 1 &&
+          R.familyXP.Coding === 1 &&
+          R.familyXP.Management === 1;
+
+        window.__smokeStage = 'special';
+        startRun({seed: 51006});
+        resetSmokeToday();
+        var protectedCard = rollTaskCard({family: 'Coding', rarity: 'common'});
+        protectedCard.specialProtected = true;
+        var replaceableCard = rollTaskCard({family: 'Sales', rarity: 'common'});
+        var specialCards = [protectedCard, replaceableCard];
+        var specialRandom = random;
+        random = function () { return 0; };
+        owApplySpecialReplacement(specialCards, true);
+        random = specialRandom;
+        var directSpecialProtection =
+          specialCards[0].rarity !== 'special' &&
+          specialCards[1].rarity === 'special';
+        R.morningCards = [
+          rollTaskCard({family: 'Coding', rarity: 'common'}),
+          rollTaskCard({family: 'Management', rarity: 'common'}),
+          rollTaskCard({family: 'Operations', rarity: 'common'})
+        ];
+        addEffect('marketIntelligence', {
+          nextMorning: true,
+          family: 'Sales',
+          slots: 1
+        });
+        owApplyMorningFamilyGuarantees();
+        var guaranteeSpecialProtection = R.morningCards.some(function (card) {
+          return card.specialProtected && card.task.family === 'Sales';
+        });
+        var specialProtection = directSpecialProtection &&
+          guaranteeSpecialProtection;
+
+        window.__smokeStage = 'contact';
+        startRun({seed: 51007});
+        resetSmokeToday();
+        R.paths.Sales = 'schmoozing';
+        R.milestones.Sales = 3;
+        R.rel.karen = 20;
+        R.phase = 'morning';
+        owStageContact('karen');
+        owConfirmContact();
+        R.rel.dave = 20;
+        R.phase = 'workday';
+        owStageContact('dave');
+        owConfirmContact();
+        var resumeContact = R.contactTeam.length === 1 &&
+          R.contactTeam[0] === 'karen';
+
+        window.__smokeStage = 'weekend';
+        startRun({seed: 51008});
+        resetSmokeToday();
+        R.phase = 'weekend';
+        R.stress = 99;
+        R.cash = 500;
+        R.guardianAngel = 1;
+        var weekendRandom = random;
+        random = function () { return .99; };
+        await owPickWeekend('wedding', 0);
+        random = weekendRandom;
+        var weekendAtomic = R.phase === 'weekendResult' &&
+          R.stress === 75 &&
+          R.cash === 350 &&
+          R.guardianAngel === 0;
+        startRun({seed: 510081});
+        resetSmokeToday();
+        R.floor = 7;
+        R.phase = 'weekend';
+        R.stress = 40;
+        await owPickWeekend('wedding', 1);
+        var weekendRecoveryUnscaled = R.stress === 35;
+
+        window.__smokeStage = 'breakthrough';
+        startRun({seed: 51009});
+        resetSmokeToday();
+        R.phase = 'clockOut';
+        R.stress = 50;
+        R.effects = [{
+          id: 'breakthrough-a',
+          type: 'creativeBreakthrough',
+          createdDay: R.stats.days,
+          workdays: 2,
+          rate: 1
+        }];
+        R.today.stressRelief = 10;
+        R.today.startProjectProgress = R.project.progress;
+        R.rival.today = {gain: 0};
+        var breakthroughBefore = R.project.progress;
+        dayResults();
+        var actionRecoveryOnce = R.project.progress - breakthroughBefore === 10;
+        var excludedBefore = R.project.progress;
+        owGrantRecovery(5, 'Wellness Stipend', false);
+        var excludedRecovery = R.project.progress === excludedBefore;
+        var breakthroughScope = actionRecoveryOnce && excludedRecovery;
+
+        window.__smokeStage = 'network-expiry';
+        startRun({seed: 51010});
+        resetSmokeToday();
+        R.stats.days = 4;
+        await owResolvePrintedEffect(
+          TASK_BY_ID.get('referralNetwork'),
+          {task: TASK_BY_ID.get('referralNetwork'), rarity: 'rare', modifiers: {}},
+          {setup: {coworkers: ['karen', 'dave', 'bob']}},
+          ['referralNetwork']
+        );
+        var network = effectsOf('referralNetwork')[0];
+        var networkExpiresTomorrow = network && network.expiresDay === 5;
+        R.stats.days = 6;
+        owPrunePins();
+        var referralNetworkExpiry = networkExpiresTomorrow &&
+          effectsOf('referralNetwork').length === 0;
+
+        window.__smokeStage = 'champion-reroll';
+        startRun({seed: 51011});
+        resetSmokeToday();
+        R.championTokens = 2;
+        R.closingRewards = [];
+        var championChooseOne = owChooseOne;
+        var championRandom = random;
+        var championChoices = 0;
+        owChooseOne = async function (title, prompt, options) {
+          if (title === 'Internal Champion' && championChoices < 2) {
+            championChoices++;
+            return options[1].value;
+          }
+          return null;
+        };
+        random = function () { return 0; };
+        var championPresentation = await owRerollClosePresentation(
+          [OW_CLOSE_REWARD_BY_ID.get('followUp')],
+          'nurturing',
+          1
+        );
+        owChooseOne = championChooseOne;
+        random = championRandom;
+        var championDiscardsPersist =
+          championChoices === 2 &&
+          R.championTokens === 0 &&
+          championPresentation.length === 1 &&
+          championPresentation[0].id === 'warmIntroduction';
+
+        window.__smokeStage = 'reserve-order';
+        startRun({seed: 51012});
+        resetSmokeToday();
+        R.cash = 600;
+        R.today.cardFlags = {
+          overnightReserves: [{profit: 100, sequence: 2}],
+          workingCapitalCaps: [{cap: 500, sequence: 1}]
+        };
+        owCreateClockOutReserves();
+        var capitalFirst =
+          R.workingCapital.length === 1 &&
+          R.workingCapital[0].amount === 500 &&
+          R.overnightReserves.length === 0 &&
+          R.cash === 100;
+        startRun({seed: 51013});
+        resetSmokeToday();
+        R.cash = 600;
+        R.today.cardFlags = {
+          overnightReserves: [{profit: 100, sequence: 1}],
+          workingCapitalCaps: [{cap: 500, sequence: 2}]
+        };
+        owCreateClockOutReserves();
+        var overnightFirst =
+          R.workingCapital.length === 0 &&
+          R.overnightReserves.length === 1 &&
+          R.cash === 350;
+        var reserveCreationOrder = capitalFirst && overnightFirst;
+
+        window.__smokeStage = 'comparison-eligibility';
+        startRun({seed: 51014});
+        resetSmokeToday();
+        R.phase = 'night';
+        R.cash = 5000;
+        R.house = ['coffeeMachine', 'mattress', 'houseplant'];
+        R.nightCards = [
+          {upgrade: UPGRADES.find(function (upgrade) { return upgrade.id === 'standingDesk'; })},
+          {upgrade: UPGRADES.find(function (upgrade) { return upgrade.id === 'mealPrep'; })}
+        ];
+        R.dealCards = [
+          OW_DEAL_BY_ID.get('wellnessStipend'),
+          OW_DEAL_BY_ID.get('conferencePass'),
+          OW_DEAL_BY_ID.get('marketIntelligence')
+        ];
+        nightState = {
+          tab: 'home',
+          bought: new Set(),
+          purchasedDealIds: new Set(),
+          recPicked: false,
+          outingUsed: false,
+          homeUsed: 0,
+          dealUsed: 0,
+          homeLimit: 1,
+          dealLimit: 1,
+          extraPurchaseCredits: 0,
+          financeMode: false
+        };
+        addEffect('comparisonShopping', {tonight: true});
+        var comparisonChooseOne = owChooseOne;
+        var deniedComparisonCalls = 0;
+        owChooseOne = async function (title, prompt, options) {
+          deniedComparisonCalls++;
+          return options[0].value;
+        };
+        await owUseComparisonUnlocked();
+        owChooseOne = comparisonChooseOne;
+        var comparisonDeniedInvalid =
+          deniedComparisonCalls === 0 &&
+          effectsOf('comparisonShopping').length === 1;
+
+        startRun({seed: 51015});
+        resetSmokeToday();
+        R.phase = 'night';
+        R.paths.Sales = 'negotiation';
+        R.milestones.Sales = 3;
+        R.cash = 175;
+        R.nightCards = [];
+        R.dealCards = [
+          OW_DEAL_BY_ID.get('wellnessStipend'),
+          OW_DEAL_BY_ID.get('conferencePass'),
+          OW_DEAL_BY_ID.get('marketIntelligence')
+        ];
+        nightState = {
+          tab: 'deals',
+          bought: new Set(),
+          purchasedDealIds: new Set(),
+          recPicked: false,
+          outingUsed: false,
+          homeUsed: 0,
+          dealUsed: 0,
+          homeLimit: 0,
+          dealLimit: 1,
+          extraPurchaseCredits: 0,
+          financeMode: false
+        };
+        addEffect('comparisonShopping', {tonight: true});
+        var comparisonWindows = [];
+        owChooseOne = async function (title, prompt, options) {
+          comparisonWindows.push(options.map(function (option) { return option.value; }));
+          return options[0].value;
+        };
+        await owUseComparisonUnlocked();
+        owChooseOne = comparisonChooseOne;
+        var comparisonAllowsLegal =
+          comparisonWindows.length === 2 &&
+          comparisonWindows[0].every(function (item) { return item.type === 'deal'; }) &&
+          comparisonWindows[1].length === 3 &&
+          comparisonWindows[1].every(function (item) {
+            return item.type === 'deal' && item.deal.price * .5 <= 175;
+          }) &&
+          nightState.purchasedDealIds.size === 1 &&
+          effectsOf('comparisonShopping').length === 0;
+        var comparisonEligibility =
+          comparisonDeniedInvalid && comparisonAllowsLegal;
+
+        startRun({seed: 51022});
+        resetSmokeToday();
+        R.phase = 'night';
+        R.cash = 500;
+        R.nightCards = [];
+        R.dealCards = [OW_DEAL_BY_ID.get('wellnessStipend')];
+        nightState = {
+          tab: 'deals',
+          bought: new Set(),
+          purchasedDealIds: new Set(),
+          recPicked: false,
+          outingUsed: false,
+          homeUsed: 0,
+          dealUsed: 0,
+          homeLimit: 1,
+          dealLimit: 0,
+          extraPurchaseCredits: 1,
+          financeMode: false
+        };
+        var expenseDealTabVisible =
+          owNightTabBar().includes("nightSwitchTab('deals')");
+        var expenseDealBought = await owPurchaseDeal(
+          OW_DEAL_BY_ID.get('wellnessStipend'),
+          1
+        );
+        var corporateExpenseDealAccess =
+          expenseDealTabVisible &&
+          expenseDealBought &&
+          nightState.extraPurchaseCredits === 0 &&
+          nightState.purchasedDealIds.has('wellnessStipend') &&
+          R.cash === 250;
+
+        window.__smokeStage = 'nested-rapid-prototype';
+        startRun({seed: 51016});
+        resetSmokeToday();
+        R.morningCards = [
+          {task: SPECIAL_TASKS[0], rarity: 'special', modifiers: {}},
+          {task: CAMPAIGN_TASKS[0], rarity: 'campaign', modifiers: {}},
+          {task: TASK_BY_ID.get('actionPlan'), rarity: 'common', modifiers: {}}
+        ];
+        var nestedOptions = [];
+        owChooseOne = async function (title, prompt, options) {
+          nestedOptions = options.map(function (option) { return option.value; });
+          return options[0].value;
+        };
+        var nestedRapidContext = await owPrepareCopiedEffectContext(
+          {task: TASK_BY_ID.get('rapidPrototype'), rarity: 'rare', modifiers: {}},
+          {task: TASK_BY_ID.get('whiteSpace'), rarity: 'common', modifiers: {}},
+          ['whiteSpace', 'rapidPrototype']
+        );
+        owChooseOne = comparisonChooseOne;
+        var nestedRapidFiltering =
+          nestedOptions.length === 1 &&
+          nestedOptions[0].task.id === 'actionPlan' &&
+          nestedRapidContext.setup.copySource.task.id === 'actionPlan';
+
+        window.__smokeStage = 'offer-distributions';
+        function distributionWithin(count, total, expected, tolerance) {
+          return Math.abs(count / total - expected) <= tolerance;
+        }
+        startRun({seed: 51017});
+        var raritySamples = 100000;
+        var rarityCounts = {common: 0, uncommon: 0, rare: 0, legendary: 0};
+        for (var rarityIndex = 0; rarityIndex < raritySamples; rarityIndex++) {
+          rarityCounts[rollRarity({})]++;
+        }
+        var ordinaryRarityDistribution =
+          distributionWithin(rarityCounts.common, raritySamples, .70, .006) &&
+          distributionWithin(rarityCounts.uncommon, raritySamples, .20, .005) &&
+          distributionWithin(rarityCounts.rare, raritySamples, .09, .004) &&
+          distributionWithin(rarityCounts.legendary, raritySamples, .01, .002);
+
+        startRun({seed: 51018});
+        var paidCounts = {common: 0, uncommon: 0, rare: 0, legendary: 0};
+        for (var paidIndex = 0; paidIndex < raritySamples; paidIndex++) {
+          paidCounts[rollRarity({paid: true})]++;
+        }
+        var paidRerollDistribution =
+          paidCounts.legendary === 0 &&
+          distributionWithin(paidCounts.common, raritySamples, 70 / 99, .006) &&
+          distributionWithin(paidCounts.uncommon, raritySamples, 20 / 99, .005) &&
+          distributionWithin(paidCounts.rare, raritySamples, 9 / 99, .004);
+
+        startRun({seed: 51019});
+        var familyCounts = {
+          Coding: 0,
+          Management: 0,
+          Design: 0,
+          Sales: 0,
+          Operations: 0
+        };
+        for (var familyIndex = 0; familyIndex < raritySamples; familyIndex++) {
+          familyCounts[rollTaskCard({rarity: 'common'}).task.family]++;
+        }
+        var equalFamilyDistribution = Object.keys(familyCounts).every(function (family) {
+          return distributionWithin(familyCounts[family], raritySamples, .20, .006);
+        });
+
+        startRun({seed: 51020});
+        var specialWindows = 100000;
+        var specialHits = 0;
+        var specialWindowUnique = true;
+        var specialBase = [
+          TASK_BY_ID.get('actionPlan'),
+          TASK_BY_ID.get('whiteSpace'),
+          TASK_BY_ID.get('salesQuota')
+        ];
+        for (var specialIndex = 0; specialIndex < specialWindows; specialIndex++) {
+          var specialWindow = specialBase.map(function (task) {
+            return {task: task, rarity: task.rarity, modifiers: {}};
+          });
+          owApplySpecialReplacement(specialWindow, true);
+          var hits = specialWindow.filter(function (card) {
+            return card.rarity === 'special';
+          }).length;
+          specialHits += hits;
+          if (hits > 1) specialWindowUnique = false;
+        }
+        var specialRate = specialHits / (specialWindows * specialBase.length);
+        var specialDistribution =
+          specialWindowUnique &&
+          specialRate >= .0017 &&
+          specialRate <= .0023;
+
+        startRun({seed: 51021});
+        R.manager = MANAGERS.find(function (manager) { return manager.id !== 'micro'; });
+        var duplicateFree = true;
+        var laterReuse = false;
+        var firstWindowIds = genMorningCards({allowSpecial: false}).map(function (card) {
+          return card.task.id;
+        });
+        for (var windowIndex = 0; windowIndex < 10000; windowIndex++) {
+          var generated = genMorningCards({allowSpecial: false});
+          var ids = generated.map(function (card) { return card.task.id; });
+          if (new Set(ids).size !== ids.length) duplicateFree = false;
+          if (ids.some(function (id) { return firstWindowIds.includes(id); })) {
+            laterReuse = true;
+          }
+        }
+        var offerIdentityRules = duplicateFree && laterReuse;
+
+        window.__smokeStage = 'result-priority';
+        var priorityDefeat = defeat;
+        var priorityVictory = victory;
+        var priorityNightPhase = nightPhase;
+        function resolveResultPriority(options) {
+          startRun({seed: options.seed});
+          resetSmokeToday();
+          R.phase = 'clockOut';
+          R.floor = options.finalFloor ? ranks().length : 1;
+          R.stress = options.stress;
+          R.project = {
+            name: 'Priority Test',
+            size: 100,
+            progress: options.playerProgress
+          };
+          R.rival.progress = options.rivalProgress;
+          R.daysLeft = options.daysLeft;
+          var route = '';
+          defeat = function (type) {
+            route = 'defeat:' + type;
+            R.phase = 'gameOver';
+          };
+          victory = function () {
+            route = 'victory';
+            R.phase = 'gameOver';
+          };
+          nightPhase = function () {
+            route = 'night';
+            R.phase = 'night';
+          };
+          afterDayResults();
+          return {route: route, floorCompleted: R.floorCompleted};
+        }
+        var burnoutPriority = resolveResultPriority({
+          seed: 51024,
+          stress: 100,
+          playerProgress: 100,
+          rivalProgress: 100,
+          daysLeft: 0
+        });
+        var playerPriority = resolveResultPriority({
+          seed: 51025,
+          stress: 99,
+          playerProgress: 100,
+          rivalProgress: 100,
+          daysLeft: 0
+        });
+        var rivalPriority = resolveResultPriority({
+          seed: 51026,
+          stress: 99,
+          playerProgress: 99,
+          rivalProgress: 100,
+          daysLeft: 0
+        });
+        var deadlinePriority = resolveResultPriority({
+          seed: 51027,
+          stress: 99,
+          playerProgress: 99,
+          rivalProgress: 99,
+          daysLeft: 0
+        });
+        var finalPriority = resolveResultPriority({
+          seed: 51028,
+          stress: 99,
+          playerProgress: 100,
+          rivalProgress: 100,
+          daysLeft: 0,
+          finalFloor: true
+        });
+        defeat = priorityDefeat;
+        victory = priorityVictory;
+        nightPhase = priorityNightPhase;
+        var resultPriority =
+          burnoutPriority.route === 'defeat:burnout' &&
+          playerPriority.route === 'night' &&
+          playerPriority.floorCompleted &&
+          rivalPriority.route === 'defeat:rival' &&
+          deadlinePriority.route === 'defeat:fired' &&
+          finalPriority.route === 'victory';
+
+        window.__smokeStage = 'phase-routes';
+        var routeStartDay = startDay;
+        var routeWeekendEvent = weekendEvent;
+        var routeFloorComplete = floorComplete;
+        var routePromotionReview = owRunPromotionReview;
+        var routeNextFloor = nextFloor;
+        function prepareNightRoute(seed, days, floorCompleted) {
+          startRun({seed: seed});
+          resetSmokeToday();
+          R.phase = 'night';
+          R.stats.days = days;
+          R.floorCompleted = floorCompleted;
+          R.effects = [];
+          R.expenseCredit = 0;
+          nightState = {
+            tab: 'home',
+            bought: new Set(),
+            purchasedDealIds: new Set(),
+            recPicked: false,
+            outingUsed: true,
+            homeUsed: 1,
+            dealUsed: 0,
+            homeLimit: 1,
+            dealLimit: 0,
+            extraPurchaseCredits: 0,
+            financeMode: false
+          };
+        }
+        var routeLog = [];
+        startDay = function () {
+          routeLog.push('morning');
+          R.phase = 'morning';
+        };
+        weekendEvent = function (nextAction) {
+          routeLog.push('weekend:' + nextAction);
+          weekendNext = nextAction;
+          R.phase = 'weekend';
+        };
+        floorComplete = function () {
+          routeLog.push('promotion');
+          R.phase = 'promotion';
+        };
+        prepareNightRoute(51029, 1, false);
+        await owFinalizeNightUnlocked();
+        var ordinaryNightRoute = routeLog.join(',') === 'morning';
+        routeLog = [];
+        prepareNightRoute(51030, 5, false);
+        await owFinalizeNightUnlocked();
+        var weekendNightRoute = routeLog.join(',') === 'weekend:startDay';
+        routeLog = [];
+        prepareNightRoute(51031, 5, true);
+        await owFinalizeNightUnlocked();
+        var completionNightRoute = routeLog.join(',') === 'promotion';
+        startDay = routeStartDay;
+        weekendEvent = routeWeekendEvent;
+        floorComplete = routeFloorComplete;
+
+        startRun({seed: 51032});
+        resetSmokeToday();
+        R.floor = 1;
+        R.stress = 50;
+        R.stats.days = 5;
+        R.floorCompleted = true;
+        R.lastPromotionRecoveryFloor = null;
+        floorComplete();
+        var promotionRecovery =
+          R.phase === 'promotion' &&
+          R.stress === 25 &&
+          R.lastPromotionRecoveryFloor === 1;
+        routeLog = [];
+        weekendEvent = function (nextAction) {
+          routeLog.push('weekend:' + nextAction);
+          weekendNext = nextAction;
+          R.phase = 'weekend';
+        };
+        owRunPromotionReview = async function () {
+          routeLog.push('promotionReview');
+          R.phase = 'promotionReview';
+        };
+        afterPromotion();
+        var promotionWeekendRoute =
+          routeLog.join(',') === 'weekend:promotionReview';
+        R.phase = 'weekendResult';
+        afterWeekend();
+        var weekendPromotionRoute =
+          routeLog.join(',') === 'weekend:promotionReview,promotionReview';
+
+        routeLog = [];
+        startRun({seed: 51033});
+        resetSmokeToday();
+        R.floor = 1;
+        R.phase = 'promotion';
+        R.stats.days = 4;
+        afterPromotion();
+        var directPromotionReviewRoute =
+          routeLog.join(',') === 'promotionReview';
+        weekendEvent = routeWeekendEvent;
+        owRunPromotionReview = routePromotionReview;
+
+        startRun({seed: 51034});
+        resetSmokeToday();
+        R.floor = 1;
+        R.phase = 'promotionReview';
+        R.familyXP = {
+          Coding: 0,
+          Management: 0,
+          Design: 0,
+          Sales: 0,
+          Operations: 0
+        };
+        var promotionChooseOne = owChooseOne;
+        owChooseOne = async function (title, prompt, options) {
+          return options[0].value;
+        };
+        await owRunPromotionReview();
+        owChooseOne = promotionChooseOne;
+        var promotionToNextFloor =
+          R.floor === 2 &&
+          R.phase === 'floorIntro';
+        nextFloor = routeNextFloor;
+        var phaseRoutes =
+          ordinaryNightRoute &&
+          weekendNightRoute &&
+          completionNightRoute &&
+          promotionRecovery &&
+          promotionWeekendRoute &&
+          weekendPromotionRoute &&
+          directPromotionReviewRoute &&
+          promotionToNextFloor;
+
+        window.__smokeStage = 'playback-determinism';
+        function stablePlaybackState() {
+          return JSON.stringify({
+            phase: R.phase,
+            projectProgress: R.project.progress,
+            projectSize: R.project.size,
+            rivalProgress: R.rival.progress,
+            stress: R.stress,
+            cash: R.cash,
+            daysLeft: R.daysLeft,
+            familyXP: R.familyXP,
+            relationships: R.rel,
+            rerollsMorning: R.rerollsMorning,
+            rerollsNight: R.rerollsNight,
+            standardBonusUsed: R.today.standardBonusUsed,
+            activatedCoworkers: R.today.activatedCoworkers,
+            actionHistory: R.today.actionHistory,
+            gameplayRng: OfficeWarsTest.rngSnapshot().gameplayState
+          });
+        }
+        async function waitForClockOut() {
+          var deadline = performance.now() + 10000;
+          while (R.phase !== 'clockOut' && R.phase !== 'gameOver' &&
+              performance.now() < deadline) {
+            await new Promise(function (resolve) { setTimeout(resolve, 10); });
+          }
+          return R.phase === 'clockOut';
+        }
+        async function runPlaybackFixture(mode) {
+          window.__smokeStage = 'playback-' + mode;
+          startRun({seed: 61001});
+          resetSmokeToday();
+          R.phase = 'morningResolution';
+          R.floor = 1;
+          R.manager = MANAGERS.find(function (manager) {
+            return manager.id === 'penny';
+          }) || R.manager;
+          R.today.naturalSlots = ['work', 'cooler', 'lunch', 'slump', 'work'];
+          R.sabotageToday = true;
+          R.saboteurPid = 'karen';
+          var card = {
+            task: TASK_BY_ID.get('actionPlan'),
+            rarity: 'common',
+            modifiers: {}
+          };
+          R.todayCard = card;
+          await owCompletePlay(card, {
+            primary: true,
+            selection: true,
+            setup: {},
+            sourceAncestors: ['actionPlan']
+          });
+          R.today.accountedCash = R.cash;
+          R.today.interestPrincipal = Math.min(R.cash, owInterestPrincipalCap());
+          preferredDayPlaybackRate = mode === 'skip' ? 1 : mode;
+          await runWorkDay();
+          if (mode === 'skip') skipWorkDay();
+          var finished = await waitForClockOut();
+          return finished ? stablePlaybackState() : 'TIMEOUT:' + mode + ':' + R.phase;
+        }
+        var playbackStartAmbientLife = startAmbientLife;
+        startAmbientLife = function () {};
+        OfficeWarsTest.setTimingScale(.02);
+        var playback1 = await runPlaybackFixture(1);
+        var playback2 = await runPlaybackFixture(2);
+        var playback4 = await runPlaybackFixture(4);
+        var playbackSkip = await runPlaybackFixture('skip');
+        OfficeWarsTest.setTimingScale(1);
+        startAmbientLife = playbackStartAmbientLife;
+        preferredDayPlaybackRate = 1;
+        var deterministicPlayback =
+          playback1 === playback2 &&
+          playback1 === playback4 &&
+          playback1 === playbackSkip;
+        if (!deterministicPlayback &&
+            [playback1, playback2, playback4, playbackSkip].every(function (state) {
+              return state.charAt(0) === '{';
+            })) {
+          var playbackStates = {
+            one: JSON.parse(playback1),
+            two: JSON.parse(playback2),
+            four: JSON.parse(playback4),
+            skip: JSON.parse(playbackSkip)
+          };
+          var reference = playbackStates.one;
+          window.__playbackDifference = Object.keys(reference).filter(function (key) {
+            return ['two', 'four', 'skip'].some(function (mode) {
+              return JSON.stringify(playbackStates[mode][key]) !== JSON.stringify(reference[key]);
+            });
+          }).map(function (key) {
+            return key + '=' + JSON.stringify({
+              one: reference[key],
+              two: playbackStates.two[key],
+              four: playbackStates.four[key],
+              skip: playbackStates.skip[key]
+            });
+          }).join('; ').slice(0, 700);
+        } else if (!deterministicPlayback) {
+          window.__playbackDifference = [
+            playback1,
+            playback2,
+            playback4,
+            playbackSkip
+          ].join(' | ');
+        }
+
+        window.__smokeStage = 'repeated-meeting';
+        startRun({seed: 61002});
+        resetSmokeToday();
+        var repeatedMeeting = owScheduleEntry(
+          'meeting',
+          'natural',
+          'Repeated Meeting Test',
+          {repeats: 1}
+        );
+        var repeatedParticipants = [];
+        for (var meetingResolution = 0; meetingResolution < 2; meetingResolution++) {
+          R.today.currentMeetingSummary = null;
+          OW_currentEntry = repeatedMeeting;
+          actionDef('meeting').resolve();
+          repeatedParticipants.push(
+            R.today.currentMeetingSummary.participants.map(function (person) {
+              return person.pid;
+            }).join(',')
+          );
+        }
+        var meetingParticipantsPersist =
+          repeatedMeeting.participants.length === 3 &&
+          repeatedParticipants[0] === repeatedParticipants[1];
+
+        window.__smokeStage = 'rng-restoration';
+        startRun({seed: 61003});
+        var rngRestorePoint = OfficeWarsTest.rngSnapshot();
+        var rngSequenceA = [random(), random(), random()];
+        OfficeWarsTest.restoreRng(rngRestorePoint);
+        var rngSequenceB = [random(), random(), random()];
+        var rngRestoration =
+          JSON.stringify(rngSequenceA) === JSON.stringify(rngSequenceB);
+
+        window.__smokeStage = 'runtime-ui';
+        async function waitForUiState(predicate, label) {
+          var deadline = performance.now() + 5000;
+          while (!predicate()) {
+            if (performance.now() > deadline) {
+              throw new Error('Timed out waiting for ' + label);
+            }
+            await new Promise(function (resolve) { setTimeout(resolve, 10); });
+          }
+        }
+        startRun({seed: 51023});
+        await waitForUiState(function () {
+          var activeOverlay = document.getElementById('overlay');
+          var activePanel = document.getElementById('overlay-panel');
+          return activeOverlay.classList.contains('active') &&
+            activeOverlay.getAttribute('aria-hidden') === 'false' &&
+            !!activePanel.querySelector('button');
+        }, 'initial overlay controls');
+        function runtimeIdsAreUnique() {
+          var runtimeIds = Array.from(document.querySelectorAll('[id]')).map(function (element) {
+            return element.id;
+          });
+          return new Set(runtimeIds).size === runtimeIds.length;
+        }
+        var runtimeStructure =
+          runtimeIdsAreUnique() &&
+          document.querySelectorAll('[data-cubicle]').length === 8 &&
+          Array.from(document.querySelectorAll('[data-cubicle]')).every(function (cubicle, index) {
+            return Number(cubicle.dataset.cubicle) === index;
+          }) &&
+          document.querySelectorAll('.water-station').length === 1 &&
+          ['day-speed-1', 'day-speed-2', 'day-speed-4', 'day-skip-button'].every(function (id) {
+            var control = document.getElementById(id);
+            return control && control.tagName === 'BUTTON' && control.getAttribute('aria-label');
+          });
+
+        var overlay = document.getElementById('overlay');
+        var overlayPanel = document.getElementById('overlay-panel');
+        var clockInButton = overlayPanel.querySelector('button');
+        clockInButton.focus();
+        var overlayFocusEntry =
+          overlay.classList.contains('active') &&
+          overlay.getAttribute('aria-hidden') === 'false' &&
+          overlayPanel.contains(document.activeElement);
+        var overlayTab = new KeyboardEvent('keydown', {
+          key: 'Tab',
+          bubbles: true,
+          cancelable: true
+        });
+        clockInButton.dispatchEvent(overlayTab);
+        var overlayFocusTrap =
+          overlayTab.defaultPrevented &&
+          document.activeElement === clockInButton;
+
+        hideOverlay();
+        var inventoryTrigger = document.querySelector('[aria-label="Open Home inventory"]');
+        inventoryTrigger.focus();
+        openHomeInventory();
+        var inventoryModal = document.getElementById('home-inventory');
+        await waitForUiState(function () {
+          return inventoryModal.classList.contains('open') &&
+            inventoryModal.contains(document.activeElement);
+        }, 'Home inventory focus');
+        var modalFocusEntry =
+          inventoryModal.classList.contains('open') &&
+          inventoryModal.contains(document.activeElement);
+        var inventoryClose = inventoryModal.querySelector('.hud-modal-close');
+        inventoryClose.focus();
+        var modalTab = new KeyboardEvent('keydown', {
+          key: 'Tab',
+          bubbles: true,
+          cancelable: true
+        });
+        inventoryClose.dispatchEvent(modalTab);
+        var modalFocusTrap =
+          modalTab.defaultPrevented &&
+          document.activeElement === inventoryClose;
+        closeHomeInventory();
+        var modalFocusReturn = document.activeElement === inventoryTrigger;
+
+        var managerButton = document.querySelector('.hud-info-button');
+        managerButton.focus();
+        var tooltip = document.getElementById('global-tip');
+        var keyboardTooltip =
+          tooltip.style.display === 'block' &&
+          tooltip.textContent.trim().length > 0;
+        hideGlobalTooltip();
+
+        owClockIn();
+        await waitForUiState(function () {
+          return R.phase === 'morning' &&
+            R.morningCards &&
+            R.morningCards.length > 0 &&
+            document.querySelectorAll('#overlay-panel .card').length === R.morningCards.length;
+        }, 'Morning task surface');
+        var morningButtons = Array.from(document.querySelectorAll('#overlay-panel .card'));
+        var semanticMorning =
+          R.phase === 'morning' &&
+          morningButtons.length === R.morningCards.length &&
+          morningButtons.every(function (button) {
+            return button.tagName === 'BUTTON' && button.type === 'button';
+          }) &&
+          Array.from(document.querySelectorAll('button')).every(function (button) {
+            return !!(
+              button.getAttribute('aria-label') ||
+              button.getAttribute('title') ||
+              button.textContent.trim()
+            );
+          }) &&
+          runtimeIdsAreUnique();
+
+        var styleText = document.querySelector('style').textContent;
+        var responsiveRules =
+          styleText.includes('@media (orientation:portrait)') &&
+          styleText.includes('.rotate-device') &&
+          styleText.includes('@media (prefers-reduced-motion:reduce)');
+        var runtimeAccessibility =
+          overlayFocusEntry &&
+          overlayFocusTrap &&
+          modalFocusEntry &&
+          modalFocusTrap &&
+          modalFocusReturn &&
+          keyboardTooltip &&
+          semanticMorning &&
+          responsiveRules;
+
+        window.__smokeStage = 'lock';
+        var releaseResolution;
+        var heldResolution = owWithResolutionLock(function () {
+          return new Promise(function (resolve) {
+            releaseResolution = resolve;
+          });
+        });
+        var blockedResolution = await owWithResolutionLock(async function () {
+          return true;
+        });
+        releaseResolution(true);
+        await heldResolution;
+        var resolutionLock = blockedResolution === false &&
+          owResolutionLock === false;
+
+        window.__smokeStage = 'headless-run';
+        var baselineRunA = await OfficeWarsTest.simulateRun({
+          seed: 62001,
+          policy: 'baseline',
+          maxDays: 80
+        });
+        var baselineRunB = await OfficeWarsTest.simulateRun({
+          seed: 62001,
+          policy: 'baseline',
+          maxDays: 80
+        });
+        var randomRun = await OfficeWarsTest.simulateRun({
+          seed: 62002,
+          policy: 'random',
+          maxDays: 80
+        });
+        var skilledRun = await OfficeWarsTest.simulateRun({
+          seed: 62003,
+          policy: 'skilled',
+          maxDays: 80
+        });
+        var headlessRunDeterminism =
+          JSON.stringify(baselineRunA) === JSON.stringify(baselineRunB);
+        var headlessRunTermination = [baselineRunA, randomRun, skilledRun].every(function (run) {
+          return ['victory', 'burnout', 'rival', 'fired', 'maxDays'].includes(run.result) &&
+            run.daysWorked > 0 &&
+            run.daysWorked <= 80 &&
+            run.history.length > 0;
+        });
+
+        return {
+          protectedTask: protectedTask,
+          firstReward: firstReward,
+          doubledBonus: doubledBonus,
+          capstoneTag: capstoneTag,
+          capstone: capstone,
+          cycleStart: cycleStart,
+          cleanStress: cleanStress,
+          seasonedStress: seasonedStress,
+          preferred: preferred,
+          keyAccount: keyAccount,
+          nurturingOne: nurturingOne,
+          nurturingTwo: nurturingTwo,
+          hotLead: hotLead,
+          cycleCards: cycleCards,
+          insurance: insurance,
+          airPriority: airPriority,
+          contingency: contingency,
+          failover: failover,
+          escalation: escalation,
+          slumpPriority: slumpPriority,
+          cycleConsumesMorning: cycleConsumesMorning,
+          copiedChoices: copiedChoices,
+          copiedApiRedirect: copiedApiRedirect,
+          additionalDesignDefers: additionalDesignDefers,
+          replacementDefersBonuses: replacementDefersBonuses,
+          readmeStacks: readmeStacks,
+          pilotStacks: pilotStacks,
+          additionalPreparation: additionalPreparation,
+          mergedCommits: mergedCommits,
+          forkReplayScope: forkReplayScope,
+          specialProtection: specialProtection,
+          resumeContact: resumeContact,
+          weekendAtomic: weekendAtomic,
+          weekendRecoveryUnscaled: weekendRecoveryUnscaled,
+          breakthroughScope: breakthroughScope,
+          referralNetworkExpiry: referralNetworkExpiry,
+          championDiscardsPersist: championDiscardsPersist,
+          reserveCreationOrder: reserveCreationOrder,
+          comparisonEligibility: comparisonEligibility,
+          corporateExpenseDealAccess: corporateExpenseDealAccess,
+          nestedRapidFiltering: nestedRapidFiltering,
+          ordinaryRarityDistribution: ordinaryRarityDistribution,
+          paidRerollDistribution: paidRerollDistribution,
+          equalFamilyDistribution: equalFamilyDistribution,
+          specialDistribution: specialDistribution,
+          offerIdentityRules: offerIdentityRules,
+          resultPriority: resultPriority,
+          phaseRoutes: phaseRoutes,
+          deterministicPlayback: deterministicPlayback,
+          meetingParticipantsPersist: meetingParticipantsPersist,
+          rngRestoration: rngRestoration,
+          runtimeStructure: runtimeStructure,
+          runtimeAccessibility: runtimeAccessibility,
+          resolutionLock: resolutionLock,
+          headlessRunDeterminism: headlessRunDeterminism,
+          headlessRunTermination: headlessRunTermination
+        };
+      })()`);
+      var failed = Object.keys(result).filter(function (key) { return !result[key]; });
+      document.title = failed.length
+        ? 'FAIL:' + failed.join(',') +
+          (frame.contentWindow.__playbackDifference
+            ? ':' + frame.contentWindow.__playbackDifference
+            : '')
+        : 'PASS:OVERHAUL';
+    } catch (error) {
+      var stack = String(error.stack || '').replace(/\s+/g, ' ').slice(0, 500);
+      document.title = 'ERROR:' + (frame.contentWindow.__smokeStage || 'base') + ':' +
+        error.name + ':' + error.message + ':' + stack;
+    }
+  }, 500);
+});
+</script>

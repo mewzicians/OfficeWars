@@ -1,0 +1,4 @@
+interface:
+  display_name: "OfficeWars Plan"
+  short_description: "Resume focused OfficeWars design planning"
+  default_prompt: "Use $officewars-plan to continue balancing OfficeWars from the project ledger."
