@@ -1103,9 +1103,16 @@ document.getElementById('game').addEventListener('load', function () {
           });
           R.today.accountedCash = R.cash;
           R.today.interestPrincipal = Math.min(R.cash, owInterestPrincipalCap());
-          preferredDayPlaybackRate = mode === 'skip' ? 1 : mode;
+          var skipMode = String(mode).indexOf('skip') === 0;
+          preferredDayPlaybackRate = skipMode ? 1 : mode;
           await runWorkDay();
-          if (mode === 'skip') skipWorkDay();
+          if (mode === 'skip-stalled') {
+            pendingAmbientConvos = 1;
+            activeConvos = 1;
+            busyCast.add('cw1');
+            reserveCubicle(2, 'skip-stalled-regression');
+          }
+          if (skipMode) skipWorkDay();
           var finished = await waitForClockOut();
           return finished ? stablePlaybackState() : 'TIMEOUT:' + mode + ':' + R.phase;
         }
@@ -1116,26 +1123,29 @@ document.getElementById('game').addEventListener('load', function () {
         var playback2 = await runPlaybackFixture(2);
         var playback4 = await runPlaybackFixture(4);
         var playbackSkip = await runPlaybackFixture('skip');
+        var playbackSkipStalled = await runPlaybackFixture('skip-stalled');
         OfficeWarsTest.setTimingScale(1);
         startAmbientLife = playbackStartAmbientLife;
         preferredDayPlaybackRate = 1;
         var deterministicPlayback =
           playback1 === playback2 &&
           playback1 === playback4 &&
-          playback1 === playbackSkip;
+          playback1 === playbackSkip &&
+          playback1 === playbackSkipStalled;
         if (!deterministicPlayback &&
-            [playback1, playback2, playback4, playbackSkip].every(function (state) {
+            [playback1, playback2, playback4, playbackSkip, playbackSkipStalled].every(function (state) {
               return state.charAt(0) === '{';
             })) {
           var playbackStates = {
             one: JSON.parse(playback1),
             two: JSON.parse(playback2),
             four: JSON.parse(playback4),
-            skip: JSON.parse(playbackSkip)
+            skip: JSON.parse(playbackSkip),
+            skipStalled: JSON.parse(playbackSkipStalled)
           };
           var reference = playbackStates.one;
           window.__playbackDifference = Object.keys(reference).filter(function (key) {
-            return ['two', 'four', 'skip'].some(function (mode) {
+            return ['two', 'four', 'skip', 'skipStalled'].some(function (mode) {
               return JSON.stringify(playbackStates[mode][key]) !== JSON.stringify(reference[key]);
             });
           }).map(function (key) {
@@ -1143,7 +1153,8 @@ document.getElementById('game').addEventListener('load', function () {
               one: reference[key],
               two: playbackStates.two[key],
               four: playbackStates.four[key],
-              skip: playbackStates.skip[key]
+              skip: playbackStates.skip[key],
+              skipStalled: playbackStates.skipStalled[key]
             });
           }).join('; ').slice(0, 700);
         } else if (!deterministicPlayback) {
@@ -1151,7 +1162,8 @@ document.getElementById('game').addEventListener('load', function () {
             playback1,
             playback2,
             playback4,
-            playbackSkip
+            playbackSkip,
+            playbackSkipStalled
           ].join(' | ');
         }
 

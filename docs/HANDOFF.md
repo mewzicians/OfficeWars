@@ -28,6 +28,13 @@ roster, shared card and schedule resolution, family-XP traits and capstones,
 advanced family systems, centralized Home effects, legacy replacements, the
 real HUD, deterministic playback controls, and the office port.
 
+The current post-snapshot HTML fixes Skip so it resolves the active action and
+remaining locked workday without relying on animation timers. The smoke harness
+now includes a deliberately stalled ambient-conversation fixture. JavaScript
+syntax and repository-diff checks pass; the new browser regression was not run
+in the implementation environment because no browser was available. The dated
+verification reports still apply to the prior snapshot hash.
+
 The first full bidirectional verification ran on 2026-08-06 and is recorded in
 `verification/FULL_VERIFICATION_2026-08-06.md`. The candidate failed ship
 signoff. Findings F1-F4 were subsequently fixed and passed the focused retest

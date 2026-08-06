@@ -4049,10 +4049,11 @@ let dayClockGameMs=0;
 let dayClockStarted=performance.now();
 let dayTimingScale=1;
 const dayWaits=new Set();
+let daySkipResolver=null;
 
 // Workday delays are stored as game-time milliseconds. Changing playback speed
-// reschedules every outstanding delay from its remaining game time, so speed
-// Skip also affect an action, walk, or conversation already in progress.
+// reschedules every outstanding delay from its remaining game time. Skip uses
+// the locked-workday resolver instead so presentation waits cannot block it.
 function armDayWait(wait){
   if(wait.cancelled)return;
   wait.started=performance.now();
@@ -4158,6 +4159,13 @@ function skipWorkDay(){
   stopAmbientLife();
   document.querySelectorAll('#characters .emote-bubble,#characters .chat-bubble').forEach(el=>el.remove());
   document.querySelectorAll('#characters .char-sprite').forEach(el=>{el.style.zIndex='';});
+  updateDayPlaybackControls();
+  if(daySkipResolver){
+    const resolve=daySkipResolver;
+    daySkipResolver=null;
+    resolve();
+    return;
+  }
   setDayPlaybackRate(100,false);
 }
 
@@ -4171,6 +4179,7 @@ function startRun(options){
   if(Object.prototype.hasOwnProperty.call(runOptions,'seed'))RNG.setSeed(runOptions.seed);
   else RNG.clearSeed();
   preferredDayPlaybackRate=1;
+  daySkipResolver=null;
   clearCubicleReservations();
   R={
     phase:'starting',
@@ -5005,8 +5014,10 @@ function owProtectHarmfulWorkdayEvent(source){
 function scheduleSabotage(dayLength){
   if(!R.sabotageToday)return;
   R.sabotageStruck=false;
+  R.sabotageResolved=false;
   const at=1500+randomFx()*(dayLength-4500);
   const pid=R.saboteurPid||pick(['karen','dave','bob','janet','raj','priya']);
+  R.saboteurPid=pid;
   const cast=castByPid(pid)||castByPid('karen');
   const attempt=()=>{
     if(!dayActive||R.sabotageStruck)return;
@@ -5024,6 +5035,7 @@ function scheduleSabotage(dayLength){
       }
       spawnBubble(cast.id,faceEl('devil','2rem'),false,2200);
       if(owProtectHarmfulWorkdayEvent('Sabotage')){
+        R.sabotageResolved=true;
         appendDayProgressEvent(
           Math.max(0,R.today.activeProgressIndex),
           'Sabotage Neutralized',
@@ -5048,10 +5060,12 @@ function scheduleSabotage(dayLength){
         ['By: '+cast.name,'Action: Trashed your work','Repercussions: -4 project progress, +3% stress before floor pressure']
       );
       if(!owSettleAccumulatorDelta({pts:0,stressGain:0,stressRelief:0},'Sabotage')){
+        R.sabotageResolved=true;
         busyCast.delete(cast.id);
         releaseCubicle(reservation);
         return;
       }
+      R.sabotageResolved=true;
       updateHUD();
       rivalReact('mockSabotage',1200);
       dayTimeout(()=>{
@@ -5066,8 +5080,9 @@ function scheduleSabotage(dayLength){
 }
 // Resolve a scheduled-but-unstruck sabotage silently (e.g. day ended early)
 function flushSabotage(){
-  if(R.sabotageToday&&!R.sabotageStruck){
+  if(R.sabotageToday&&!R.sabotageResolved){
     R.sabotageStruck=true;
+    R.sabotageResolved=true;
     if(owProtectHarmfulWorkdayEvent('Sabotage')){
       appendDayProgressEvent(
         Math.max(0,R.today.activeProgressIndex),
@@ -5871,6 +5886,7 @@ function requestFinishWorkDay(){
   })();
 }
 function finishWorkDay(){
+  daySkipResolver=null;
   flushSabotage();  // sabotage that never got its moment still lands
   if(R.phase==='gameOver')return;
   dayActive=false;activeConvos=0;pendingAmbientConvos=0;
@@ -11563,53 +11579,156 @@ runWorkDay=async function(){
   owRunOpeningEvents();
 
   let index=0;
-  function runEntry(){
-    if(!dayActive)return;
+  let resolution=0;
+  let currentResolution=null;
+  let pendingVisit=null;
+  let fastForwarding=false;
+
+  function settleResolution(state){
+    if(!state||state.settled)return true;
+    state.settled=true;
+    if(state.resolvedKind==='mad'&&!state.definition._outcome){
+      owPrepareHeadlessOfficeChat(state.definition);
+    }
+    const line=state.definition.resolve();
+    R.today.lastEntryLine=line;
+    R.today.log.push(line);
+    currentResolution=null;
+    resolution++;
+    if(!owSettleAccumulatorDelta(state.packageStart,progressActionName(state.resolvedKind)))return false;
+    if(!owResolveTriggeredWorks())return false;
+    updateOverheadBars();updateHUD();
+    return true;
+  }
+
+  function settleVisitHeadlessly(){
+    if(!pendingVisit)return true;
+    const visit=pendingVisit;
+    pendingVisit=null;
+    owRunHeadlessDeskVisit(R.today.interactionPid||null,visit.trackerIndex);
+    return owSettleAccumulatorDelta(visit.packageStart,'Desk Visit');
+  }
+
+  function settleSabotageAtMidday(){
+    if(R.sabotageToday&&!R.sabotageResolved)flushSabotage();
+    return R.phase!=='gameOver';
+  }
+
+  function finishEntry(entry,trackerIndex,next){
+    completeDayProgressPoint(trackerIndex,R.today.lastEntryLine);
+    const visitNow=!R.today.dailyInteractionDone&&trackerIndex===Math.ceil(entries.length/2)-1;
+    index++;
+    resolution=0;
+    if(!visitNow){next();return;}
+    R.today.dailyInteractionDone=true;
+    pendingVisit={packageStart:owAccumulatorSnapshot(),trackerIndex};
+    const visit=pendingVisit;
+    runDailyDeskVisit(()=>{
+      if(!dayActive||pendingVisit!==visit)return;
+      pendingVisit=null;
+      if(!owSettleAccumulatorDelta(visit.packageStart,'Desk Visit'))return;
+      next();
+    },trackerIndex);
+  }
+
+  function runNextResolution(){
+    if(!dayActive||fastForwarding)return;
     if(index>=entries.length){requestFinishWorkDay();return;}
     const entry=entries[index];
     const trackerIndex=index;
-    let resolution=0;
-    startDayProgressPoint(trackerIndex);
-    function runResolution(){
-      if(!dayActive)return;
-      if(resolution>entry.repeats){
-        completeDayProgressPoint(trackerIndex,R.today.lastEntryLine);
-        const visitNow=!R.today.dailyInteractionDone&&trackerIndex===Math.ceil(entries.length/2)-1;
-        index++;
-        if(visitNow){
-          R.today.dailyInteractionDone=true;
-          const visitStart=owAccumulatorSnapshot();
-          runDailyDeskVisit(()=>{
-            if(owSettleAccumulatorDelta(visitStart,'Desk Visit'))runEntry();
-          },trackerIndex);
-        }else dayTimeout(runEntry,Math.max(200,CONFIG.ACTION_MS/Math.max(1,entry.repeats+1)));
-        return;
-      }
-      R.today.currentMeetingSummary=null;
-      const resolvedKind=owResolvedEntryKind(entry);
-      OW_currentEntry=entry;
-      const def=actionDef(resolvedKind);
-      const packageStart=owAccumulatorSnapshot();
-      document.getElementById('dt-action').textContent=def.label+(entry.repeats?' ('+(resolution+1)+'/'+(entry.repeats+1)+')':'');
-      animateRivalDay(Math.min(trackerIndex,(R.rival.today&&R.rival.today.workSlots)||trackerIndex));
-      walkTo('you',WAYPOINTS[def.wp],()=>{
-        if(!dayActive)return;
-        def.perform(()=>{
-          if(!dayActive)return;
-          const line=def.resolve();
-          R.today.lastEntryLine=line;
-          R.today.log.push(line);
-          if(!owSettleAccumulatorDelta(packageStart,progressActionName(resolvedKind)))return;
-          if(!owResolveTriggeredWorks())return;
-          updateOverheadBars();updateHUD();
-          resolution++;
-          dayTimeout(runResolution,Math.max(100,CONFIG.ACTION_MS/Math.max(1,entry.repeats+1)));
-        });
+    if(resolution===0)startDayProgressPoint(trackerIndex);
+    if(resolution>entry.repeats){
+      finishEntry(entry,trackerIndex,()=>{
+        dayTimeout(runNextResolution,Math.max(200,CONFIG.ACTION_MS/Math.max(1,entry.repeats+1)));
       });
+      return;
     }
-    runResolution();
+    R.today.currentMeetingSummary=null;
+    const resolvedKind=owResolvedEntryKind(entry);
+    OW_currentEntry=entry;
+    const definition=actionDef(resolvedKind);
+    const state={
+      entry,
+      trackerIndex,
+      resolution,
+      resolvedKind,
+      definition,
+      packageStart:owAccumulatorSnapshot(),
+      settled:false
+    };
+    currentResolution=state;
+    document.getElementById('dt-action').textContent=definition.label+(entry.repeats?' ('+(resolution+1)+'/'+(entry.repeats+1)+')':'');
+    animateRivalDay(Math.min(trackerIndex,(R.rival.today&&R.rival.today.workSlots)||trackerIndex));
+    walkTo('you',WAYPOINTS[definition.wp],()=>{
+      if(!dayActive||fastForwarding||currentResolution!==state)return;
+      definition.perform(()=>{
+        if(!dayActive||fastForwarding||currentResolution!==state)return;
+        if(!settleResolution(state))return;
+        dayTimeout(runNextResolution,Math.max(100,CONFIG.ACTION_MS/Math.max(1,entry.repeats+1)));
+      });
+    });
   }
-  runEntry();
+
+  daySkipResolver=()=>{
+    if(!dayActive||fastForwarding)return;
+    fastForwarding=true;
+    clearDayTimeouts();
+    walkGen++;
+    activeConvos=0;
+    pendingAmbientConvos=0;
+    scriptedSceneActive=false;
+    busyCast.clear();
+    walkingCast.clear();
+    clearCubicleReservations();
+    document.querySelectorAll('#characters .emote-bubble,#characters .chat-bubble').forEach(el=>el.remove());
+    document.querySelectorAll('#characters .char-sprite').forEach(el=>{
+      el.style.zIndex='';
+      el.style.marginTop='0';
+      el.style.transition='';
+    });
+
+    if(currentResolution&&!settleResolution(currentResolution))return;
+    if(pendingVisit){
+      if(!settleVisitHeadlessly())return;
+      if(!settleSabotageAtMidday())return;
+    }else if(R.today.dailyInteractionDone&&!settleSabotageAtMidday())return;
+
+    while(dayActive&&index<entries.length){
+      const entry=entries[index];
+      const trackerIndex=index;
+      if(resolution===0)startDayProgressPoint(trackerIndex);
+      while(dayActive&&resolution<=entry.repeats){
+        R.today.currentMeetingSummary=null;
+        const resolvedKind=owResolvedEntryKind(entry);
+        OW_currentEntry=entry;
+        const definition=actionDef(resolvedKind);
+        const state={
+          entry,
+          trackerIndex,
+          resolution,
+          resolvedKind,
+          definition,
+          packageStart:owAccumulatorSnapshot(),
+          settled:false
+        };
+        currentResolution=state;
+        if(!settleResolution(state))return;
+      }
+      completeDayProgressPoint(trackerIndex,R.today.lastEntryLine);
+      const visitNow=!R.today.dailyInteractionDone&&trackerIndex===Math.ceil(entries.length/2)-1;
+      index++;
+      resolution=0;
+      if(visitNow){
+        R.today.dailyInteractionDone=true;
+        pendingVisit={packageStart:owAccumulatorSnapshot(),trackerIndex};
+        if(!settleVisitHeadlessly())return;
+        if(!settleSabotageAtMidday())return;
+      }
+    }
+    if(dayActive)finishWorkDay();
+  };
+
+  runNextResolution();
 };
 
 // ═══════════════════════════════════════════════════════════════
@@ -11633,9 +11752,10 @@ function owPrepareHeadlessOfficeChat(definition){
     !definition._outcome.replacement&&
     !definition._outcome.neutralized;
 }
-function owRunHeadlessDeskVisit(){
-  const pid=owChooseDailyVisitor([...OW_COWORKER_PIDS,'chad']);
+function owRunHeadlessDeskVisit(selectedPid,trackerIndex){
+  const pid=selectedPid||owChooseDailyVisitor([...OW_COWORKER_PIDS,'chad']);
   const cast=castByPid(pid);
+  R.today.interactionPid=pid;
   let bonus={text:'No bonus',good:false};
   if(pid!=='chad')bonus=applyVisitBonus(pid,'you');
   R.today.log.push({
@@ -11644,6 +11764,13 @@ function owRunHeadlessDeskVisit(){
     g:bonus.good,
     n:cast.name
   });
+  if(trackerIndex!==undefined){
+    appendDayProgressEvent(
+      trackerIndex,
+      'Afterward: Desk Visit',
+      ['With: '+cast.name,'Bonus: '+bonus.text]
+    );
+  }
 }
 async function owRunWorkDayHeadless(options){
   const opts=options||{};
