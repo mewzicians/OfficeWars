@@ -107,14 +107,3 @@ python .officewars-full-verify.py 0
 
 The game itself has no Python dependency. These commands are only for
 development and verification.
-
-## Repository Setup
-
-See [REPOSITORY_SETUP.md](REPOSITORY_SETUP.md) for GitHub Pages, repository
-topics, social preview, milestone, and release guidance.
-
-## License
-
-A public license has intentionally not been selected for this snapshot. Read
-[LICENSE_GUIDE.md](LICENSE_GUIDE.md) and add a `LICENSE` file before inviting
-outside reuse or contributions.
