@@ -3,7 +3,7 @@
 Snapshot date: 2026-08-06
 
 Implemented game SHA-256:
-`2A4880220763678436C6BDFA043EAD7777BB71F01547F8B17B047768206C1D78`
+`A33645E9CC7F1A9F8CC6BD7A700377875D45825F4A8CD8FC5A40B2A7C154197A`
 
 ## Current Candidate
 
@@ -16,6 +16,9 @@ through rollout Phases 0-6:
 - centralized Home effects and legacy-system replacements;
 - the real HUD, Resume Book, deterministic playback, responsive office, and
   portrait rotation gate.
+- Skip now resolves the active action and remaining locked schedule directly,
+  bypassing presentation-only walking and conversation waits while preserving
+  action, desk-visit, sabotage, and Clock Out resolution.
 
 ## Verification
 
@@ -24,11 +27,16 @@ through rollout Phases 0-6:
 - The smoke suite passed four consecutive post-fix runs.
 - The sampled responsive matrix found no persistent-HUD overlap or viewport
   overflow.
+- The current Skip fix passes JavaScript syntax and repository-diff checks and
+  adds a stalled-conversation regression fixture. That browser fixture was not
+  run in the implementation environment because no browser was available.
 - The current candidate is still not ready for final ship signoff because
   structural balance and several exhaustive UI, accessibility, reset, and
   lifecycle rows remain open.
 
-See `verification/` for exact evidence and limitations.
+The dated reports under `verification/` apply to the prior
+`2A4880220763678436C6BDFA043EAD7777BB71F01547F8B17B047768206C1D78`
+snapshot. See those reports for their exact evidence and limitations.
 
 ## Current Balance Evidence
 

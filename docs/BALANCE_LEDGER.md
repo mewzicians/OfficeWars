@@ -37,7 +37,13 @@ percent, Lights Out 5 percent, promotion recovery 25 percent, interest 15
 percent, five base workday actions, and rank pairs
 `110/10, 130/8, 165/7, 210/6, 250/6, 285/6, 300/5`.
 
-### Implementation Verification
+The current HTML has SHA-256
+`A33645E9CC7F1A9F8CC6BD7A700377875D45825F4A8CD8FC5A40B2A7C154197A`.
+Skip uses the locked-workday continuation resolver rather than accelerating
+presentation timers, so stalled ambient conversations, walking, or desk-visit
+presentation cannot block the remaining deterministic resolution.
+
+### Implementation Verification For The 2026-08-06 Snapshot
 
 Checked on 2026-08-06:
 
