@@ -38,10 +38,15 @@ percent, five base workday actions, and rank pairs
 `110/10, 130/8, 165/7, 210/6, 250/6, 285/6, 300/5`.
 
 The current HTML has SHA-256
-`A33645E9CC7F1A9F8CC6BD7A700377875D45825F4A8CD8FC5A40B2A7C154197A`.
+`41A3CC9823C032C1D80518DB61E0C9289C5CDAADFD9EAE3C16F1E587092A71A0`.
 Skip uses the locked-workday continuation resolver rather than accelerating
 presentation timers, so stalled ambient conversations, walking, or desk-visit
-presentation cannot block the remaining deterministic resolution.
+presentation cannot block the remaining deterministic resolution. Meeting and
+Office Chat participants, Outcomes, the daily visitor, and sabotage identity
+are locked before their presentation can affect availability. Stored meeting
+participants use canonical gameplay IDs. If a resolver throws, Skip rolls back
+the workday gameplay state and both RNG streams, restores its control, and
+preserves the prepared resolution for a deterministic retry.
 
 ### Implementation Verification For The 2026-08-06 Snapshot
 
@@ -280,7 +285,8 @@ Build and resolve each workday in this order:
 - Workday Events use fixed timeline anchors so normal, double-speed, and skipped
   playback have identical order and outcomes. They do not count for Capacity
   Planning, Process Audit, or Efficiency unless an effect explicitly converts
-  the event into an action.
+  the event into an action. The normal daily desk visit resolves after the
+  midpoint Schedule Entry, followed immediately by armed sabotage.
 - Triggered Schedule Entries receive normal action and trait triggers but do
   not retroactively count for Capacity Planning. Process Audit and Efficiency
   evaluate their Action Resolutions normally.

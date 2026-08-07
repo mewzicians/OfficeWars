@@ -192,7 +192,8 @@ Desk visits, sabotage, passive manager ticks, and similar Workday Events are
 not Schedule Entries or Action Resolutions. They use fixed timeline positions
 so normal, double-speed, and skipped playback always resolve the same order and
 outcomes. An event counts as an action only when an effect explicitly converts
-it into one.
+it into one. The normal daily desk visit resolves after the midpoint Schedule
+Entry, and armed sabotage resolves immediately after that visit.
 
 - Work on Task grants project progress.
 - Lunch resolves a hidden favorable or unfavorable result.

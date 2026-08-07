@@ -2838,10 +2838,11 @@ const MEETING_TOPICS=[
 ];
 
 const MEETING_PIDS=['chad','karen','dave','bob','janet','raj','priya'];
-function shuffledIndexes(length){
+function shuffledIndexes(length,randomSource){
   const out=Array.from({length},(_,i)=>i);
+  const source=randomSource||random;
   for(let i=out.length-1;i>0;i--){
-    const j=Math.floor(random()*(i+1));
+    const j=Math.floor(source()*(i+1));
     [out[i],out[j]]=[out[j],out[i]];
   }
   return out;
@@ -2861,7 +2862,7 @@ function takeMeetingResponse(topic,pid){
   const key=topic.id+'|'+pid;
   const state=R.meetingResponseState[key]||(R.meetingResponseState[key]={bag:[],last:null});
   if(!state.bag.length){
-    state.bag=shuffledIndexes(responses.length);
+    state.bag=shuffledIndexes(responses.length,randomFx);
     // Responses are popped from the end. Swap the first draw if it would
     // immediately repeat the previous cycle's final response.
     const nextIndex=state.bag[state.bag.length-1];
@@ -4160,13 +4161,26 @@ function skipWorkDay(){
   document.querySelectorAll('#characters .emote-bubble,#characters .chat-bubble').forEach(el=>el.remove());
   document.querySelectorAll('#characters .char-sprite').forEach(el=>{el.style.zIndex='';});
   updateDayPlaybackControls();
-  if(daySkipResolver){
-    const resolve=daySkipResolver;
-    daySkipResolver=null;
-    resolve();
+  const resolver=daySkipResolver;
+  if(resolver){
+    try{
+      resolver();
+    }catch(error){
+      console.error('Skip resolver failed; press Skip to retry.',error);
+      daySkipMode=false;
+      updateDayPlaybackControls();
+      const action=document.getElementById('dt-action');
+      if(dayActive&&action)action.textContent='⚠️ Skip paused — press Skip to retry';
+    }
     return;
   }
-  setDayPlaybackRate(100,false);
+  // A workday should always install its deterministic continuation before the
+  // controls become interactive. Recover visibly instead of entering an
+  // unbounded timer-acceleration state if that invariant is ever broken.
+  console.error('Skip requested without an active workday resolver.');
+  daySkipMode=false;
+  updateDayPlaybackControls();
+  if(dayActive)startAmbientLife();
 }
 
 function ranks(){return CONFIG.QUICKTEST?RANKS_QUICK:RANKS;}
@@ -5010,73 +5024,63 @@ function owProtectHarmfulWorkdayEvent(source){
   }
   return owConsumeEscalation(source);
 }
-// The mid-day sabotage strike: saboteur walks to your desk, devil emote, damage.
-function scheduleSabotage(dayLength){
+// Lock sabotage identity before playback. The gameplay event resolves at the
+// fixed midpoint after the normal desk visit; animation timing never decides
+// whether it lands before or after another action.
+function scheduleSabotage(){
   if(!R.sabotageToday)return;
   R.sabotageStruck=false;
   R.sabotageResolved=false;
-  const at=1500+randomFx()*(dayLength-4500);
   const pid=R.saboteurPid||pick(['karen','dave','bob','janet','raj','priya']);
   R.saboteurPid=pid;
+}
+function runSabotageEvent(done){
+  let completed=false;
+  const finish=()=>{
+    if(completed)return;
+    completed=true;
+    scriptedSceneActive=false;
+    if(done)done();
+  };
+  if(!R.sabotageToday||R.sabotageResolved){finish();return;}
+  scriptedSceneActive=true;
+  const pid=R.saboteurPid||'karen';
   const cast=castByPid(pid)||castByPid('karen');
+  let reservation=null;
   const attempt=()=>{
-    if(!dayActive||R.sabotageStruck)return;
-    if(scriptedSceneActive||!isAtOwnDesk('you',1.5)||busyCast.has(cast.id)||walkingCast.has(cast.id)||bubbleBusy(cast.id)){
+    if(!dayActive||R.sabotageResolved){finish();return;}
+    if(!isAtOwnDesk('you',1.5)||busyCast.has(cast.id)||walkingCast.has(cast.id)||bubbleBusy(cast.id)){
       dayTimeout(attempt,250);return;
     }
-    const reservation=reserveCubicle(CAST.find(c=>c.id==='you').desk,'sabotage');
+    reservation=reserveCubicle(CAST.find(c=>c.id==='you').desk,'sabotage');
     if(!reservation){dayTimeout(attempt,250);return;}
-    R.sabotageStruck=true;
     busyCast.add(cast.id); // saboteurs don't get pulled into small talk
     const meetPlayer=()=>walkTo(cast.id,deskVisitorTarget('you'),()=>{
-      if(!dayActive){busyCast.delete(cast.id);releaseCubicle(reservation);return;}
+      if(!dayActive||R.sabotageResolved){
+        busyCast.delete(cast.id);releaseCubicle(reservation);finish();return;
+      }
       if(Math.hypot(charPos[cast.id].x-charPos.you.x,charPos[cast.id].y-charPos.you.y)>10){
         meetPlayer();return;
       }
       spawnBubble(cast.id,faceEl('devil','2rem'),false,2200);
-      if(owProtectHarmfulWorkdayEvent('Sabotage')){
-        R.sabotageResolved=true;
-        appendDayProgressEvent(
-          Math.max(0,R.today.activeProgressIndex),
-          'Sabotage Neutralized',
-          ['By: '+cast.name,'Protection: '+(owHasClosingReward('executiveAirCover')?'Executive Air Cover':'Escalation Coverage'),'Repercussions: none']
-        );
-        updateHUD();
-        dayTimeout(()=>{
-          busyCast.delete(cast.id);
-          releaseCubicle(reservation);
-          if(dayActive)walkTo(cast.id,{x:CHAR_POS[cast.desk][0],y:CHAR_POS[cast.desk][1]},null);
-        },1200);
-        return;
-      }
-      R.today.pts+=SABOTAGE_ACTION.pts;
-      recordTodayStress(SABOTAGE_ACTION.stress);
-      R.rel[pid]=Math.max(0,(R.rel[pid]||0)-2);
-      spawnFloatText(charPos.you.x,charPos.you.y-10,SABOTAGE_ACTION.pts+' progress','#e74c3c');
-      R.today.log.push(flavorLine(DAY_FLAVOR.sabotage,SABOTAGE_ACTION.pts+' project progress, +'+SABOTAGE_ACTION.stress+'% stress',false,'Sabotage ('+cast.name+')'));
-      appendDayProgressEvent(
-        Math.max(0,R.today.activeProgressIndex),
-        'Sabotage',
-        ['By: '+cast.name,'Action: Trashed your work','Repercussions: -4 project progress, +3% stress before floor pressure']
-      );
-      if(!owSettleAccumulatorDelta({pts:0,stressGain:0,stressRelief:0},'Sabotage')){
-        R.sabotageResolved=true;
+      flushSabotage();
+      if(R.phase==='gameOver'){
         busyCast.delete(cast.id);
         releaseCubicle(reservation);
+        finish();
         return;
       }
-      R.sabotageResolved=true;
-      updateHUD();
       rivalReact('mockSabotage',1200);
       dayTimeout(()=>{
         busyCast.delete(cast.id);
         releaseCubicle(reservation);
         if(dayActive)walkTo(cast.id,{x:CHAR_POS[cast.desk][0],y:CHAR_POS[cast.desk][1]},null);
       },2400);
+      finish();
     });
     meetPlayer();
   };
-  dayTimeout(attempt,at);
+  attempt();
 }
 // Resolve a scheduled-but-unstruck sabotage silently (e.g. day ended early)
 function flushSabotage(){
@@ -5185,29 +5189,28 @@ function actionDef(kind){
       // Office Chat: walk over, play a real exchange; outcome decides good/bad
       wp:'desk', label:'💬 Chatting with a co-worker...',
       perform(done){
+        if(!this._partner||!this._outcome)owPrepareHeadlessOfficeChat(this,OW_currentEntry);
         scriptedSceneActive=true;
         const beginChat=()=>{
           if(!dayActive){scriptedSceneActive=false;done();return;}
           if(activeConvos>=2){dayTimeout(beginChat,200);return;}
-          const available=availablePlayerInteractionPids(true).filter(pid=>canReserveCubicle(castByPid(pid).desk));
-          if(!available.length){dayTimeout(beginChat,200);return;}
-          // Pick the chat partner by relationship, but only from people who
-          // are stationary and not already in another interaction.
-          const partner=pickWeightedCoworker(available);
-          this._partner=partner;
+          // Gameplay locks the partner and Outcome before presentation. Wait
+          // for that person instead of letting ambient movement change who is
+          // eligible at a particular playback speed.
+          const partner=this._partner;
           const cast=castByPid(partner);
+          if(!cast){scriptedSceneActive=false;done();return;}
+          if(busyCast.has(cast.id)||walkingCast.has(cast.id)||bubbleBusy(cast.id)||
+              !isAtOwnDesk(cast.id)||!canReserveCubicle(cast.desk)){
+            dayTimeout(beginChat,200);return;
+          }
           const reservation=reserveCubicle(cast.desk,'office-chat');
           if(!reservation){dayTimeout(beginChat,200);return;}
           this._reservation=reservation;
-          const rel=R.rel[partner]||0;
-          const toxic=R.manager.id==='toxic'&&!owHasClosingReward('executiveAirCover');
-          const badChance=toxic?0.6:Math.max(CONFIG.CHAT_BAD_MIN,CONFIG.CHAT_BAD_BASE-CONFIG.CHAT_BAD_PER_REL*rel);
-          this._outcome=owResolveOutcome('mad',random()>=badChance,()=>random()>=badChance);
-          this._soured=!this._outcome.favorable&&!this._outcome.replacement&&!this._outcome.neutralized;
           const bank=CHAT_LINES[partner];
           const lines=pickFx(this._soured?bank.bad:bank.good);
           busyCast.add(cast.id);busyCast.add('you');
-          setActiveProgressParticipants([{name:cast.name,bonus:''}]);
+          setActiveProgressParticipants([{pid:cast.pid,name:cast.name,bonus:''}]);
           // The co-worker remains at their own desk; the player walks over.
           const dest=deskVisitorTarget(cast.id);
           walkTo('you',dest,()=>{
@@ -5262,11 +5265,11 @@ function actionDef(kind){
     case 'meeting':return{
       wp:'desk', label:'📅 Team meeting...',
       perform(done){
-        runTeamMeetingDialogue(done);
+        runTeamMeetingDialogue(done,this._participants);
       },
       resolve(){
         R.stats.meetings++;
-        const outcome=owResolveOutcome(
+        const outcome=this._outcome||owResolveOutcome(
           'meeting',
           random()<owMeetingFavorableChance(),
           ()=>random()<owMeetingFavorableChance()
@@ -5700,10 +5703,14 @@ function pickWeightedCoworker(candidates){
   for(let i=0;i<pids.length;i++){r-=weights[i];if(r<=0)return pids[i];}
   return pids[0];
 }
-function runTeamMeetingDialogue(done){
+function runTeamMeetingDialogue(done,preparedPids){
   scriptedSceneActive=true;
   busyCast.add('you');
   let reservation=null,host=null,visitors=[],finished=false;
+  const meetingPids=owNormalizeParticipantPids(preparedPids).slice(0,3);
+  MEETING_PIDS.forEach(pid=>{
+    if(meetingPids.length<3&&!meetingPids.includes(pid))meetingPids.push(pid);
+  });
   const finishMeeting=()=>{
     if(finished)return;
     finished=true;
@@ -5727,31 +5734,26 @@ function runTeamMeetingDialogue(done){
     }
     // Finish existing desk conversations before assembling the roundtable.
     if(activeConvos>0||pendingAmbientConvos>0){dayTimeout(gather,200);return;}
-    const forcedPids=OW_currentEntry&&OW_currentEntry.participants&&OW_currentEntry.participants.length
-      ?OW_currentEntry.participants.slice()
-      :null;
-    const ordinaryAvailable=availablePlayerInteractionPids();
-    const available=forcedPids
-      ?forcedPids.filter(pid=>ordinaryAvailable.includes(pid))
-      :ordinaryAvailable;
-    if(forcedPids&&available.length<forcedPids.length){dayTimeout(gather,200);return;}
-    const hosts=available.filter(pid=>{
-      const cast=castByPid(pid);
-      return isAtOwnDesk(cast.id)&&canReserveCubicle(cast.desk);
-    });
-    if(available.length<3||!hosts.length){dayTimeout(gather,200);return;}
-    // One participant stays seated as host. The player and two more co-workers
-    // walk fully inside the same cubicle before the four-person roundtable.
-    const hostPid=forcedPids?hosts[0]:pick(hosts);
-    host=castByPid(hostPid);
+    const participants=meetingPids.map(castByPid);
+    if(participants.some(cast=>!cast)){
+      finishMeeting();
+      return;
+    }
+    if(participants.some(cast=>
+      busyCast.has(cast.id)||walkingCast.has(cast.id)||bubbleBusy(cast.id)
+    )){dayTimeout(gather,200);return;}
+    // Participant identity and order are gameplay state. The first locked
+    // participant is the host; presentation waits for that exact group rather
+    // than letting ambient availability change the meeting.
+    host=participants[0];
+    if(!isAtOwnDesk(host.id)||!canReserveCubicle(host.desk)){
+      dayTimeout(gather,200);return;
+    }
     reservation=reserveCubicle(host.desk,'team-meeting');
     if(!reservation){dayTimeout(gather,200);return;}
-    const remaining=available.filter(pid=>pid!==hostPid);
-    const visitorPids=forcedPids?remaining.slice(0,2):shuffledIndexes(remaining.length).slice(0,2).map(i=>remaining[i]);
-    visitors=visitorPids.map(castByPid);
-    const participants=[host,...visitors];
-    if(OW_currentEntry&&!(OW_currentEntry.participants||[]).length){
-      OW_currentEntry.participants=participants.map(cast=>cast.id);
+    visitors=participants.slice(1,3);
+    if(OW_currentEntry&&OW_currentEntry.kind==='meeting'){
+      OW_currentEntry.participants=participants.map(cast=>cast.pid);
     }
     const targets=teamMeetingTargets(host.id);
     participants.forEach(cast=>busyCast.add(cast.id));
@@ -5760,7 +5762,7 @@ function runTeamMeetingDialogue(done){
       const el=document.getElementById('char-'+id);
       if(el)el.classList.add('meeting-participant');
     });
-    const summary={participants:participants.map(c=>({pid:c.id,name:c.name,bonus:''}))};
+    const summary={participants:participants.map(c=>({pid:c.pid,name:c.name,bonus:''}))};
     R.today.currentMeetingSummary=summary;
     setActiveProgressParticipants(summary.participants);
     let arrivals=0;
@@ -5769,7 +5771,7 @@ function runTeamMeetingDialogue(done){
       if(arrivals<3)return;
       if(!dayActive){finishMeeting();return;}
       const topic=takeMeetingTopic();
-      const ordered=shuffledIndexes(participants.length).map(i=>participants[i]);
+      const ordered=shuffledIndexes(participants.length,randomFx).map(i=>participants[i]);
       const lines=[{who:0,text:topic.prompt,ms:meetingLineMs(topic.prompt)}];
       ordered.forEach((cast,index)=>{
         const text=takeMeetingResponse(topic,cast.pid);
@@ -5779,7 +5781,7 @@ function runTeamMeetingDialogue(done){
         // Participant bonuses resolve only after the meeting outcome is
         // accepted, so a replacement action cannot keep the old attendees.
         summary.participants=participants.map(cast=>({
-          pid:cast.id,
+          pid:cast.pid,
           name:cast.name,
           bonus:''
         }));
@@ -5886,9 +5888,12 @@ function requestFinishWorkDay(){
   })();
 }
 function finishWorkDay(){
-  daySkipResolver=null;
   flushSabotage();  // sabotage that never got its moment still lands
-  if(R.phase==='gameOver')return;
+  if(R.phase==='gameOver'){
+    daySkipResolver=null;
+    return;
+  }
+  daySkipResolver=null;
   dayActive=false;activeConvos=0;pendingAmbientConvos=0;
   clearDayTimeouts();
   scriptedSceneActive=false;
@@ -6015,12 +6020,25 @@ function stopAmbientLife(){
   ambientStopped=true;
   if(ambientTimer){cancelDayTimeout(ambientTimer);ambientTimer=null;}
 }
+function owResolveDailyDeskVisit(pid,floatCastId){
+  const cast=castByPid(pid);
+  const bonus=pid==='chad'
+    ?{text:'No bonus',good:false}
+    :applyVisitBonus(pid,floatCastId);
+  R.today.log.push(pid==='chad'
+    ?{t:'CHAD stopped by your desk. He contributed nothing.',e:'',g:true,n:''}
+    :{t:cast.name+' stopped by your desk.',e:bonus.text,g:bonus.good,n:cast.name});
+  return{cast,bonus};
+}
 // Exactly one co-worker interaction per day: they walk to YOUR desk,
 // exchange a composed line, and their personal day bonus applies.
-function runDailyDeskVisit(done,trackerIndex){
+function runDailyDeskVisit(done,trackerIndex,selectedPid){
   scriptedSceneActive=true;
   busyCast.add('you');
   let reservation=null;
+  const lockedPid=selectedPid||R.today.interactionPid||
+    owChooseDailyVisitor([...OW_COWORKER_PIDS,'chad']);
+  R.today.interactionPid=lockedPid;
   const attempt=()=>{
     if(!dayActive){
       releaseCubicle(reservation);
@@ -6030,15 +6048,16 @@ function runDailyDeskVisit(done,trackerIndex){
       return;
     }
     if(activeConvos>=2){dayTimeout(attempt,250);return;}
+    const pid=lockedPid;
+    const cast=castByPid(pid);
+    if(!cast){scriptedSceneActive=false;busyCast.delete('you');done();return;}
+    if(busyCast.has(cast.id)||walkingCast.has(cast.id)||bubbleBusy(cast.id)){
+      dayTimeout(attempt,250);return;
+    }
     if(!reservation){
       reservation=reserveCubicle(CAST.find(c=>c.id==='you').desk,'daily-visit');
       if(!reservation){dayTimeout(attempt,250);return;}
     }
-    const available=availablePlayerInteractionPids();
-    if(!available.length){dayTimeout(attempt,250);return;}
-    const pid=owChooseDailyVisitor(available);
-    const cast=castByPid(pid);
-    R.today.interactionPid=pid;
     busyCast.add(cast.id);
     const lines=pid==='chad'
       ?[{who:0,text:pickFx(RIVAL_LINES[(R.rel.chad||0)>=60?'youAhead':'generic'])},{who:1,face:'meh'}]
@@ -6052,15 +6071,7 @@ function runDailyDeskVisit(done,trackerIndex){
         return;
       }
       runConvo([cast.id,'you'],lines,()=>{
-        let bonus;
-        if(pid==='chad'){
-          // Chad brings nothing. He never has.
-          bonus={text:'No bonus',good:false};
-          R.today.log.push({t:'CHAD stopped by your desk. He contributed nothing.', e:'', g:true, n:''});
-        }else{
-          bonus=applyVisitBonus(pid,'you');
-          R.today.log.push({t:cast.name+' stopped by your desk.', e:bonus.text, g:bonus.good, n:cast.name});
-        }
+        const bonus=owResolveDailyDeskVisit(pid,'you').bonus;
         appendDayProgressEvent(
           trackerIndex===undefined?Math.max(0,R.today.activeProgressIndex):trackerIndex,
           'Afterward: Desk Visit',
@@ -10058,8 +10069,18 @@ function owCheckBurnout(source){
   }
   if(dayActive){
     dayActive=false;
+    daySkipResolver=null;
+    daySkipMode=false;
     stopAmbientLife();
     clearDayTimeouts();
+    scriptedSceneActive=false;
+    activeConvos=0;
+    pendingAmbientConvos=0;
+    busyCast.clear();
+    walkingCast.clear();
+    clearCubicleReservations();
+    walkGen++;
+    updateDayPlaybackControls();
   }
   hideOverlay();hideOverlayToggle();
   defeat('burnout');
@@ -10776,6 +10797,61 @@ function owScheduleEntry(kind,origin,source,extra){
     forcedOutcome:null
   },extra||{});
 }
+function owNormalizeParticipantPid(value){
+  if(!value)return null;
+  const cast=CAST.find(person=>person.pid===value||person.id===value);
+  return cast&&cast.pid||null;
+}
+function owNormalizeParticipantPids(values){
+  const result=[];
+  (Array.isArray(values)?values:[]).forEach(value=>{
+    const pid=owNormalizeParticipantPid(value);
+    if(pid&&!result.includes(pid))result.push(pid);
+  });
+  return result;
+}
+function owLockActionParticipants(entry,resolvedKind){
+  const nativeEntry=!!entry&&entry.kind===resolvedKind;
+  const existing=nativeEntry?owNormalizeParticipantPids(entry.participants):[];
+  if(resolvedKind==='meeting'){
+    const pids=existing.slice(0,3);
+    if(pids.length<3){
+      shuffleWith(MEETING_PIDS)
+        .filter(pid=>!pids.includes(pid))
+        .slice(0,3-pids.length)
+        .forEach(pid=>pids.push(pid));
+    }
+    if(nativeEntry)entry.participants=pids.slice();
+    return pids;
+  }
+  if(resolvedKind==='mad'){
+    const pid=existing[0]||pickWeightedCoworker([...OW_COWORKER_PIDS,'chad']);
+    if(nativeEntry)entry.participants=[pid];
+    return[pid];
+  }
+  return[];
+}
+function owPrepareActionResolution(entry,resolvedKind,definition){
+  if(resolvedKind==='mad'){
+    owPrepareHeadlessOfficeChat(definition,entry);
+    const cast=castByPid(definition._partner);
+    if(cast)setActiveProgressParticipants([{pid:cast.pid,name:cast.name,bonus:''}]);
+  }else if(resolvedKind==='meeting'){
+    definition._participants=owLockActionParticipants(entry,resolvedKind);
+    const summary={participants:definition._participants.map(pid=>{
+      const cast=castByPid(pid);
+      return{pid:cast.pid,name:cast.name,bonus:''};
+    })};
+    R.today.currentMeetingSummary=summary;
+    setActiveProgressParticipants(summary.participants);
+    definition._outcome=owResolveOutcome(
+      'meeting',
+      random()<owMeetingFavorableChance(),
+      ()=>random()<owMeetingFavorableChance()
+    );
+  }
+  return definition;
+}
 function owOrdinaryActions(){
   const actions=['work','cooler','mad','slump'];
   if(R.daysLeft>2)actions.push('meeting');
@@ -11210,19 +11286,24 @@ function owActivateCoworker(pid,options){
   }
   return result;
 }
-function owResolveMeetingParticipants(useFreshParticipants){
+function owResolveMeetingParticipants(useFreshParticipants,preparedPids){
   const current=R.today.currentMeetingSummary;
-  let pids=!useFreshParticipants&&current
-    ?current.participants.map(person=>person.pid).filter(Boolean)
-    :[];
+  let pids=owNormalizeParticipantPids(preparedPids);
+  if(!useFreshParticipants&&!pids.length&&current){
+    pids=owNormalizeParticipantPids(current.participants.map(person=>person.pid));
+  }
   if(!useFreshParticipants&&!pids.length&&OW_currentEntry&&
       (OW_currentEntry.participants||[]).length){
-    pids=OW_currentEntry.participants.slice();
+    pids=owNormalizeParticipantPids(OW_currentEntry.participants);
   }
-  if(!pids.length){
-    pids=shuffleWith(OW_COWORKER_PIDS).slice(0,3);
+  if(pids.length<3){
+    shuffleWith(MEETING_PIDS)
+      .filter(pid=>!pids.includes(pid))
+      .slice(0,3-pids.length)
+      .forEach(pid=>pids.push(pid));
   }
-  if(OW_currentEntry&&!(OW_currentEntry.participants||[]).length){
+  pids=pids.slice(0,3);
+  if(!useFreshParticipants&&OW_currentEntry&&OW_currentEntry.kind==='meeting'){
     OW_currentEntry.participants=pids.slice();
   }
   const summary={participants:[]};
@@ -11423,8 +11504,13 @@ actionDef=function(kind){
     const line=baseResolve.call(def);
     const resolvedKind=line&&line._resolvedKind||kind;
     if(resolvedKind==='meeting'){
-      const freshParticipants=kind!=='meeting'||line&&line.n==='Failover Protocol';
-      owResolveMeetingParticipants(freshParticipants);
+      const nativeMeeting=!!(OW_currentEntry&&OW_currentEntry.kind==='meeting');
+      const failoverMeeting=!!(line&&line.n==='Failover Protocol');
+      const freshParticipants=!nativeMeeting||failoverMeeting;
+      owResolveMeetingParticipants(
+        freshParticipants,
+        failoverMeeting?undefined:def._participants
+      );
     }
     return owAfterAction(resolvedKind,line,OW_currentEntry);
   };
@@ -11549,7 +11635,7 @@ function owRunOpeningEvents(){
 }
 runWorkDay=async function(){
   R.phase='scheduleDesk';
-  const entries=owPrepareSchedule(R.today.naturalSlots);
+  let entries=owPrepareSchedule(R.today.naturalSlots);
   await owApplyLeadership(entries);
   owApplyCapacityPlanning(entries);
   R.today.scheduleEntries=entries;
@@ -11567,16 +11653,15 @@ runWorkDay=async function(){
   document.getElementById('dt-action').textContent='☕ Clocking in...';
   ticker.classList.add('active');
   renderDayActionLegend();
-  const resolutionCount=entries.reduce((sum,entry)=>sum+1+entry.repeats,0);
-  const dayLength=resolutionCount*CONFIG.ACTION_MS;
   if(R.outingChadBadRel){
     R.outingChadBadRel=false;
     dayTimeout(()=>{if(dayActive)spawnBubble('rival',RIVAL_LINES.badRelOuting[0],true,3500,true);},1200);
   }
   if(isBossFloor()&&R.day===1)rivalReact('floorStart',2500);
-  scheduleSabotage(dayLength);
+  scheduleSabotage();
   startAmbientLife();
   owRunOpeningEvents();
+  if(!dayActive||R.phase==='gameOver')return;
 
   let index=0;
   let resolution=0;
@@ -11584,13 +11669,85 @@ runWorkDay=async function(){
   let pendingVisit=null;
   let fastForwarding=false;
 
+  function cloneSkipTransactionValue(value){
+    if(value===undefined)return undefined;
+    if(typeof structuredClone==='function'){
+      try{return structuredClone(value);}catch(error){}
+    }
+    return JSON.parse(JSON.stringify(value));
+  }
+
+  function captureSkipTransaction(){
+    const state=currentResolution;
+    const definitionData={};
+    if(state&&state.definition){
+      Object.keys(state.definition).forEach(key=>{
+        if(typeof state.definition[key]!=='function'){
+          definitionData[key]=cloneSkipTransactionValue(state.definition[key]);
+        }
+      });
+    }
+    return{
+      run:cloneSkipTransactionValue(R),
+      rng:RNG.snapshot(),
+      index,
+      resolution,
+      currentResolution:state,
+      currentEntryId:state&&state.entry&&state.entry.id||null,
+      currentSettled:state&&state.settled,
+      definitionData,
+      pendingVisit:cloneSkipTransactionValue(pendingVisit),
+      activeEntryId:OW_currentEntry&&OW_currentEntry.id||null,
+      resolver:daySkipResolver
+    };
+  }
+
+  function restoreSkipTransaction(transaction){
+    clearDayTimeouts();
+    R=transaction.run;
+    RNG.restore(transaction.rng);
+    entries=R.today.scheduleEntries||[];
+    index=transaction.index;
+    resolution=transaction.resolution;
+    pendingVisit=transaction.pendingVisit;
+    currentResolution=transaction.currentResolution;
+    if(currentResolution){
+      currentResolution.entry=entries.find(entry=>entry.id===transaction.currentEntryId)||
+        currentResolution.entry;
+      currentResolution.settled=transaction.currentSettled;
+      Object.keys(currentResolution.definition).forEach(key=>{
+        if(typeof currentResolution.definition[key]!=='function'){
+          delete currentResolution.definition[key];
+        }
+      });
+      Object.keys(transaction.definitionData).forEach(key=>{
+        currentResolution.definition[key]=cloneSkipTransactionValue(
+          transaction.definitionData[key]
+        );
+      });
+      if(Object.prototype.hasOwnProperty.call(currentResolution.definition,'_reservation')){
+        currentResolution.definition._reservation=null;
+      }
+    }
+    OW_currentEntry=entries.find(entry=>entry.id===transaction.activeEntryId)||
+      currentResolution&&currentResolution.entry||null;
+    dayActive=true;
+    daySkipResolver=transaction.resolver;
+    scriptedSceneActive=false;
+    activeConvos=0;
+    pendingAmbientConvos=0;
+    busyCast.clear();
+    walkingCast.clear();
+    clearCubicleReservations();
+  }
+
   function settleResolution(state){
     if(!state||state.settled)return true;
-    state.settled=true;
     if(state.resolvedKind==='mad'&&!state.definition._outcome){
-      owPrepareHeadlessOfficeChat(state.definition);
+      owPrepareHeadlessOfficeChat(state.definition,state.entry);
     }
     const line=state.definition.resolve();
+    state.settled=true;
     R.today.lastEntryLine=line;
     R.today.log.push(line);
     currentResolution=null;
@@ -11605,7 +11762,7 @@ runWorkDay=async function(){
     if(!pendingVisit)return true;
     const visit=pendingVisit;
     pendingVisit=null;
-    owRunHeadlessDeskVisit(R.today.interactionPid||null,visit.trackerIndex);
+    owRunHeadlessDeskVisit(visit.pid,visit.trackerIndex);
     return owSettleAccumulatorDelta(visit.packageStart,'Desk Visit');
   }
 
@@ -11621,14 +11778,16 @@ runWorkDay=async function(){
     resolution=0;
     if(!visitNow){next();return;}
     R.today.dailyInteractionDone=true;
-    pendingVisit={packageStart:owAccumulatorSnapshot(),trackerIndex};
+    const pid=owChooseDailyVisitor([...OW_COWORKER_PIDS,'chad']);
+    R.today.interactionPid=pid;
+    pendingVisit={packageStart:owAccumulatorSnapshot(),trackerIndex,pid};
     const visit=pendingVisit;
     runDailyDeskVisit(()=>{
       if(!dayActive||pendingVisit!==visit)return;
       pendingVisit=null;
       if(!owSettleAccumulatorDelta(visit.packageStart,'Desk Visit'))return;
-      next();
-    },trackerIndex);
+      runSabotageEvent(()=>{if(dayActive)next();});
+    },trackerIndex,pid);
   }
 
   function runNextResolution(){
@@ -11647,6 +11806,7 @@ runWorkDay=async function(){
     const resolvedKind=owResolvedEntryKind(entry);
     OW_currentEntry=entry;
     const definition=actionDef(resolvedKind);
+    owPrepareActionResolution(entry,resolvedKind,definition);
     const state={
       entry,
       trackerIndex,
@@ -11671,61 +11831,84 @@ runWorkDay=async function(){
 
   daySkipResolver=()=>{
     if(!dayActive||fastForwarding)return;
+    let transaction=null;
     fastForwarding=true;
-    clearDayTimeouts();
-    walkGen++;
-    activeConvos=0;
-    pendingAmbientConvos=0;
-    scriptedSceneActive=false;
-    busyCast.clear();
-    walkingCast.clear();
-    clearCubicleReservations();
-    document.querySelectorAll('#characters .emote-bubble,#characters .chat-bubble').forEach(el=>el.remove());
-    document.querySelectorAll('#characters .char-sprite').forEach(el=>{
-      el.style.zIndex='';
-      el.style.marginTop='0';
-      el.style.transition='';
-    });
+    try{
+      transaction=captureSkipTransaction();
+      clearDayTimeouts();
+      walkGen++;
+      activeConvos=0;
+      pendingAmbientConvos=0;
+      scriptedSceneActive=false;
+      busyCast.clear();
+      walkingCast.clear();
+      clearCubicleReservations();
+      document.querySelectorAll('#characters .emote-bubble,#characters .chat-bubble').forEach(el=>el.remove());
+      document.querySelectorAll('#characters .char-sprite').forEach(el=>{
+        el.style.zIndex='';
+        el.style.marginTop='0';
+        el.style.transition='';
+      });
 
-    if(currentResolution&&!settleResolution(currentResolution))return;
-    if(pendingVisit){
-      if(!settleVisitHeadlessly())return;
-      if(!settleSabotageAtMidday())return;
-    }else if(R.today.dailyInteractionDone&&!settleSabotageAtMidday())return;
-
-    while(dayActive&&index<entries.length){
-      const entry=entries[index];
-      const trackerIndex=index;
-      if(resolution===0)startDayProgressPoint(trackerIndex);
-      while(dayActive&&resolution<=entry.repeats){
-        R.today.currentMeetingSummary=null;
-        const resolvedKind=owResolvedEntryKind(entry);
-        OW_currentEntry=entry;
-        const definition=actionDef(resolvedKind);
-        const state={
-          entry,
-          trackerIndex,
-          resolution,
-          resolvedKind,
-          definition,
-          packageStart:owAccumulatorSnapshot(),
-          settled:false
-        };
-        currentResolution=state;
-        if(!settleResolution(state))return;
-      }
-      completeDayProgressPoint(trackerIndex,R.today.lastEntryLine);
-      const visitNow=!R.today.dailyInteractionDone&&trackerIndex===Math.ceil(entries.length/2)-1;
-      index++;
-      resolution=0;
-      if(visitNow){
-        R.today.dailyInteractionDone=true;
-        pendingVisit={packageStart:owAccumulatorSnapshot(),trackerIndex};
+      if(currentResolution&&!settleResolution(currentResolution))return;
+      if(pendingVisit){
         if(!settleVisitHeadlessly())return;
         if(!settleSabotageAtMidday())return;
+      }else if(R.today.dailyInteractionDone&&!settleSabotageAtMidday())return;
+
+      while(dayActive&&index<entries.length){
+        const entry=entries[index];
+        const trackerIndex=index;
+        if(resolution===0)startDayProgressPoint(trackerIndex);
+        while(dayActive&&resolution<=entry.repeats){
+          R.today.currentMeetingSummary=null;
+          const resolvedKind=owResolvedEntryKind(entry);
+          OW_currentEntry=entry;
+          const definition=actionDef(resolvedKind);
+          owPrepareActionResolution(entry,resolvedKind,definition);
+          const state={
+            entry,
+            trackerIndex,
+            resolution,
+            resolvedKind,
+            definition,
+            packageStart:owAccumulatorSnapshot(),
+            settled:false
+          };
+          currentResolution=state;
+          if(!settleResolution(state))return;
+        }
+        completeDayProgressPoint(trackerIndex,R.today.lastEntryLine);
+        const visitNow=!R.today.dailyInteractionDone&&trackerIndex===Math.ceil(entries.length/2)-1;
+        index++;
+        resolution=0;
+        if(visitNow){
+          R.today.dailyInteractionDone=true;
+          const pid=owChooseDailyVisitor([...OW_COWORKER_PIDS,'chad']);
+          R.today.interactionPid=pid;
+          pendingVisit={packageStart:owAccumulatorSnapshot(),trackerIndex,pid};
+          if(!settleVisitHeadlessly())return;
+          if(!settleSabotageAtMidday())return;
+        }
+      }
+      if(dayActive)finishWorkDay();
+    }catch(error){
+      // Roll back every gameplay mutation and both RNG streams. Presentation
+      // stays cancelled, so a second Skip can retry the same prepared state.
+      if(transaction)restoreSkipTransaction(transaction);
+      throw error;
+    }finally{
+      fastForwarding=false;
+      if(!dayActive){
+        daySkipMode=false;
+        daySkipResolver=null;
+        scriptedSceneActive=false;
+        busyCast.clear();
+        walkingCast.clear();
+        clearCubicleReservations();
+        updateDayPlaybackControls();
       }
     }
-    if(dayActive)finishWorkDay();
   };
 
   runNextResolution();
@@ -11734,9 +11917,8 @@ runWorkDay=async function(){
 // ═══════════════════════════════════════════════════════════════
 // ORDERED CLOCK OUT
 // ═══════════════════════════════════════════════════════════════
-function owPrepareHeadlessOfficeChat(definition){
-  const candidates=[...OW_COWORKER_PIDS,'chad'];
-  const partner=pickWeightedCoworker(candidates);
+function owPrepareHeadlessOfficeChat(definition,entry){
+  const partner=owLockActionParticipants(entry,'mad')[0];
   const relationship=R.rel[partner]||0;
   const toxic=R.manager.id==='toxic'&&!owHasClosingReward('executiveAirCover');
   const badChance=toxic
@@ -11754,16 +11936,10 @@ function owPrepareHeadlessOfficeChat(definition){
 }
 function owRunHeadlessDeskVisit(selectedPid,trackerIndex){
   const pid=selectedPid||owChooseDailyVisitor([...OW_COWORKER_PIDS,'chad']);
-  const cast=castByPid(pid);
   R.today.interactionPid=pid;
-  let bonus={text:'No bonus',good:false};
-  if(pid!=='chad')bonus=applyVisitBonus(pid,'you');
-  R.today.log.push({
-    t:cast.name+' made the normal daily desk visit.',
-    e:bonus.text,
-    g:bonus.good,
-    n:cast.name
-  });
+  const visit=owResolveDailyDeskVisit(pid,'you');
+  const cast=visit.cast;
+  const bonus=visit.bonus;
   if(trackerIndex!==undefined){
     appendDayProgressEvent(
       trackerIndex,
@@ -11785,6 +11961,7 @@ async function owRunWorkDayHeadless(options){
   R.today.dayProgress=[];
   R.today.activeProgressIndex=-1;
   simulateRivalDay();
+  scheduleSabotage();
   owRunOpeningEvents();
   if(R.phase==='gameOver')return capturePhaseSnapshot('headless-game-over');
 
@@ -11797,7 +11974,7 @@ async function owRunWorkDayHeadless(options){
       const resolvedKind=owResolvedEntryKind(entry);
       OW_currentEntry=entry;
       const definition=actionDef(resolvedKind);
-      if(resolvedKind==='mad')owPrepareHeadlessOfficeChat(definition);
+      owPrepareActionResolution(entry,resolvedKind,definition);
       const packageStart=owAccumulatorSnapshot();
       const line=definition.resolve();
       R.today.lastEntryLine=line;
@@ -11812,7 +11989,8 @@ async function owRunWorkDayHeadless(options){
     if(!R.today.dailyInteractionDone&&index===visitAfter){
       R.today.dailyInteractionDone=true;
       const visitStart=owAccumulatorSnapshot();
-      owRunHeadlessDeskVisit();
+      const pid=owChooseDailyVisitor([...OW_COWORKER_PIDS,'chad']);
+      owRunHeadlessDeskVisit(pid);
       if(!owSettleAccumulatorDelta(visitStart,'Desk Visit')){
         return capturePhaseSnapshot('headless-game-over');
       }
