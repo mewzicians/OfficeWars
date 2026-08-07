@@ -1,6 +1,6 @@
 # OfficeWars Balance Ledger
 
-Last updated: 2026-08-06
+Last updated: 2026-08-07
 
 ## Status Rules
 
@@ -29,63 +29,104 @@ The real HTML now contains the approved overhaul candidate:
   tables, Logistics storage, Standard Procedures, and named resources;
 - centralized Home effects with inert set metadata hooks;
 - legacy Library, Hackathon, and Networking Brunch replacements; and
-- the real HUD, Resume Book, deterministic 1x/2x/4x/Skip playback, landscape
-  phone layout, portrait rotation gate, and eight-cubicle office.
+- the real HUD, Resume Book, deterministic playback through one cycling
+  1x/2x/4x button plus Skip, landscape phone layout, portrait rotation gate,
+  and eight-cubicle office;
+- one versioned active-run save, Continue Run, deterministic prepared-Workday
+  restoration, persistent result summaries, and safe casino restoration; and
+- the six-step contextual first-day orientation with persistent completion,
+  Skip Orientation, and replay through How to Play.
 
 Current core values are floor stress scaling 20 percent, automatic sleep 4
 percent, Lights Out 5 percent, promotion recovery 25 percent, interest 15
 percent, five base workday actions, and rank pairs
 `110/10, 130/8, 165/7, 210/6, 250/6, 285/6, 300/5`.
 
-The current HTML has SHA-256
-`41A3CC9823C032C1D80518DB61E0C9289C5CDAADFD9EAE3C16F1E587092A71A0`.
-Skip uses the locked-workday continuation resolver rather than accelerating
-presentation timers, so stalled ambient conversations, walking, or desk-visit
-presentation cannot block the remaining deterministic resolution. Meeting and
-Office Chat participants, Outcomes, the daily visitor, and sabotage identity
-are locked before their presentation can affect availability. Stored meeting
-participants use canonical gameplay IDs. If a resolver throws, Skip rolls back
-the workday gameplay state and both RNG streams, restores its control, and
-preserves the prepared resolution for a deterministic retry.
+### Current Candidate Verification
 
-### Implementation Verification For The 2026-08-06 Snapshot
-
-Checked on 2026-08-06:
+Checked on 2026-08-07:
 
 - `officewarsautobattler.html` has SHA-256
-  `2A4880220763678436C6BDFA043EAD7777BB71F01547F8B17B047768206C1D78`.
-- The overhaul smoke suite covers deterministic playback, seeded run
-  termination, distributions, phase routes, advanced systems, runtime
-  structure, and accessibility basics. Its fixed accessibility delays were
-  replaced with state-based waits; the updated harness passed four consecutive
-  post-fix runs.
-- The seven-case visual matrix reports no overflow or persistent-HUD overlap
-  at desktop, compact desktop, landscape phone, portrait rotation, Workday,
-  Morning, and Night states.
+  `30214B7FFF8FB4ED44690B90B64EE991E8F300ACE1A4E66E9100BBDAFCC81D12`.
+- The current playback-control update replaces three speed buttons with one
+  cycling button. Its displayed 1x, 2x, and 4x speeds use effective timing
+  multipliers 2, 4, and 8 relative to the previous baseline.
+- The player's project progress is consolidated into the top-center project
+  title. Its green fill sits behind a fixed dark scrim, shows the exact current
+  and required progress, and briefly pulses when progress changes. The
+  bottom-left player HUD contains the portrait and Stress bar only; Chad keeps
+  his separate top-right project bar.
+- Each Workday action clears the preceding ticker outcome when it begins and
+  publishes its own result in the same settlement step that updates the HUD.
+  Repeated actions follow the same rule for every resolution.
+- The current hash passes the browser smoke suite, all 23 focused persistence
+  checks, all eight advanced interaction groups, and the 17-case readability
+  matrix. Current relationship, Night, Campaign, and regression evidence is
+  recorded in
+  `verification/RELATIONSHIP_NIGHT_CAMPAIGN_UI_2026-08-07.md`.
+- The focused persistence suite passes 23 checks. It covers valid, corrupt,
+  and incompatible saves; deterministic Morning and prepared-Workday restore;
+  Night and result restore; new-run replacement; return to menu; pending Slots
+  settlement; active Blackjack and Poker restore; and every orientation
+  transition. Exact evidence is recorded in
+  `verification/PERSISTENCE_TUTORIAL_2026-08-07.md`.
+- Skip resolves through the locked-workday continuation rather than
+  presentation timers. Meetings, Office Chats, the daily visitor, sabotage,
+  and their gameplay outcomes are prepared before presentation. Participant
+  records use canonical gameplay IDs, and a resolver error rolls back gameplay
+  state and both random streams before enabling deterministic retry.
+- On the preceding broad-verification hash, the final expanded smoke suite
+  passed four consecutive local browser runs. It compares gameplay state and
+  random state across 1x, 2x, 4x, and Skip and covers meetings, chats, visits,
+  sabotage, repeated input, rollback, ambient contention, invalid participant
+  records, converted meetings, and burnout cleanup.
+- The readability overhaul passes a 17-case visual matrix covering desktop,
+  compact desktop, landscape phone, portrait rotation, ordinary and Campaign
+  Morning, Resume, resolved Workday, Clock Out, ordinary and Lights-Out Night,
+  and 200-percent text scaling. It reports no sampled clipped text, viewport
+  overflow, or persistent-HUD overlap.
 - The first full bidirectional verification is recorded in
   `verification/FULL_VERIFICATION_2026-08-06.md`. Its implementation and
   readability findings F1-F4 are resolved and passed the focused retest in
   `verification/BLOCKERS_1_4_RETEST_2026-08-06.md`.
+- The current full verification is recorded in
+  `verification/FULL_VERIFICATION_2026-08-07_30214B7F.md`. Player-facing
+  implementation, deterministic playback, persistence, sampled accessibility,
+  responsive behavior, and distribution pass. The headless Night policy fails
+  the same purchase-versus-Lights-Out rule that the player UI correctly
+  enforces, so current balance simulation is Blocked. The report preserves all
+  Not Run and Blocked rows.
+- `verification/FULL_VERIFICATION_2026-08-07.md` remains exact historical
+  evidence for its named preceding hash.
 - All eight targeted high-risk interaction groups passed deterministic runtime
   fixtures in
   `verification/ADVANCED_INTERACTION_VERIFICATION_2026-08-06.md`: maximal
   schedule ordering, Clock Out economy, coworker ordering, repeated meetings,
   promotion batches, all 14 ordinary trait paths, advanced-system lifecycles,
-  and worst-case resolution chains.
-- F5 remains open: the scripted-skilled policy won 55.3 percent against the
-  25-35 percent target. The advanced suite found no rules defect, but its
-  121-resolution, 2,403-progress action chain is a serious balance and
-  readability watchpoint.
-- The same audit completed 3,000 seeded runs without simulation errors:
-  baseline won 0.7 percent, random won 12.2 percent, and scripted-skilled won
-  55.3 percent. `Regression Tests` was the skilled policy's largest selection
-  outlier and remains a watchpoint rather than an automatic nerf.
-- Final implementation signoff, the full structural simulation matrix, and
-  balance tuning remain pending. UI and accessibility rows not exercised by
-  the targeted advanced suite retain their existing verification status.
-- The historical UI prototype, old handoffs, and pre-cleanup full ledger are
-  intentionally omitted from the public development snapshot.
-- This `docs/BALANCE_LEDGER.md` remains the current decision-status source.
+  and worst-case resolution chains. The current hash passed the same suite
+  locally without browser errors or external requests.
+- A prior 3,000-run audit completed without runtime errors: baseline won 0.7
+  percent, random won 12.2 percent, and scripted-skilled won 58.4 percent.
+  `Regression Tests` was that policy's largest selection outlier. Those values
+  remain useful historical telemetry for their exact snapshot, but they are
+  not valid current balance evidence after the two-way Night choice became
+  Locked: the headless policy buys a Home item and then grants itself manual
+  Lights Out.
+- Current Skip validation and the cross-version simulation comparison are
+  recorded in
+  `verification/SKIP_FIX_LOCAL_VALIDATION_2026-08-07.md`.
+- Repairing and rerunning the headless Night policy, structural tuning, human
+  playtest evidence, and the exhaustive verification rows named in the current
+  full report remain pending. The player-facing readability, playback-control,
+  persistence, and first-day orientation updates have no remaining approved
+  feature work.
+- `officewars-ui-prototype.html` has SHA-256
+  `1E4D168C61B4EEA81FFE97E7518CCB5B3C3BBC34BEF0720C43337707554BDBC4`.
+  It implements only the separate mock HUD and office-layout prototype; its
+  playback does not represent real gameplay outcomes.
+- Historical handoffs and the pre-cleanup full ledger are preserved under
+  `archive/`. The root `docs/BALANCE_LEDGER.md` remains the current
+  decision-status source.
 
 ## Locked
 
@@ -147,6 +188,33 @@ Checked on 2026-08-06:
   compact.
 - Treat Chad's coefficients as simulation-tunable values rather than changing
   them before the approved cards and traits are implemented accurately.
+
+### Run Persistence And First-Day Tutorial
+
+- Replace the `Endless` main-menu option with `Continue Run`.
+  Show it only when a valid active-run save exists.
+- Keep one versioned active-run save in browser storage and save after committed
+  decisions and stable phase transitions. Keep tutorial completion and other
+  meta preferences separate from the active run.
+- If the game is restored during a prepared Workday, restore its deterministic
+  checkpoint and automatically Skip its remaining playback to Clock Out. Do
+  not attempt to serialize live animation timers or resolver closures.
+- Teach only the basic game loop through six contextual first-workday
+  callouts: the project race and stress, morning task anatomy, the Resume,
+  Workday playback, Clock Out, and Night. Keep advanced traits and card
+  interactions for players to discover.
+- For each callout, darken the rest of the screen and leave the relevant
+  existing interface spotlighted. Keep the copy to at most two short sentences
+  and provide `Next` and `Skip Orientation`.
+- Pause once before the first Workday begins to explain its autonomous
+  playback and `1x`, `2x`, `4x`, and Skip controls. Do not interrupt playback
+  after it starts.
+- Do not rig first-run cards or outcomes. Store completed tutorial steps across
+  refreshes and allow the orientation to be replayed through How to Play.
+- Require confirmation before `New Run` replaces an existing active save.
+- Preserve a victory or defeat result across refreshes. From the run summary,
+  let the player return cleanly to the main menu; clear the active-run save only
+  when that result is dismissed or a replacement run is confirmed.
 
 ### Task Roster Review Direction
 
@@ -395,7 +463,9 @@ Use one flexible `Night Desk`:
    Outing, Expense Credit, discount, and financing allowance.
 2. Let the player take available Outings and make eligible Home and Deal
    purchases in any order. Selecting a Home card does not automatically end
-   Night.
+   Night. Unless an effect explicitly permits both, manually selecting Lights
+   Out makes Home and Deal purchases unavailable, while making either purchase
+   makes manual Lights Out unavailable. Outings remain independent.
 3. Spend Expense Credit before ordinary cash on every eligible payment.
 4. For Cross-Sell, a category counts when at least some cash or Expense Credit
    is actually paid toward Home, Deals, or Outings. Free and fully financed
@@ -407,12 +477,15 @@ Use one flexible `Night Desk`:
    increase its recorded spending.
 6. End Night only through an explicit finalization. Warn about unused
    purchases, Outings, or Expense Credit but allow the player to continue.
+   Do not warn about unused Home or Deal purchases after the player has
+   manually selected Lights Out.
 7. On confirmation, expire night-only effects and unspent Expense Credit,
    apply automatic sleep, then apply Lights Out when selected or granted, and
    advance to the appropriate Weekend, promotion, or morning.
 
 - A newly purchased Home upgrade or move applies immediately, including to
-  automatic sleep and Lights Out during that same Night.
+  automatic sleep and, when an explicit exception allows both, Lights Out
+  during that same Night.
 - Every repeated Night-card effect remains a separate Effect Instance.
   Resource grants, credits, rebates, and explicitly additional purchases
   stack. An instance does not bypass the normal Home, Deal, or Outing limit
@@ -1183,20 +1256,57 @@ These are risks to measure after full verification, not approved nerfs:
 
 ### HUD Readability Direction
 
+- Keep the retro monospace display type for headings, names, labels, and major
+  numbers. Use a clean system sans-serif for rules text, explanations,
+  forecasts, logs, and other reading-heavy body copy.
+- Give decision cards a consistent information hierarchy: family banner, card
+  name and rarity, `Gain`, `Cost`, `Timing`, then `Effect`. Important values
+  must scan before the player reads the complete rules text.
+- Do not print the routine `+1 family XP` granted by an ordinary Complete Play
+  on every task card. Show only exceptional XP changes or redirections.
+- Keep exact rules and forecasts available through click, tap, and keyboard
+  focus. Hover may expose the same details but cannot be their only access
+  path.
+- On short landscape screens, show compact simultaneous task comparisons plus
+  one selected-card detail area instead of shrinking three complete cards.
+- Reduce repeated Resume-rail status copy so progression and the next relevant
+  milestone receive the available space.
+- Group Clock Out results by system and source, including Progress, Stress,
+  Cash, Relationships, and carried effects, rather than relying on one
+  chronological event log.
 - Move the player portrait into a standalone HUD cluster in the bottom-left
   corner.
-- Give the player cluster two persistent bars: project progress and stress.
+- Turn the prominent top-center project title into the player's project
+  progress bar. Fill it from left to right behind the project name, keep the
+  exact current and required progress visible inside it, and preserve a dark
+  readability overlay above the fill.
+- Briefly pulse the top project bar whenever its displayed progress changes.
+  Disable the pulse under reduced-motion preferences.
+- Give the bottom-left player cluster one persistent health-style Stress bar.
+  Remove its duplicate project-progress bar.
 - Do not place the HUD inside a full-width bottom background, frame, or border.
 - Place Chad's portrait and project-progress bar in the top-right corner, with
   workdays remaining directly underneath.
-- Keep the current project title prominent and larger than secondary HUD text.
+- Keep the current project title prominent, readable above every fill level,
+  and larger than secondary HUD text.
 - Keep a reduced right-hand sidebar dedicated to Resume information.
 - Divide the Resume sidebar height across the five family summaries and use
   larger text for family XP, selected paths, and milestone status.
+- Do not repeat implied state such as `Choose a path at 3 XP` or `No path
+  selected` in the persistent rail. Use its segments, milestone markers,
+  selected path name, and available-choice emphasis to communicate that state.
 - Show family XP as ten discrete one-point segments without visible XP
   counters. Mark the 3/6/10 milestone gates and emphasize the next required
   gate. At 10, use an overflow marker rather than a number.
 - Use a dark-mode Resume Book for complete trait details.
+- Make each full family summary in the Resume rail one accessible control.
+  Activating it opens the Resume Book directly to that family's tab.
+- Style the Resume Book as a dark interactive resume with all five family tabs
+  across the top. Each tab shows the family's identity, exact uncapped XP,
+  milestone progress, selected path, and complete mechanical effects.
+- Give each family one concise flavor sentence about the player's current skill
+  in that discipline. Change it at meaningful XP bands so the resume develops
+  with the run, but never substitute flavor for exact mechanical information.
 - Show exact uncapped family XP in the Resume Book and Promotion Review because
   Debugging and other effects can use XP above 10.
 - Keep the capstone owner or pending reservation visible in the Resume rail and
@@ -1228,11 +1338,13 @@ These are risks to measure after full verification, not approved nerfs:
   playback, then expand them in every other phase where the sidebar is
   available.
 - Do not include a manual Resume minimize control.
-- During workday playback, place Help, a `1x/2x/4x` speed selector, and Skip
-  controls at the bottom-right immediately left of the Resume rail. Use a
-  segmented speed control when space permits and one cycling button that shows
-  the active speed on short or landscape-phone viewports. Expose compact
-  controls through tooltips and accessible labels.
+- During workday playback, place Help, one cycling speed button, and Skip at the
+  bottom-right immediately left of the Resume rail. The speed button shows the
+  active `1x`, `2x`, or `4x` value and advances on every activation. Expose
+  both controls through tooltips and accessible labels.
+- Use twice the previous presentation speed as the new player-facing 1x
+  baseline. The displayed 1x, 2x, and 4x modes therefore use effective timing
+  multipliers 2, 4, and 8 relative to the old baseline.
 - Hide playback controls outside the workday. Changing speed or skipping alters
   presentation only; Skip visibly enters a disabled resolving state until the
   deterministic workday finishes.
@@ -1584,7 +1696,7 @@ absorbs final stress after floor-pressure scaling at a one-to-one rate.
 | 3 XP: Centered | Actual stress recovery also grants an equal amount of Focus, capped at 10. Focus lasts until consumed or through the end of the next workday. |
 | 6 XP: Inspired | Increase the Focus cap to 20. Every point of Focus consumed also grants 1 project progress. |
 | 10 XP: Creative Flow | Remove the Focus cap. Unused Focus carries between workdays instead of expiring. |
-| Capstone: Flow State | Lights Out occurs automatically every night without consuming the Home choice. Focus spent during a workday refreshes at the start of the next workday instead of disappearing. |
+| Capstone: Flow State | Lights Out occurs automatically every night without blocking Home or Deal purchases. Focus spent during a workday refreshes at the start of the next workday instead of disappearing. |
 
 - Only stress actually recovered generates Focus; attempted recovery while at
   zero stress does not.
@@ -1598,11 +1710,18 @@ absorbs final stress after floor-pressure scaling at a one-to-one rate.
 - The Special task `Rebrand Initiative` is the only way to unlock the
   path. It has 10 base project progress, generates 10 base stress, grants no
   family XP, and its first play unlocks Brand Strategy immediately.
+- Its player-facing effect text is: `Unlock Brand Strategy. Some task offers
+  become Campaign cards. Play the requested Campaign cards in order to
+  complete Campaigns and earn powerful rewards.`
 - `Rebrand Initiative` has no effect beyond activating the questline. Later
   copies do not grant Campaign progress or another standalone benefit.
 - Brand Strategy has no 3, 6, or 10 Design XP milestones.
 - Track Brand Strategy with a `Campaigns Completed` stat rather than Brand
   Equity.
+- While a Campaign is active, the Morning Task Desk shows a dedicated status
+  band with the Campaign name, requested task and family, completed steps, and
+  total Campaigns completed. Campaign progress displays completed steps rather
+  than the ordinal of the next requested task.
 - Every Campaign has its own name and an ordered sequence of specific task
   cards chosen to reflect a plausible real-world workflow.
 - Campaigns become progressively longer as the questline advances.
@@ -1759,7 +1878,8 @@ absorbs final stress after floor-pressure scaling at a one-to-one rate.
 - Present these purchases through a dedicated Deal Desk rather than mixing them
   into or diluting the ordinary Home-card offer.
 - Buying a Deal is an additional night action. It does not consume a Home
-  choice, the outing, or Lights Out.
+  purchase or the Outing, but it ordinarily makes manual Lights Out
+  unavailable under the shared Night rule.
 - Do not give Negotiation an additional ordinary night or Home choice. Reserve
   that effect for another Sales trait path.
 - When a purchased Deal schedules a Client Call for the following workday, that
@@ -2250,7 +2370,8 @@ Superseded designs and the complete pre-cleanup ledger are preserved through
 
 ## Open Questions
 
-1. Define the remaining structural simulation matrix and tune F5 against the
+1. Make the headless Night policy obey the Locked purchase-versus-Lights-Out
+   choice, rerun the structural simulation matrix, and then tune F5 against the
    25-35 percent skilled-player win-rate target. Preserve the advanced suite's
    action-inflation result as a primary balance and readability watchpoint.
 2. After the overhaul candidate passes full verification, design the Home set

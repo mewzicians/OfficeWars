@@ -13,6 +13,28 @@ from playwright.sync_api import sync_playwright
 ROOT = Path(__file__).resolve().parent
 GAME_URL = (ROOT / "officewarsautobattler.html").as_uri()
 RUNS_PER_POLICY = int(sys.argv[1]) if len(sys.argv) > 1 else 250
+META_COMPLETE = json.dumps(
+    {
+        "schema": 1,
+        "tutorial": {
+            "completed": True,
+            "nextStep": 6,
+            "skipped": False,
+            "replayRequested": False,
+        },
+    }
+)
+
+
+def complete_orientation(page):
+    page.evaluate(
+        "(meta) => localStorage.setItem(OW_META_KEY, meta)", META_COMPLETE
+    )
+    page.reload(wait_until="load", timeout=30_000)
+    page.wait_for_function(
+        "document.documentElement.dataset.officewarsReady === 'true'",
+        timeout=15_000,
+    )
 
 
 CORE_AUDIT = r"""
@@ -78,7 +100,11 @@ CORE_AUDIT = r"""
     SPECIAL_TASKS.length === 1 &&
     SPECIAL_TASKS[0].id === 'rebrandInitiative' &&
     SPECIAL_TASKS[0].progress === 10 &&
-    SPECIAL_TASKS[0].stress === 10,
+    SPECIAL_TASKS[0].stress === 10 &&
+    SPECIAL_TASKS[0].effect ===
+      'Unlock Brand Strategy. Some task offers become Campaign cards. ' +
+      'Play the requested Campaign cards in order to complete Campaigns and ' +
+      'earn powerful rewards.',
     SPECIAL_TASKS
   );
   expect('campaign-shape',
@@ -381,6 +407,41 @@ async () => {
     buttonCount: document.querySelectorAll('button').length
   });
 
+  const projectHud = document.getElementById('project-hud');
+  const projectFill = projectHud.querySelector('#sp-prog-fill');
+  const projectValue = projectHud.querySelector('#sp-prog-val');
+  const projectScrim = projectHud.querySelector('.project-hud-scrim');
+  const projectTrack = projectHud.querySelector('.project-hud-track');
+  const projectProgressBeforePulse = R.project.progress;
+  updateHUD();
+  R.project.progress = projectProgressBeforePulse + 1;
+  updateHUD();
+  const projectPulse = projectTrack.classList.contains('progress-pulse');
+  R.project.progress = projectProgressBeforePulse;
+  projectHud.dataset.projectKey = '';
+  updateHUD();
+  expect('project-hud-consolidation',
+    projectFill &&
+    projectValue &&
+    projectScrim &&
+    projectPulse &&
+    document.querySelector('style').textContent.includes('@keyframes project-progress-pulse') &&
+    document.getElementById('player-hud').querySelector('#sp-prog-fill') === null &&
+    document.getElementById('player-hud').querySelector('#sp-prog-val') === null &&
+    document.getElementById('player-hud').querySelector('#sp-str-fill') &&
+    projectHud.tabIndex === 0 &&
+    projectHud.getAttribute('data-tip-id') === 'sp-prog-tip',
+    {
+      topFill: !!projectFill,
+      topValue: projectValue && projectValue.textContent,
+      scrim: !!projectScrim,
+      pulse: projectPulse,
+      bottomProject: !!document.getElementById('player-hud').querySelector('#sp-prog-fill'),
+      bottomStress: !!document.getElementById('player-hud').querySelector('#sp-str-fill'),
+      tabIndex: projectHud.tabIndex
+    }
+  );
+
   hideOverlay();
   const inventoryTrigger = document.querySelector('[aria-label="Open Home inventory"]');
   inventoryTrigger.focus();
@@ -413,18 +474,78 @@ async () => {
   );
   hideGlobalTooltip();
 
-  const controls = ['day-speed-1', 'day-speed-2', 'day-speed-4', 'day-skip-button']
+  const controls = ['day-speed-button', 'day-skip-button']
     .map(id => document.getElementById(id));
   expect('playback-controls-semantic',
     controls.every(control =>
       control &&
       control.tagName === 'BUTTON' &&
       control.getAttribute('aria-label')
-    ),
+    ) &&
+    document.getElementById('day-speed-button').textContent.trim() === '1x' &&
+    !document.getElementById('day-speed-1') &&
+    !document.getElementById('day-speed-2') &&
+    !document.getElementById('day-speed-4'),
     controls.map(control => control && ({
       id: control.id,
-      label: control.getAttribute('aria-label')
+      label: control.getAttribute('aria-label'),
+      text: control.textContent.trim()
     }))
+  );
+
+  const speedControl = document.getElementById('day-speed-button');
+  const savedPlayback = {
+    active: dayActive,
+    skip: daySkipMode,
+    rate: dayPlaybackRate,
+    preferred: preferredDayPlaybackRate,
+    clock: dayClockGameMs,
+    started: dayClockStarted
+  };
+  dayActive = true;
+  daySkipMode = false;
+  dayPlaybackRate = DAY_PLAYBACK_BASE_RATE;
+  preferredDayPlaybackRate = 1;
+  updateDayPlaybackControls();
+  const speedCycle = [[speedControl.textContent.trim(), dayPlaybackRate]];
+  speedControl.click();
+  speedCycle.push([speedControl.textContent.trim(), dayPlaybackRate]);
+  speedControl.click();
+  speedCycle.push([speedControl.textContent.trim(), dayPlaybackRate]);
+  speedControl.click();
+  speedCycle.push([speedControl.textContent.trim(), dayPlaybackRate]);
+  dayActive = savedPlayback.active;
+  daySkipMode = savedPlayback.skip;
+  dayPlaybackRate = savedPlayback.rate;
+  preferredDayPlaybackRate = savedPlayback.preferred;
+  dayClockGameMs = savedPlayback.clock;
+  dayClockStarted = savedPlayback.started;
+  updateDayPlaybackControls();
+  expect('playback-control-cycle',
+    JSON.stringify(speedCycle) === JSON.stringify([
+      ['1x', 2], ['2x', 4], ['4x', 8], ['1x', 2]
+    ]),
+    speedCycle
+  );
+
+  const tickerResult = document.getElementById('dt-result');
+  owUpdateTickerResult({e: '+5 project progress', g: true});
+  const settledTickerResult = tickerResult.textContent;
+  owUpdateTickerResult(null, true);
+  const pendingTickerResult = tickerResult.textContent;
+  owUpdateTickerResult(null);
+  const workdayRunnerSource = runWorkDay.toString();
+  expect('workday-ticker-live-sync',
+    settledTickerResult === 'POSITIVE · +5 project progress' &&
+    pendingTickerResult === 'Resolving...' &&
+    workdayRunnerSource.includes('owUpdateTickerResult(null,true)') &&
+    workdayRunnerSource.includes('owUpdateTickerResult(line)'),
+    {
+      settledTickerResult,
+      pendingTickerResult,
+      clearsAtActionStart: workdayRunnerSource.includes('owUpdateTickerResult(null,true)'),
+      updatesAtSettlement: workdayRunnerSource.includes('owUpdateTickerResult(line)')
+    }
   );
 
   const styleText = document.querySelector('style').textContent;
@@ -436,6 +557,31 @@ async () => {
       portrait: styleText.includes('@media (orientation:portrait)'),
       rotationGate: styleText.includes('.rotate-device'),
       reducedMotion: styleText.includes('@media (prefers-reduced-motion:reduce)')
+    }
+  );
+
+  startRun({seed: 90001});
+  R.today = {additionalNightPurchases: 0, log: []};
+  nightPhase();
+  nightState.tab = 'outings';
+  renderOutingsUI();
+  const relationshipBonus = visitBonusText('karen');
+  const relationshipTooltip = document.querySelector(
+    '.people-choice[data-tip]'
+  )?.getAttribute('data-tip') || '';
+  const outingPanelText = document.getElementById('overlay-panel').textContent;
+  expect('relationship-copy',
+    !relationshipBonus.includes('improves with relationship') &&
+    !relationshipTooltip.includes('Day bonus:') &&
+    outingPanelText.includes(
+      'Coworkers give you their bonus when you meet with them during the workday.'
+    ),
+    {
+      relationshipBonus,
+      relationshipTooltip,
+      footerPresent: outingPanelText.includes(
+        'Coworkers give you their bonus when you meet with them during the workday.'
+      )
     }
   );
 
@@ -486,25 +632,112 @@ async () => {
     finalRewardActive: false,
     campaignsCompleted: 0,
     campaignIndex: 0,
-    step: 0,
+    step: 2,
     dailyRerolls: 0,
     stepRewardsUnlocked: false
   };
   R.phase = 'morning';
   R.today.naturalSlots = ['work', 'meeting', 'lunch', 'cooler', 'slump'];
   R.morningCards = genMorningCards({allowSpecial: false});
-  owApplyCampaignReplacement(R.morningCards);
+  R.morningCards[0] = {
+    task: owCampaignRequiredTask(),
+    rarity: 'campaign',
+    source: 'campaign',
+    modifiers: {},
+    specialProtected: true
+  };
   renderMorningUI();
   const campaignCard = R.morningCards.find(card => card.rarity === 'campaign');
+  const campaignStatus = document.querySelector('.campaign-status');
+  const campaignText = campaignStatus && campaignStatus.textContent;
   expect('campaign-surface',
     !!campaignCard &&
-    document.getElementById('overlay-panel').textContent.includes('Brand Research'),
+    !!campaignStatus &&
+    campaignStatus.dataset.campaignStep === '2' &&
+    campaignText.includes('Brand Research') &&
+    campaignText.includes('Creative Brief') &&
+    campaignText.includes('DESIGN') &&
+    campaignText.includes('2 OF 3 STEPS') &&
+    campaignStatus.querySelectorAll('.campaign-progress-segment.filled').length === 2 &&
+    !campaignText.includes('3/3'),
     {
       card: campaignCard && campaignCard.task.id,
-      text: document.getElementById('overlay-panel').textContent.slice(0, 300)
+      step: campaignStatus && campaignStatus.dataset.campaignStep,
+      filled: campaignStatus &&
+        campaignStatus.querySelectorAll('.campaign-progress-segment.filled').length,
+      text: campaignText
     }
   );
 
+  startRun({seed: 900031});
+  R.cash = 10000;
+  R.today = {additionalNightPurchases: 0};
+  nightPhase();
+  const purchaseOpenBeforeLightsOut =
+    owCanPurchaseCategory('home') &&
+    !document.querySelector('.night-lights-toggle input').disabled;
+  owToggleLightsOut(true);
+  const manualLightsOutBlocksPurchases =
+    nightState.recPicked &&
+    !owCanPurchaseCategory('home') &&
+    !owCanPurchaseCategory('deal') &&
+    [...document.querySelectorAll('.card')].every(card => card.disabled);
+  owToggleLightsOut(false);
+  nightState.homeUsed = 1;
+  renderNightUI();
+  const purchaseBlocksLightsOutControl =
+    document.querySelector('.night-lights-toggle input').disabled;
+  owToggleLightsOut(true);
+  const purchaseRejectsLightsOut = !nightState.recPicked;
+
+  startRun({seed: 900032});
+  R.cash = 10000;
+  R.paths.Design = 'moodboard';
+  R.milestones.Design = 10;
+  R.capstone = {family: 'Design', path: 'moodboard', status: 'active'};
+  R.today = {additionalNightPurchases: 0};
+  nightPhase();
+  const moodboardAllowsPurchases =
+    owHasCapstone('moodboard') &&
+    owCanPurchaseCategory('home') &&
+    document.querySelector('.night-lights-toggle input').checked;
+  expect('night-lights-out-purchase-exclusivity',
+    purchaseOpenBeforeLightsOut &&
+    manualLightsOutBlocksPurchases &&
+    purchaseBlocksLightsOutControl &&
+    purchaseRejectsLightsOut &&
+    moodboardAllowsPurchases,
+    {
+      purchaseOpenBeforeLightsOut,
+      manualLightsOutBlocksPurchases,
+      purchaseBlocksLightsOutControl,
+      purchaseRejectsLightsOut,
+      moodboardAllowsPurchases
+    }
+  );
+
+  startRun({seed: 900033});
+  R.cash = 10000;
+  R.stress = 50;
+  R.today = {additionalNightPurchases: 0, log: []};
+  nightPhase();
+  await owSimulationResolveNight({name: 'skilled'});
+  const simulatedNightPurchase = owNightPurchaseUsed();
+  const simulatedLightsOut = nightState.recPicked;
+  const simulatedException = owNightLightsOutPurchaseException();
+  expect('simulation-night-policy-obeys-lights-out-exclusivity',
+    !(simulatedNightPurchase && simulatedLightsOut && !simulatedException),
+    {
+      purchaseUsed: simulatedNightPurchase,
+      homeUsed: nightState.homeUsed,
+      dealUsed: nightState.dealUsed,
+      lightsOut: simulatedLightsOut,
+      exception: simulatedException,
+      finalStress: R.stress
+    }
+  );
+
+  startRun({seed: 900034});
   openResumeBook();
   await new Promise(resolve => setTimeout(resolve, 20));
   const resume = document.getElementById('resume-book');
@@ -771,12 +1004,15 @@ async ({state}) => {
     R.morningCards.length > 0
   );
   if (state === 'workday') {
-    OfficeWarsTest.setTimingScale(3);
+    OfficeWarsTest.setTimingScale(0.25);
     const common = R.morningCards.findIndex(card => card.rarity === 'common');
     selectMorning(common >= 0 ? common : 0, 'offer');
-    await confirmMorning();
+    void confirmMorning();
     await waitFor(() => R.phase === 'workday');
-    await new Promise(resolve => setTimeout(resolve, 50));
+    await waitFor(() =>
+      document.getElementById('dt-result').textContent !==
+      'Results appear as actions resolve.'
+    );
   } else if (state === 'night') {
     nightPhase();
     await waitFor(() => R.phase === 'night');
@@ -818,7 +1054,8 @@ LAYOUT_INSPECT = r"""
   }).map(element => ({id: element.id, rect: rectOf(element)}));
 
   const clippedText = [...document.querySelectorAll(
-    '#day-action-legend *,#overlay-panel .card *,#resume-book *,#home-inventory *'
+    '#project-hud *,#day-action-legend *,#overlay-panel .card *,' +
+    '#resume-book *,#home-inventory *'
   )].filter(element => {
     if (!visible(element) || !element.textContent.trim()) return false;
     const style = getComputedStyle(element);
@@ -921,6 +1158,7 @@ with sync_playwright() as playwright:
             "document.documentElement.dataset.officewarsReady === 'true'",
             timeout=15_000,
         )
+        complete_orientation(page)
         page.set_default_timeout(120_000)
 
         audit = {"checks": {}, "detail": {}}
@@ -937,6 +1175,9 @@ with sync_playwright() as playwright:
         audit["detail"]["no-external-runtime-requests"] = requests
 
         print("AUDIT_JSON=" + json.dumps(audit, separators=(",", ":")))
+        failed_checks = [
+            name for name, passed in audit["checks"].items() if not passed
+        ]
 
         layout_cases = [
             ("desktop-morning", 1440, 900, "morning"),
@@ -962,6 +1203,7 @@ with sync_playwright() as playwright:
                 "document.documentElement.dataset.officewarsReady === 'true'",
                 timeout=15_000,
             )
+            complete_orientation(layout_page)
             phase = layout_page.evaluate(LAYOUT_SETUP, {"state": state})
             layout[name] = {"requestedState": state, "phase": phase}
             layout[name].update(layout_page.evaluate(LAYOUT_INSPECT))
@@ -985,5 +1227,8 @@ with sync_playwright() as playwright:
                 SIMULATION_AUDIT, {"runsPerPolicy": RUNS_PER_POLICY}
             )
             print("SIMULATION_JSON=" + json.dumps(simulation, separators=(",", ":")))
+        if failed_checks:
+            print("FAILED_CHECKS=" + ",".join(failed_checks))
+            raise SystemExit(1)
     finally:
         browser.close()

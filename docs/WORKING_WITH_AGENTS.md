@@ -149,6 +149,8 @@ game. The shipped experience remains one standalone HTML file.
 Simulated policies are instruments, not players.
 
 - State exactly what choices the policy can and cannot make.
+- Require every policy to use the same legal actions, costs, exclusions,
+  exceptions, and resolution order as a player before trusting its telemetry.
 - Use fixed seeds for comparisons.
 - Separate overall win rate from conditional conversion rates.
 - Compare failure causes and floor curves, not just final outcomes.

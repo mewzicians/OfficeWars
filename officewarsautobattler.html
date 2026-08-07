@@ -2,12 +2,21 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Office War — Career</title>
 <style>
-html { font-size: clamp(13px, 0.55vw + 0.55vh + 6px, 24px); }
+:root {
+  --ow-display-font: "Courier New", Courier, monospace;
+  --ow-body-font: "Segoe UI", Arial, sans-serif;
+}
+html { font-size: 18px; }
 * { margin: 0; padding: 0; box-sizing: border-box; }
-body { background: #1a1a2e; color: #ecf0f1; font-family: 'Courier New', monospace; height: 100vh; overflow: hidden; }
+body { background: #1a1a2e; color: #ecf0f1; font-family: var(--ow-body-font); height: 100vh; overflow: hidden; }
+h1,h2,h3,.ct,.btn,.menu-btn,.replay-btn,
+.hud-icon-button,.day-playback-button,.resume-book-button,
+.resume-book-tab,.hud-bar-label,.workdays,.resume-family-name {
+  font-family:var(--ow-display-font);
+}
 
 /* ═══ MAIN MENU ═══ */
 #screen-menu { position: fixed; inset: 0; z-index: 500; background: #1a1a2e; display: flex; flex-direction: column; align-items: center; justify-content: center; }
@@ -17,6 +26,30 @@ body { background: #1a1a2e; color: #ecf0f1; font-family: 'Courier New', monospac
 .menu-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 12px; }
 .menu-btn { background: #16213e; border: 2px solid #3498db; color: #ecf0f1; padding: 22px 30px; font-family: inherit; font-size: 1.2rem; font-weight: bold; cursor: pointer; border-radius: 6px; transition: all .2s; }
 .menu-btn:hover { border-color: #f39c12; color: #f39c12; transform: translateY(-2px); }
+.menu-btn[hidden] { display:none; }
+.menu-btn-detail { display:block; margin-top:5px; color:#9fb0ba; font-family:var(--ow-body-font); font-size:.68rem; font-weight:600; }
+.menu-dialog {
+  position:fixed;
+  inset:0;
+  z-index:700;
+  display:none;
+  place-items:center;
+  padding:20px;
+  background:rgba(6,10,14,.86);
+}
+.menu-dialog.open { display:grid; }
+.menu-dialog-panel {
+  width:min(28rem,calc(100vw - 32px));
+  border:2px solid #f39c12;
+  border-radius:6px;
+  background:#111a21;
+  padding:1.25rem;
+  box-shadow:0 20px 55px rgba(0,0,0,.65);
+  text-align:center;
+}
+.menu-dialog-panel h2 { color:#f39c12; font-size:1.15rem; }
+.menu-dialog-panel p { margin:.8rem 0 1rem; color:#c5d0d5; font-size:.9rem; line-height:1.5; }
+.menu-dialog-actions { display:flex; justify-content:center; gap:.65rem; flex-wrap:wrap; }
 
 /* ═══ GAME OVER ═══ */
 #screen-gameover { position: fixed; inset: 0; z-index: 500; background: #1a1a2e; display: none; flex-direction: column; align-items: center; justify-content: center; padding: 30px; }
@@ -28,6 +61,54 @@ body { background: #1a1a2e; color: #ecf0f1; font-family: 'Courier New', monospac
 .results-tbl th { color: #f39c12; }
 .replay-btn { margin-top: 20px; background: #16213e; border: 2px solid #2ecc71; color: #2ecc71; padding: 12px 30px; font-family: inherit; font-size: 1.05rem; cursor: pointer; border-radius: 6px; }
 .replay-btn:hover { background: #2ecc71; color: #1a1a2e; }
+.result-actions { display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-top:20px; }
+.result-actions .replay-btn { margin-top:0; }
+
+/* ═══ FIRST-DAY ORIENTATION ═══ */
+.tutorial-backdrop {
+  position:fixed;
+  inset:0;
+  z-index:600;
+  display:none;
+  background:rgba(3,7,10,.82);
+}
+.tutorial-backdrop.active { display:block; }
+.tutorial-stack-root { z-index:610!important; pointer-events:none!important; }
+.tutorial-focus-ring {
+  position:fixed;
+  z-index:615;
+  display:none;
+  border:3px solid #f2b84b;
+  border-radius:7px;
+  box-shadow:0 0 0 4px rgba(242,184,75,.18),0 0 24px rgba(242,184,75,.48);
+  pointer-events:none;
+}
+.tutorial-focus-ring.active { display:block; }
+.tutorial-callout {
+  position:fixed;
+  z-index:620;
+  display:none;
+  width:min(24rem,calc(100vw - 24px));
+  max-height:calc(100vh - 16px);
+  overflow:auto;
+  border:2px solid #f2b84b;
+  border-radius:6px;
+  background:#111a21;
+  padding:.9rem;
+  box-shadow:0 14px 38px rgba(0,0,0,.65);
+}
+.tutorial-callout.active { display:block; }
+.tutorial-callout-kicker { color:#f2b84b; font-family:var(--ow-display-font); font-size:.7rem; font-weight:900; }
+.tutorial-callout h2 { margin:.2rem 0 .45rem; color:#fff3c2; font-size:1.05rem; }
+.tutorial-callout p { color:#d4dde1; font-size:.88rem; line-height:1.45; }
+.tutorial-callout-actions { display:flex; justify-content:flex-end; gap:.5rem; margin-top:.8rem; flex-wrap:wrap; }
+.tutorial-callout .btn { font-size:.78rem; padding:.4rem .7rem; }
+@media (orientation:landscape) and (max-height:560px) {
+  .tutorial-callout { width:min(22rem,calc(100vw - 16px)); padding:.6rem; }
+  .tutorial-callout h2 { font-size:.9rem; }
+  .tutorial-callout p { font-size:.75rem; line-height:1.35; }
+  .tutorial-callout-actions { margin-top:.45rem; }
+}
 
 /* ═══ OFFICE SCENE ═══ */
 #office-scene { position: fixed; inset: 0; background: #1e2a3a; display: none; }
@@ -524,7 +605,7 @@ body { background: #1a1a2e; color: #ecf0f1; font-family: 'Courier New', monospac
 
 /* ═══ CARDS ═══ */
 .card-row { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin: 15px 0; }
-.card { background: #16213e; border: 2px solid #3498db; border-radius: 8px; padding: 0.9rem; color: inherit; cursor: pointer; transition: all .2s; width: 12rem; display: flex; flex-direction: column; font-family: inherit; text-align: left; }
+.card { background: #16213e; border: 2px solid #3498db; border-radius: 8px; padding: 0.9rem; color: inherit; cursor: pointer; transition: all .2s; width: 12rem; display: flex; flex-direction: column; font-family: var(--ow-body-font); text-align: left; }
 .card:hover,.card:focus-visible { border-color: #f39c12; transform: translateY(-3px); box-shadow: 0 4px 12px rgba(0,0,0,.4); outline: none; }
 .card:disabled { cursor: default; }
 .people-choice { background: transparent; color: inherit; font-family: inherit; }
@@ -543,6 +624,249 @@ body { background: #1a1a2e; color: #ecf0f1; font-family: 'Courier New', monospac
 .btn { background: #16213e; border: 2px solid #3498db; color: #ecf0f1; padding: 0.5rem 1.1rem; font-family: inherit; font-size: 0.95rem; cursor: pointer; border-radius: 5px; transition: all .2s; }
 .btn:hover { border-color: #f39c12; color: #f39c12; }
 .btn.disabled { opacity: 0.3; pointer-events: none; }
+
+/* Morning decisions: family first, values second, rules third. */
+.morning-window { width:100%; }
+.morning-full-cards { display:flex; }
+.morning-compact { display:none; }
+.task-card {
+  width:13.25rem;
+  min-height:20rem;
+  padding:0;
+  overflow:visible;
+  border-color:var(--rarity-color,#3498db);
+}
+.task-family-banner {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  min-height:2rem;
+  padding:.4rem .65rem;
+  background:#111d2d;
+  border-bottom:2px solid var(--family-color);
+  color:var(--family-color);
+  font-family:var(--ow-display-font);
+  font-size:.76rem;
+  font-weight:900;
+}
+.task-card-body {
+  display:flex;
+  flex:1 1 auto;
+  flex-direction:column;
+  padding:.75rem;
+}
+.task-card-title-row {
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:.65rem;
+}
+.task-card-title {
+  color:#fff3c2;
+  font-family:var(--ow-display-font);
+  font-size:1rem;
+  font-weight:900;
+  line-height:1.2;
+}
+.task-rarity {
+  flex:0 0 auto;
+  color:var(--rarity-color,#9fb0ba);
+  font-family:var(--ow-display-font);
+  font-size:.65rem;
+  font-weight:900;
+}
+.task-metrics {
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:.45rem;
+  margin:.75rem 0;
+}
+.task-metric {
+  min-width:0;
+  padding:.48rem;
+  border:1px solid #435763;
+  border-radius:4px;
+  background:#111d2d;
+}
+.task-metric-label {
+  display:block;
+  color:#9eabb2;
+  font-family:var(--ow-display-font);
+  font-size:.58rem;
+  font-weight:900;
+}
+.task-metric-value {
+  display:block;
+  margin-top:.12rem;
+  font-family:var(--ow-display-font);
+  font-size:.9rem;
+  font-weight:900;
+  line-height:1.15;
+}
+.task-metric.gain .task-metric-value,
+.task-metric.recovery .task-metric-value { color:#5add8c; }
+.task-metric.cost .task-metric-value { color:#ff7772; }
+.task-effect-block {
+  flex:1 1 auto;
+  padding-top:.65rem;
+  border-top:1px solid #435763;
+}
+.task-timing {
+  display:block;
+  color:var(--family-color);
+  font-family:var(--ow-display-font);
+  font-size:.64rem;
+  font-weight:900;
+}
+.task-effect {
+  display:block;
+  margin-top:.28rem;
+  color:#e5eaed;
+  font-size:.84rem;
+  line-height:1.42;
+}
+.task-card-note {
+  margin-top:.55rem;
+  color:#b9c4ca;
+  font-size:.72rem;
+  line-height:1.35;
+}
+.task-card-note.hot-lead { color:#ffe27b; }
+.task-card-note.campaign { color:#f5a6d4; }
+.task-card-note.pin { color:#77bfff; }
+.morning-compact-options {
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:.45rem;
+}
+.morning-compact-option {
+  min-width:0;
+  padding:.45rem;
+  border:2px solid var(--rarity-color,#3498db);
+  border-radius:5px;
+  background:#15243a;
+  color:#eaf0f2;
+  font-family:var(--ow-body-font);
+  text-align:left;
+  cursor:pointer;
+}
+.morning-compact-option.active {
+  border-color:var(--family-color);
+  box-shadow:inset 0 -3px var(--family-color);
+}
+.morning-compact-family {
+  display:block;
+  color:var(--family-color);
+  font-family:var(--ow-display-font);
+  font-size:.58rem;
+  font-weight:900;
+}
+.morning-compact-name {
+  display:block;
+  margin-top:.2rem;
+  overflow:hidden;
+  color:#fff3c2;
+  font-family:var(--ow-display-font);
+  font-size:.72rem;
+  font-weight:900;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+.morning-compact-values {
+  display:flex;
+  justify-content:space-between;
+  gap:.3rem;
+  margin-top:.28rem;
+  font-family:var(--ow-display-font);
+  font-size:.63rem;
+}
+.morning-compact-values .gain { color:#5add8c; }
+.morning-compact-values .cost { color:#ff7772; }
+.morning-compact-detail {
+  display:grid;
+  grid-template-columns:minmax(9rem,.7fr) minmax(0,1.3fr) auto;
+  gap:.7rem;
+  align-items:center;
+  margin-top:.5rem;
+  padding:.6rem .7rem;
+  border:1px solid #4b5d68;
+  border-left:4px solid var(--family-color);
+  border-radius:4px;
+  background:#111d2d;
+}
+.morning-compact-detail-title {
+  color:#fff3c2;
+  font-family:var(--ow-display-font);
+  font-size:.82rem;
+  font-weight:900;
+}
+.morning-compact-detail-effect {
+  color:#e5eaed;
+  font-size:.74rem;
+  line-height:1.3;
+}
+.morning-compact-select { white-space:nowrap; }
+.campaign-status {
+  display:grid;
+  grid-template-columns:1.05fr 1.35fr 1fr .8fr;
+  max-width:56rem;
+  margin:.6rem auto .2rem;
+  overflow:hidden;
+  border:1px solid #713653;
+  border-left:4px solid #e84393;
+  border-radius:4px;
+  background:#111d2d;
+  text-align:left;
+}
+.campaign-status-cell {
+  min-width:0;
+  padding:.62rem .72rem;
+  border-left:1px solid #3d3445;
+}
+.campaign-status-cell:first-child { border-left:0; }
+.campaign-status-label {
+  display:block;
+  color:#c28eaa;
+  font-family:var(--ow-display-font);
+  font-size:.58rem;
+  font-weight:900;
+}
+.campaign-status-value {
+  display:block;
+  margin-top:.2rem;
+  color:#f7edf3;
+  font-family:var(--ow-display-font);
+  font-size:.82rem;
+  font-weight:900;
+  line-height:1.25;
+  overflow-wrap:anywhere;
+}
+.campaign-status-target .campaign-status-value {
+  color:var(--campaign-family-color,#f7edf3);
+}
+.campaign-status-family {
+  display:block;
+  margin-top:.15rem;
+  color:var(--campaign-family-color,#f7edf3);
+  font-size:.68rem;
+  font-weight:700;
+}
+.campaign-progress-track {
+  display:grid;
+  grid-template-columns:repeat(var(--campaign-steps,1),minmax(0,1fr));
+  gap:3px;
+  margin-top:.38rem;
+}
+.campaign-progress-segment {
+  height:5px;
+  border:1px solid #77465f;
+  border-radius:1px;
+  background:#2a2633;
+}
+.campaign-progress-segment.filled {
+  border-color:#e84393;
+  background:#e84393;
+}
 
 /* ═══ ANIMATIONS ═══ */
 @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-4px)} 75%{transform:translateX(4px)} }
@@ -585,6 +909,15 @@ body { background: #1a1a2e; color: #ecf0f1; font-family: 'Courier New', monospac
 #day-ticker.active { display: block; }
 #day-ticker .dt-title { color: #f39c12; font-weight: bold; font-size: 1.5rem; letter-spacing: 1px; }
 #day-ticker .dt-action { color: #ecf0f1; font-size: 1.15rem; margin-top: 6px; min-height: 1.5rem; }
+.dt-result {
+  min-height:1.15rem;
+  margin-top:.25rem;
+  color:#b9c5ca;
+  font-size:.78rem;
+  line-height:1.3;
+}
+.dt-result.good { color:#62df91; }
+.dt-result.bad { color:#ff817c; }
 .day-action-legend-toggle { position:absolute; top:.45rem; right:.5rem; display:none; background:#16213e; border:1px solid #f39c12; border-radius:4px; padding:.24rem .4rem; color:#f39c12; font-family:inherit; font-size:.6rem; font-weight:bold; letter-spacing:.5px; cursor:pointer; z-index:3; }
 .day-action-legend-toggle:hover,.day-action-legend-toggle:focus-visible { background:#f39c12; color:#1a1a2e; outline:none; }
 #day-ticker.legend-compact .day-action-legend-toggle { display:block; }
@@ -608,8 +941,9 @@ body { background: #1a1a2e; color: #ecf0f1; font-family: 'Courier New', monospac
 .day-playback-button.skip { border-color:#e67e22; color:#f5b041; }
 .day-playback-button:disabled { opacity:.58; cursor:default; }
 .day-playback-controls.skipping .day-playback-button.skip { border-color:#f39c12; color:#f39c12; animation:meeting-flash .5s steps(2,end) infinite; }
-#office-scene.day-speed-2 .char-sprite { transition-duration:.15s; }
-#office-scene.day-speed-4 .char-sprite { transition-duration:.075s; }
+#office-scene.day-speed-1 .char-sprite { transition-duration:.15s; }
+#office-scene.day-speed-2 .char-sprite { transition-duration:.075s; }
+#office-scene.day-speed-4 .char-sprite { transition-duration:.04s; }
 #office-scene.day-skipping .char-sprite { transition:none!important; }
 #office-scene.day-skipping .float-face,#office-scene.day-skipping .float-text { display:none; }
 .day-progress { position:relative; height:4.25rem; margin:.7rem .3rem 0; }
@@ -644,7 +978,8 @@ body { background: #1a1a2e; color: #ecf0f1; font-family: 'Courier New', monospac
 }
 @media (prefers-reduced-motion:reduce) {
   .cub.meeting-active .meeting-signal,.hostile-drop,.day-playback-controls.skipping .day-playback-button.skip { animation:none; }
-  .day-progress-player,.day-progress-fill { transition:none; }
+  .day-progress-player,.day-progress-fill,.project-hud-fill { transition:none; }
+  .project-hud-track.progress-pulse { animation:none; }
 }
 
 /* ═══ CUTSCENE BANNER ═══ */
@@ -782,15 +1117,62 @@ body.ow-workday { --ow-current-rail: 70px; }
   min-width:15rem;
   transform:translateX(-50%);
   text-align:center;
-  pointer-events:none;
+  filter:drop-shadow(0 3px 3px rgba(0,0,0,.82));
+}
+.project-hud-track {
+  position:relative;
+  height:3.25rem;
+  overflow:hidden;
+  border:2px solid #71828b;
+  border-radius:5px;
+  background:#142129;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.04);
+}
+.project-hud-fill {
+  position:absolute;
+  inset:0 auto 0 0;
+  width:0;
+  background:var(--ow-green);
+  transition:width .3s ease;
+}
+.project-hud-scrim {
+  position:absolute;
+  inset:0;
+  z-index:1;
+  background:rgba(5,12,17,.58);
+}
+.project-hud-content {
+  position:relative;
+  z-index:2;
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto;
+  align-items:center;
+  gap:12px;
+  height:100%;
+  padding:0 12px;
+  color:#fff;
+  text-shadow:0 2px 3px #000,0 1px 2px #000;
 }
 #hud-project-name {
-  color:#f5f7f8;
-  font-size:1.35rem;
+  min-width:0;
+  color:#fff;
+  font-size:1.15rem;
   font-weight:900;
+  line-height:1.05;
   text-transform:uppercase;
-  text-shadow:0 2px 3px #000;
+  overflow-wrap:anywhere;
 }
+#sp-prog-val {
+  color:#fff;
+  font-size:.95rem;
+  font-weight:900;
+  white-space:nowrap;
+}
+@keyframes project-progress-pulse {
+  0%,100% { border-color:#71828b; box-shadow:inset 0 0 0 1px rgba(255,255,255,.04),0 0 0 rgba(46,204,113,0); }
+  40% { border-color:#b8ffd0; box-shadow:inset 0 0 0 1px rgba(255,255,255,.12),0 0 18px rgba(46,204,113,.8); }
+}
+.project-hud-track.progress-pulse { animation:project-progress-pulse .45s ease-out; }
 
 #rival-hud {
   position:fixed;
@@ -895,8 +1277,6 @@ body.ow-workday { --ow-current-rail: 70px; }
   box-shadow:0 0 12px rgba(242,184,75,.48);
   font-size:3.2rem;
 }
-.player-bars .hud-bar + .hud-bar { margin-top:7px; }
-#sp-prog-fill { background:var(--ow-green); }
 #sp-str-fill { background:var(--ow-red); }
 #active-effect-strip {
   display:flex;
@@ -964,6 +1344,7 @@ body.ow-workday { --ow-current-rail: 70px; }
   min-height:0;
 }
 .resume-family {
+  position:relative;
   min-height:0;
   padding:10px;
   overflow:hidden;
@@ -978,6 +1359,23 @@ body.ow-workday { --ow-current-rail: 70px; }
 .resume-family:hover,.resume-family:focus-visible {
   background:#1b2932;
   outline:none;
+}
+.resume-family.choice-ready::after {
+  content:"!";
+  position:absolute;
+  top:8px;
+  right:8px;
+  display:grid;
+  place-items:center;
+  width:1.1rem;
+  height:1.1rem;
+  border-radius:50%;
+  background:var(--ow-gold);
+  color:#17222a;
+  font-family:var(--ow-display-font);
+  font-size:.7rem;
+  font-weight:900;
+  box-shadow:0 0 8px rgba(242,184,75,.55);
 }
 .resume-family-name {
   color:var(--family-color);
@@ -1016,7 +1414,9 @@ body.ow-workday { --ow-current-rail: 70px; }
 .resume-family-path {
   margin-top:7px;
   color:#c5ced2;
-  font-size:.76rem;
+  font-family:var(--ow-display-font);
+  font-size:.78rem;
+  font-weight:900;
   line-height:1.3;
 }
 .resume-family-next {
@@ -1127,11 +1527,24 @@ body.ow-workday .rival-hud-portrait {
   border-bottom:2px solid #43545d;
 }
 .resume-book-top h2 { color:var(--ow-gold); font-size:1.5rem; }
+.resume-book-role {
+  margin-top:.3rem;
+  color:#b9c5ca;
+  font-size:.82rem;
+}
+.resume-book-capstone {
+  color:#ffe193;
+  font-family:var(--ow-display-font);
+  font-size:.76rem;
+  font-weight:900;
+  text-align:right;
+}
 .resume-book-tabs {
   display:flex;
   gap:4px;
   margin-top:1rem;
   overflow-x:auto;
+  border-bottom:1px solid #43545d;
 }
 .resume-book-tab {
   flex:1 0 auto;
@@ -1148,10 +1561,63 @@ body.ow-workday .rival-hud-portrait {
 .resume-book-tab.active {
   color:#fff;
   border-bottom-color:var(--tab-color);
+  background:#18262f;
+}
+.resume-family-summary {
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto;
+  gap:1rem;
+  align-items:start;
+  margin-top:1rem;
+  padding:1rem;
+  border:1px solid #40515a;
+  border-left:5px solid var(--family-color);
+  border-radius:5px;
+  background:#15232c;
+}
+.resume-family-summary h3 {
+  color:var(--family-color);
+  font-size:1.15rem;
+}
+.resume-family-identity {
+  margin-top:.28rem;
+  color:#d4dde1;
+  font-size:.84rem;
+  line-height:1.4;
+}
+.resume-proficiency {
+  margin-top:.65rem;
+  color:#edf2f4;
+  font-size:.9rem;
+  font-style:italic;
+  line-height:1.45;
+}
+.resume-xp-total {
+  color:#fff3be;
+  font-family:var(--ow-display-font);
+  font-size:1.35rem;
+  font-weight:900;
+  text-align:right;
+  white-space:nowrap;
+}
+.resume-xp-total small {
+  display:block;
+  margin-top:.2rem;
+  color:#91a0a7;
+  font-family:var(--ow-body-font);
+  font-size:.65rem;
+  font-weight:600;
+}
+.resume-book-track {
+  grid-column:1 / -1;
+  display:grid;
+  grid-template-columns:repeat(10,minmax(0,1fr));
+  gap:4px;
+  height:1rem;
 }
 .resume-path-grid {
   display:grid;
-  grid-template-columns:repeat(2,minmax(0,1fr));
+  grid-template-columns:repeat(auto-fit,minmax(15rem,1fr));
   gap:10px;
   margin-top:1rem;
 }
@@ -1186,6 +1652,135 @@ body.ow-workday .rival-hud-portrait {
   font-size:.75rem;
   line-height:1.35;
 }
+
+/* Readable phase summaries. */
+.clockout-summary {
+  width:min(48rem,100%);
+  margin:0 auto;
+}
+.clockout-grid {
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:.65rem;
+  margin-top:.75rem;
+}
+.clockout-group {
+  min-width:0;
+  padding:.75rem;
+  border:1px solid #40515a;
+  border-radius:5px;
+  background:#14222b;
+}
+.clockout-group h3 {
+  display:flex;
+  justify-content:space-between;
+  gap:.75rem;
+  padding-bottom:.45rem;
+  border-bottom:1px solid #40515a;
+  color:var(--group-color,#eaf0f2);
+  font-size:.82rem;
+}
+.clockout-row {
+  display:flex;
+  justify-content:space-between;
+  gap:1rem;
+  padding:.3rem 0;
+  color:#cbd5d9;
+  font-size:.78rem;
+}
+.clockout-row span { min-width:0; overflow-wrap:anywhere; }
+.clockout-row strong {
+  min-width:0;
+  color:#f1f4f5;
+  text-align:right;
+  overflow-wrap:anywhere;
+}
+.clockout-log {
+  margin-top:.65rem;
+  border:1px solid #40515a;
+  border-radius:5px;
+  background:#101a21;
+}
+.clockout-log summary {
+  padding:.6rem .75rem;
+  color:#b9c5ca;
+  font-family:var(--ow-display-font);
+  font-size:.72rem;
+  font-weight:900;
+  cursor:pointer;
+}
+.clockout-log-body {
+  max-height:10rem;
+  overflow-y:auto;
+  padding:0 .75rem .7rem;
+  color:#bdc3c7;
+  font-size:.76rem;
+  line-height:1.55;
+}
+.night-shell { width:100%; }
+.night-status {
+  margin:.25rem auto .65rem;
+  color:#b8c4c9;
+  font-size:.82rem;
+  text-align:center;
+}
+.night-footer {
+  position:sticky;
+  bottom:-1px;
+  z-index:3;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:1rem;
+  margin:1rem -.2rem -.2rem;
+  padding:.7rem;
+  border-top:2px solid #455761;
+  background:rgba(17,26,33,.98);
+}
+.night-footer-summary {
+  color:#b9c5ca;
+  font-size:.75rem;
+  line-height:1.35;
+}
+.night-footer-actions {
+  display:flex;
+  align-items:center;
+  gap:.65rem;
+}
+.night-lights-toggle {
+  display:flex;
+  align-items:center;
+  gap:.45rem;
+  min-height:2.3rem;
+  padding:.4rem .6rem;
+  border:1px solid #50636d;
+  border-radius:4px;
+  color:#dce4e7;
+  font-size:.75rem;
+  cursor:pointer;
+}
+.night-lights-toggle:focus-within { border-color:var(--ow-gold); }
+.night-lights-toggle.unavailable {
+  opacity:.52;
+  cursor:not-allowed;
+}
+.night-lights-toggle input {
+  width:1rem;
+  height:1rem;
+  accent-color:var(--ow-green);
+}
+.night-lights-toggle strong {
+  color:#fff3be;
+  font-family:var(--ow-display-font);
+  font-size:.72rem;
+}
+.night-finalize {
+  flex:0 0 auto;
+  border-color:var(--ow-green);
+  color:var(--ow-green);
+  font-size:1rem;
+  font-weight:900;
+}
 .home-inventory-content { padding:1.5rem; }
 #sp-house-header { color:var(--ow-gold); font-size:1.25rem; font-weight:900; }
 #sp-house {
@@ -1205,7 +1800,7 @@ body.ow-workday .rival-hud-portrait {
 .rotate-device { display:none; }
 
 #day-ticker {
-  top:4.1rem;
+  top:4.75rem;
   left:calc((100% - var(--ow-current-rail)) / 2);
   width:min(42rem,calc(100vw - var(--ow-current-rail) - clamp(500px,44vw,680px) - 64px));
 }
@@ -1237,16 +1832,20 @@ body.ow-workday .rival-hud-portrait {
   .rotate-device span { display:block; margin-top:8px; color:#aebbc0; }
 }
 @media (orientation:landscape) and (max-height:560px) {
+  html { font-size:16px; }
   :root { --ow-rail-width:clamp(160px,22vw,190px); --ow-current-rail:var(--ow-rail-width); }
   body.ow-workday { --ow-current-rail:64px; }
   #run-hud { top:6px; left:7px; width:190px; }
   #sp-floor { font-size:1rem; }
-  #sp-day,#sp-cash-val { font-size:.72rem; }
+  #sp-day,#sp-cash-val { font-size:.8rem; }
   .hud-icon-button { width:1.75rem; height:1.75rem; font-size:.78rem; }
-  .hud-info-button,#sp-today { margin-top:4px; padding:4px 6px; font-size:.65rem; }
-  .hud-info-label { font-size:.52rem; }
+  .hud-info-button,#sp-today { margin-top:4px; padding:4px 6px; font-size:.72rem; }
+  .hud-info-label { font-size:.62rem; }
   #project-hud { top:7px; width:15rem; }
-  #hud-project-name { font-size:.9rem; }
+  .project-hud-track { height:2.35rem; }
+  .project-hud-content { gap:6px; padding:0 7px; }
+  #hud-project-name { font-size:.76rem; }
+  #sp-prog-val { font-size:.68rem; }
   #rival-hud { top:6px; right:calc(var(--ow-current-rail) + 8px); width:190px; }
   .rival-hud-main { grid-template-columns:1fr 3.7rem; }
   .rival-hud-portrait { width:3.7rem;height:3.7rem;font-size:1.8rem; }
@@ -1254,10 +1853,10 @@ body.ow-workday .rival-hud-portrait {
   body.ow-workday .rival-hud-portrait { width:2.7rem;height:2.7rem;font-size:1.35rem; }
   .rival-hud-name { font-size:.8rem; }
   .hud-bar { height:1rem; }
-  .hud-bar-value,.hud-bar-label { font-size:.55rem; }
+  .hud-bar-value,.hud-bar-label { font-size:.62rem; }
   .workdays { height:1.8rem; }
   #sp-deadline-val { font-size:1.8rem; }
-  .workdays-label { font-size:.65rem; }
+  .workdays-label { font-size:.72rem; }
   #player-hud { left:7px; bottom:6px; width:270px; }
   .player-hud-main { grid-template-columns:4.5rem 1fr; }
   .player-hud-portrait { width:4.5rem;height:4.5rem;font-size:2.2rem; }
@@ -1265,7 +1864,7 @@ body.ow-workday .rival-hud-portrait {
   body.ow-workday .player-hud-main { grid-template-columns:3.3rem 1fr; }
   body.ow-workday .player-hud-portrait { width:3.3rem;height:3.3rem;font-size:1.7rem; }
   body.ow-workday #active-effect-strip { margin-left:3.3rem; padding-left:6px; }
-  .effect-chip { padding:3px 5px; font-size:.5rem; }
+  .effect-chip { padding:3px 5px; font-size:.6rem; }
   #side-panel { width:var(--ow-current-rail); }
   body.ow-workday .resume-header { justify-content:center; }
   body.ow-workday .resume-book-label,
@@ -1278,10 +1877,10 @@ body.ow-workday .rival-hud-portrait {
   body.ow-workday .resume-family-initial { display:block; color:var(--family-color); font-size:1rem; font-weight:900; }
   body:not(.ow-workday) .resume-header { flex-basis:2.8rem; padding:5px 7px; }
   body:not(.ow-workday) .resume-family { padding:5px 7px; }
-  body:not(.ow-workday) .resume-family-name { font-size:.78rem; }
+  body:not(.ow-workday) .resume-family-name { font-size:.8rem; }
   body:not(.ow-workday) .resume-xp-track,
   body:not(.ow-workday) .deal-ladder { height:.75rem; margin-top:4px; gap:2px; }
-  body:not(.ow-workday) .resume-family-path { margin-top:4px; font-size:.64rem; line-height:1.1; }
+  body:not(.ow-workday) .resume-family-path { margin-top:4px; font-size:.72rem; line-height:1.1; }
   body:not(.ow-workday) .resume-family-next { display:none; }
   body:not(.ow-workday) #resume-capstone { padding:4px; font-size:.55rem; }
   #day-ticker { top:2.8rem; width:min(25rem,calc(100vw - 420px)); padding:.45rem .6rem; }
@@ -1289,14 +1888,68 @@ body.ow-workday .rival-hud-portrait {
     top:4.7rem;
     max-height:calc(100vh - 5.2rem);
   }
-  #day-ticker .dt-title { font-size:.8rem; }
-  #day-ticker .dt-action { font-size:.68rem; }
+  #day-ticker .dt-title { font-size:.85rem; }
+  #day-ticker .dt-action { font-size:.76rem; }
+  #day-ticker .dt-result { font-size:.66rem; }
   .day-progress { height:2.8rem; margin-top:.25rem; }
   .day-playback-controls { right:70px; bottom:5px; }
   .day-playback-button { min-width:2.5rem; padding:.35rem .4rem; font-size:.55rem; }
   .hud-modal { padding:8px; }
   .hud-modal-dialog { width:calc(100vw - 80px); max-height:calc(100vh - 16px); }
+  #overlay-panel {
+    width:calc(100% - 12px);
+    max-height:calc(100vh - 18px);
+    padding:.55rem;
+  }
+  #overlay-panel h2 { margin-bottom:2px; font-size:1rem; }
+  #overlay-panel .sub { margin-bottom:.45rem; font-size:.78rem; }
+  .morning-full-cards { display:none; }
+  .morning-compact { display:block; }
+  .morning-compact-detail {
+    grid-template-columns:minmax(7.5rem,.7fr) minmax(0,1.3fr) auto;
+    gap:.5rem;
+    padding:.45rem .55rem;
+  }
+  .morning-compact-select { padding:.4rem .6rem; font-size:.7rem; }
+  .campaign-status { margin:.4rem auto .15rem; }
+  .campaign-status-cell { padding:.4rem .45rem; }
+  .campaign-status-label { font-size:.5rem; }
+  .campaign-status-value { font-size:.68rem; }
+  .campaign-status-family { font-size:.56rem; }
+  .resume-book-content { padding:1rem; }
+  .resume-book-top { padding-bottom:.6rem; }
+  .resume-book-tabs { margin-top:.5rem; }
+  .resume-family-summary { margin-top:.65rem; padding:.7rem; }
+  .resume-family-identity,.resume-proficiency { font-size:.76rem; }
+  .resume-path-grid { grid-template-columns:repeat(3,minmax(13rem,1fr)); }
+  .resume-path { padding:.65rem; }
+  .resume-milestone { padding:.4rem 0; font-size:.7rem; }
+  .clockout-grid { grid-template-columns:repeat(2,minmax(0,1fr)); gap:.4rem; }
+  .clockout-group { padding:.5rem; }
+  .clockout-row { font-size:.68rem; }
+  .clockout-log-body { max-height:5rem; }
+  .night-footer {
+    gap:.4rem;
+    margin-top:.6rem;
+    padding:.5rem;
+  }
+  .night-footer-summary {
+    min-width:0;
+    font-size:.64rem;
+  }
+  .night-footer-actions { gap:.35rem; }
+  .night-lights-toggle {
+    gap:.28rem;
+    padding:.3rem .38rem;
+    font-size:.62rem;
+  }
+  .night-lights-toggle strong { font-size:.62rem; }
+  .night-finalize {
+    padding:.4rem .55rem;
+    font-size:.72rem;
+  }
 }
+* { letter-spacing:0!important; }
 </style>
 </head>
 <body>
@@ -1306,8 +1959,8 @@ body.ow-workday .rival-hud-portrait {
   <h1>OFFICE WAR</h1>
   <div class="sub">CAREER — climb the ladder. Take the CEO's job.</div>
   <div class="menu-grid">
-    <button class="menu-btn" onclick="startRun()">PLAY</button>
-    <button class="menu-btn" onclick="alert('Coming Soon!')">ENDLESS</button>
+    <button class="menu-btn" id="menu-continue" hidden onclick="owContinueRun()">CONTINUE RUN<span class="menu-btn-detail" id="menu-continue-detail"></span></button>
+    <button class="menu-btn" onclick="owRequestNewRun()">NEW RUN</button>
     <button class="menu-btn" onclick="showHowToPlay()">HOW TO PLAY</button>
     <button class="menu-btn" onclick="alert('Coming Soon!')">OPTIONS</button>
   </div>
@@ -1318,7 +1971,21 @@ body.ow-workday .rival-hud-portrait {
   <h1 id="go-title">GAME OVER</h1>
   <div class="sub" id="go-msg"></div>
   <table class="results-tbl" id="go-tbl"></table>
-  <button class="replay-btn" onclick="location.reload()">PLAY AGAIN</button>
+  <div class="result-actions">
+    <button class="replay-btn" onclick="owReturnToMainMenu()">RETURN TO MAIN MENU</button>
+    <button class="replay-btn" onclick="owRequestNewRun()">NEW RUN</button>
+  </div>
+</div>
+
+<div class="menu-dialog" id="menu-dialog" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="menu-dialog-title">
+  <div class="menu-dialog-panel">
+    <h2 id="menu-dialog-title">REPLACE ACTIVE RUN?</h2>
+    <p id="menu-dialog-copy">Starting a new run will replace the current save.</p>
+    <div class="menu-dialog-actions">
+      <button class="btn" id="menu-dialog-confirm" type="button">START NEW RUN</button>
+      <button class="btn" type="button" onclick="owCloseMenuDialog()">KEEP CURRENT RUN</button>
+    </div>
+  </div>
 </div>
 
 <!-- OFFICE SCENE -->
@@ -1401,19 +2068,18 @@ body.ow-workday .rival-hud-portrait {
 
 <!-- DAY TICKER -->
 <div id="day-ticker">
-  <button class="day-action-legend-toggle" id="day-action-legend-toggle" type="button" aria-controls="day-action-legend" aria-expanded="false">ACTIONS</button>
+  <button class="day-action-legend-toggle" id="day-action-legend-toggle" type="button" aria-controls="day-action-legend" aria-expanded="false">GUIDE</button>
   <div class="dt-title" id="dt-title">DAY 1 — MON</div>
   <div class="dt-action" id="dt-action">Clocking in...</div>
+  <div class="dt-result" id="dt-result" role="status" aria-live="polite">Results appear as actions resolve.</div>
   <div class="day-progress" id="day-progress" aria-label="Workday progress"></div>
 </div>
 <aside id="day-action-legend" tabindex="0" aria-labelledby="day-action-legend-title" aria-hidden="true">
-  <div class="day-action-legend-title" id="day-action-legend-title">DAY ACTIONS</div>
+  <div class="day-action-legend-title" id="day-action-legend-title">ACTION GUIDE</div>
   <div id="day-action-legend-rows"></div>
 </aside>
 <div class="day-playback-controls" id="day-playback-controls" aria-label="Workday playback controls">
-  <button class="day-playback-button" id="day-speed-1" type="button" aria-label="Normal workday playback speed" title="Normal speed" aria-pressed="true" onclick="chooseDaySpeed(1)">1x</button>
-  <button class="day-playback-button" id="day-speed-2" type="button" aria-label="Double workday playback speed" title="Double speed" aria-pressed="false" onclick="chooseDaySpeed(2)">2x</button>
-  <button class="day-playback-button" id="day-speed-4" type="button" aria-label="Quadruple workday playback speed" title="Quadruple speed" aria-pressed="false" onclick="chooseDaySpeed(4)">4x</button>
+  <button class="day-playback-button speed-active" id="day-speed-button" type="button" aria-label="Workday speed 1x; activate for 2x" title="Current speed: 1x. Click for 2x." onclick="toggleDaySpeed()">1x</button>
   <button class="day-playback-button skip" id="day-skip-button" type="button" aria-label="Fast-forward the rest of the workday" title="Resolve all remaining workday events" onclick="skipWorkDay()">SKIP DAY</button>
 </div>
 
@@ -1438,8 +2104,15 @@ body.ow-workday .rival-hud-portrait {
   <div id="sp-today" tabindex="0" data-tip-id="hud-today-tip">TODAY // PICK A TASK</div>
 </section>
 
-<section id="project-hud" aria-label="Current project">
-  <div id="hud-project-name">CURRENT PROJECT</div>
+<section id="project-hud" tabindex="0" aria-label="Current project" data-tip-id="sp-prog-tip">
+  <div class="project-hud-track">
+    <div class="project-hud-fill" id="sp-prog-fill" style="width:0%"></div>
+    <div class="project-hud-scrim" aria-hidden="true"></div>
+    <div class="project-hud-content">
+      <span id="hud-project-name">CURRENT PROJECT</span>
+      <span id="sp-prog-val">0 / 0</span>
+    </div>
+  </div>
 </section>
 
 <section id="rival-hud" tabindex="0" role="button" aria-label="Open Chad forecast" data-tip-id="sp-rival-tip" onclick="openChadForecast()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openChadForecast();}">
@@ -1465,12 +2138,7 @@ body.ow-workday .rival-hud-portrait {
     <div class="hud-portrait player-hud-portrait" aria-hidden="true">🧑‍💼</div>
     <div class="player-bars">
       <div id="sp-home-label" style="display:none">Apartment</div>
-      <div class="hud-bar-label"><span>PROJECT</span></div>
-      <div class="hud-bar" data-tip-id="sp-prog-tip">
-        <div class="hud-bar-fill" id="sp-prog-fill" style="width:0%"></div>
-        <span class="hud-bar-value" id="sp-prog-val">0 / 0</span>
-      </div>
-      <div class="hud-bar-label" style="margin-top:6px"><span>STRESS</span><span id="sp-dsr-val" data-tip-id="sp-dsr-tip">-4% TONIGHT</span></div>
+      <div class="hud-bar-label"><span>STRESS</span><span id="sp-dsr-val" data-tip-id="sp-dsr-tip">-4% TONIGHT</span></div>
       <div class="hud-bar" id="sp-stress-row" data-tip="Your health bar. Hit 100% and you burn out.">
         <div class="hud-bar-fill" id="sp-str-fill" style="width:0%"></div>
         <span class="hud-bar-value" id="sp-str-val">0%</span>
@@ -1523,11 +2191,23 @@ body.ow-workday .rival-hud-portrait {
   <div><strong>ROTATE TO LANDSCAPE</strong><span>Use the full office floor.</span></div>
 </div>
 
+<div class="tutorial-backdrop" id="tutorial-backdrop" aria-hidden="true"></div>
+<div class="tutorial-focus-ring" id="tutorial-focus-ring" aria-hidden="true"></div>
+<section class="tutorial-callout" id="tutorial-callout" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="tutorial-title">
+  <div class="tutorial-callout-kicker" id="tutorial-kicker">ORIENTATION</div>
+  <h2 id="tutorial-title"></h2>
+  <p id="tutorial-copy"></p>
+  <div class="tutorial-callout-actions">
+    <button class="btn" type="button" onclick="owSkipOrientation()">SKIP ORIENTATION</button>
+    <button class="btn" type="button" id="tutorial-next" onclick="owAdvanceOrientation()">NEXT</button>
+  </div>
+</section>
+
 <!-- GLOBAL TOOLTIP -->
 <div id="global-tip"></div>
 
 <!-- OVERLAY -->
-<div id="overlay" role="dialog" aria-modal="true" aria-hidden="true" aria-label="OfficeWars decision"><div id="overlay-bg"></div><div id="overlay-panel" tabindex="-1" aria-live="polite"></div><div id="overlay-toggle"><button type="button" onclick="toggleOverlayVisibility()">HIDE</button></div></div>
+<div id="overlay" role="dialog" aria-modal="true" aria-hidden="true" aria-label="OfficeWars decision"><div id="overlay-bg"></div><div id="overlay-panel" tabindex="-1" aria-live="polite"></div><div id="overlay-toggle"><button type="button" onclick="toggleOverlayVisibility()">VIEW OFFICE</button></div></div>
 
 <script>
 // ═══════════════════════════════════════════════════════════════
@@ -1659,7 +2339,7 @@ const TASKS=[
   task('perfectExecution','Operations','Perfect Execution','legendary',8,12,'Positive non-Work actions trigger bonus Work. Slumps become Work. Every Work grants 2 additional progress today.')
 ];
 const SPECIAL_TASKS=[
-  {id:'rebrandInitiative',family:'Special',name:'Rebrand Initiative',rarity:'special',progress:10,stress:10,effect:'Unlock Brand Strategy. This card grants no family XP.'}
+  {id:'rebrandInitiative',family:'Special',name:'Rebrand Initiative',rarity:'special',progress:10,stress:10,effect:'Unlock Brand Strategy. Some task offers become Campaign cards. Play the requested Campaign cards in order to complete Campaigns and earn powerful rewards.'}
 ];
 function campaignTask(id,family,name){
   const bonuses={
@@ -1961,7 +2641,7 @@ function visitBonusText(pid){
   if(b.pts)parts.push('+'+b.pts+' project progress');
   if(b.cash)parts.push('+$'+b.cash);
   if(b.stress)parts.push((b.stress>0?'+':'')+b.stress+'% stress');
-  return parts.join(', ')+' (improves with relationship)';
+  return parts.join(', ');
 }
 function applyVisitBonus(pid,floatCastId){
   const cast=castByPid(pid);
@@ -3768,6 +4448,7 @@ function capturePhaseSnapshot(label){
     rng:RNG.snapshot()
   };
   if(R.debugSnapshots)R.debugSnapshots.push(snapshot);
+  owAutosaveFromSnapshot(label);
   return snapshot;
 }
 window.OfficeWarsTest={
@@ -3807,10 +4488,14 @@ function toggleOverlayVisibility(){
   const panel=document.getElementById('overlay-panel');
   const bg=document.getElementById('overlay-bg');
   const btn=document.querySelector('#overlay-toggle button');
-  if(panel.style.display==='none'){panel.style.display='';bg.style.display='';btn.textContent='HIDE';}
-  else{panel.style.display='none';bg.style.display='none';btn.textContent='SHOW';}
+  if(panel.style.display==='none'){panel.style.display='';bg.style.display='';btn.textContent='VIEW OFFICE';}
+  else{panel.style.display='none';bg.style.display='none';btn.textContent='RETURN TO DESK';}
 }
-function showOverlayToggle(){document.getElementById('overlay-toggle').style.display='block';}
+function showOverlayToggle(){
+  document.getElementById('overlay-toggle').style.display='block';
+  const btn=document.querySelector('#overlay-toggle button');
+  if(btn)btn.textContent='VIEW OFFICE';
+}
 function hideOverlayToggle(){
   document.getElementById('overlay-toggle').style.display='none';
   const panel=document.getElementById('overlay-panel');
@@ -4011,8 +4696,18 @@ document.addEventListener('click',e=>{
   if(!e.target.closest('[data-tip],[data-tip-id]'))hideGlobalTooltip();
 });
 document.addEventListener('keydown',e=>{
-  const modal=document.querySelector('.hud-modal.open, #overlay.active');
+  const modal=document.querySelector('#tutorial-callout.active, #menu-dialog.open, .hud-modal.open, #overlay.active');
   if(e.key==='Escape'){
+    if(modal&&modal.id==='tutorial-callout'){
+      e.preventDefault();
+      document.getElementById('tutorial-next').focus();
+      return;
+    }
+    if(modal&&modal.id==='menu-dialog'){
+      e.preventDefault();
+      owCloseMenuDialog();
+      return;
+    }
     if(modal&&modal.classList.contains('hud-modal')){
       e.preventDefault();
       if(modal.id==='home-inventory')closeHomeInventory();
@@ -4043,7 +4738,10 @@ window.addEventListener('resize',hideGlobalTooltip);
 // ═══════════════════════════════════════════════════════════════
 let R=null;
 let dayActive=false;
-let dayPlaybackRate=1;
+const DAY_PLAYBACK_BASE_RATE=2;
+const DAY_PLAYBACK_SPEEDS=[1,2,4];
+let dayPlaybackRate=DAY_PLAYBACK_BASE_RATE;
+// Preferred speed uses the player-facing 1x/2x/4x scale.
 let preferredDayPlaybackRate=1;
 let daySkipMode=false;
 let dayClockGameMs=0;
@@ -4101,7 +4799,8 @@ function clearDayTimeouts(){
   dayWaits.clear();
 }
 function setDayPlaybackRate(rate,persist){
-  const next=Math.max(1,Number(rate)||1);
+  const nextSpeed=DAY_PLAYBACK_SPEEDS.includes(Number(rate))?Number(rate):1;
+  const next=nextSpeed*DAY_PLAYBACK_BASE_RATE;
   const now=performance.now();
   dayClockGameMs+=(now-dayClockStarted)*dayPlaybackRate;
   dayClockStarted=now;
@@ -4111,33 +4810,41 @@ function setDayPlaybackRate(rate,persist){
     clearTimeout(wait.timer);
   });
   dayPlaybackRate=next;
-  if(persist!==false&&[1,2,4].includes(next))preferredDayPlaybackRate=next;
+  if(persist!==false){
+    preferredDayPlaybackRate=nextSpeed;
+    owUpdateSavedPlaybackPreference();
+  }
   waits.forEach(armDayWait);
   updateDayPlaybackControls();
 }
+function currentDayPlaybackSpeed(){
+  const speed=dayPlaybackRate/DAY_PLAYBACK_BASE_RATE;
+  return DAY_PLAYBACK_SPEEDS.includes(speed)?speed:1;
+}
 function updateDayPlaybackControls(){
   const controls=document.getElementById('day-playback-controls');
+  const speed=document.getElementById('day-speed-button');
   const skip=document.getElementById('day-skip-button');
   const scene=document.getElementById('office-scene');
-  const speedButtons=[1,2,4].map(rate=>document.getElementById('day-speed-'+rate));
-  if(!controls||speedButtons.some(button=>!button)||!skip||!scene)return;
+  if(!controls||!speed||!skip||!scene)return;
   controls.classList.toggle('active',dayActive);
   controls.classList.toggle('skipping',daySkipMode);
-  speedButtons.forEach((button,index)=>{
-    const rate=[1,2,4][index];
-    const active=dayPlaybackRate===rate&&!daySkipMode;
-    button.classList.toggle('speed-active',active);
-    button.setAttribute('aria-pressed',String(active));
-    button.disabled=!dayActive||daySkipMode;
-  });
+  const current=currentDayPlaybackSpeed();
+  const next=current===1?2:(current===2?4:1);
+  speed.textContent=current+'x';
+  speed.setAttribute('aria-label','Workday speed '+current+'x; activate for '+next+'x');
+  speed.title='Current speed: '+current+'x. Click for '+next+'x.';
+  speed.classList.toggle('speed-active',!daySkipMode);
+  speed.disabled=!dayActive||daySkipMode;
   skip.disabled=!dayActive||daySkipMode;
   skip.textContent=daySkipMode?'SKIPPING…':'SKIP DAY';
-  scene.classList.toggle('day-speed-2',dayPlaybackRate===2&&!daySkipMode);
-  scene.classList.toggle('day-speed-4',dayPlaybackRate===4&&!daySkipMode);
+  DAY_PLAYBACK_SPEEDS.forEach(rate=>{
+    scene.classList.toggle('day-speed-'+rate,current===rate&&!daySkipMode);
+  });
   scene.classList.toggle('day-skipping',daySkipMode);
 }
 function resetDayPlayback(){
-  dayPlaybackRate=preferredDayPlaybackRate;
+  dayPlaybackRate=preferredDayPlaybackRate*DAY_PLAYBACK_BASE_RATE;
   daySkipMode=false;
   dayClockGameMs=0;
   dayClockStarted=performance.now();
@@ -4148,10 +4855,11 @@ function dayGameNow(){
 }
 function toggleDaySpeed(){
   if(!dayActive||daySkipMode)return;
-  chooseDaySpeed(dayPlaybackRate===1?2:(dayPlaybackRate===2?4:1));
+  const current=currentDayPlaybackSpeed();
+  chooseDaySpeed(current===1?2:(current===2?4:1));
 }
 function chooseDaySpeed(rate){
-  if(!dayActive||daySkipMode||![1,2,4].includes(rate))return;
+  if(!dayActive||daySkipMode||!DAY_PLAYBACK_SPEEDS.includes(rate))return;
   setDayPlaybackRate(rate,true);
 }
 function skipWorkDay(){
@@ -4191,7 +4899,12 @@ function isFinalFloor(){return R.floor===ranks().length;}
 function startRun(options){
   const runOptions=options&&typeof options==='object'?options:{};
   if(Object.prototype.hasOwnProperty.call(runOptions,'seed'))RNG.setSeed(runOptions.seed);
-  else RNG.clearSeed();
+  else{
+    const seed=globalThis.crypto&&typeof globalThis.crypto.getRandomValues==='function'
+      ?globalThis.crypto.getRandomValues(new Uint32Array(1))[0]
+      :(Date.now()^Math.floor(Math.random()*0xffffffff));
+    RNG.setSeed(seed);
+  }
   preferredDayPlaybackRate=1;
   daySkipResolver=null;
   clearCubicleReservations();
@@ -4291,6 +5004,7 @@ function floorIntro(){
   showOverlay(h);
   updateHUD();renderCast();
   capturePhaseSnapshot('floor-intro');
+  void owMaybeShowOrientationForPhase('floorIntro');
 }
 window.owClockIn=function(){
   if(R.phase!=='floorIntro')return;
@@ -4316,7 +5030,11 @@ async function startDay(){
   R.todaySlots=[];
   R.today={
     pts:0, stressGain:0, stressRelief:0, pay:0, log:[], lunchGood:null,
-    startProjectProgress:R.project.progress, taskPlays:[], cardFlags:{},
+    startProjectProgress:R.project.progress,
+    startStress:R.stress,
+    startCash:R.cash,
+    startRelationships:Object.assign({},R.rel),
+    taskPlays:[], cardFlags:{},
     actionHistory:[], positiveActionTypes:[], backupQueue:[],
     standardBonusUsed:{karen:false,dave:false,bob:false,janet:false,raj:false,priya:false},
     activatedCoworkers:[],
@@ -4344,6 +5062,7 @@ async function startDay(){
   updateHUD();renderCast();
   await morningPick();
   capturePhaseSnapshot('morning');
+  void owMaybeShowOrientationForPhase('morning');
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -5458,9 +6177,8 @@ function layoutDayActionLegend(){
   const usableBottom=controlsRect&&measured.left<controlsRect.right&&measured.right>controlsRect.left
     ?controlsRect.top-8
     :window.innerHeight-8;
-  const fits=measured.left>=tickerRect.right+12&&
-    measured.right<=usableRight-8&&
-    measured.bottom<=usableBottom;
+  // Keep the office visible. The full guide is always opt-in.
+  const fits=false;
   legend.classList.remove('measuring');
   if(fits){
     dayActionLegendOpen=false;
@@ -5674,8 +6392,23 @@ function completeDayProgressPoint(index,line){
   if(item.kind==='meeting'&&R.today.currentMeetingSummary){
     item.participants=R.today.currentMeetingSummary.participants.slice();
   }
+  owUpdateTickerResult(line);
   renderDayProgress();
   renderDayActionLegend();
+}
+function owUpdateTickerResult(line,pending){
+  const host=document.getElementById('dt-result');
+  if(!host)return;
+  host.classList.remove('good','bad');
+  if(!line){
+    host.textContent=pending?'Resolving...':'Results appear as actions resolve.';
+    return;
+  }
+  const outcome=line.e||line.t||'No direct stat change';
+  if(line.g===true)host.classList.add('good');
+  else if(line.g===false)host.classList.add('bad');
+  const prefix=line.g===true?'POSITIVE':(line.g===false?'NEGATIVE':'RESULT');
+  host.textContent=`${prefix} · ${outcome}`;
 }
 function setActiveProgressParticipants(participants){
   const item=R.today.dayProgress[R.today.activeProgressIndex];
@@ -5813,7 +6546,7 @@ function runWorkDay(){
   const ticker=document.getElementById('day-ticker');
   document.getElementById('dt-title').textContent=`DAY ${R.stats.days} — ${dayName()}`;
   document.getElementById('dt-action').textContent='☕ Clocking in...';
-
+  owUpdateTickerResult(null);
   ticker.classList.add('active');
   renderDayActionLegend();
   const dayLength=slots.length*CONFIG.ACTION_MS;
@@ -5838,6 +6571,7 @@ function runWorkDay(){
     const def=actionDef(slots[slotIndex]);
     startDayProgressPoint(slotIndex);
     document.getElementById('dt-action').textContent=def.label;
+    owUpdateTickerResult(null,true);
     // Rival works in tandem — his floats/walks per slot
     animateRivalDay(idx);
     const slotStart=dayGameNow();
@@ -6350,13 +7084,13 @@ function renderOutingsUI(){
     }
     const cast=castByPid(pid);
     const clickable=!nightState.outingUsed;
-    h+=`<button type="button" class="people-choice" data-tip="Day bonus: ${esc(visitBonusText(pid))}" ${clickable?'':`disabled`} onclick="${clickable?`pickOutingPid('${pid}')`:''}" style="text-align:center;padding:0.6rem;border:2px solid ${pid==='chad'?'#e74c3c':'#3498db'};border-radius:8px;cursor:${clickable?'pointer':'default'};${clickable?'':'opacity:.5;'}transition:all .2s" onmouseover="this.style.borderColor='#f39c12'" onmouseout="this.style.borderColor='${pid==='chad'?'#e74c3c':'#3498db'}'">
+    h+=`<button type="button" class="people-choice" data-tip="${esc(visitBonusText(pid))}" ${clickable?'':`disabled`} onclick="${clickable?`pickOutingPid('${pid}')`:''}" style="text-align:center;padding:0.6rem;border:2px solid ${pid==='chad'?'#e74c3c':'#3498db'};border-radius:8px;cursor:${clickable?'pointer':'default'};${clickable?'':'opacity:.5;'}transition:all .2s" onmouseover="this.style.borderColor='#f39c12'" onmouseout="this.style.borderColor='${pid==='chad'?'#e74c3c':'#3498db'}'">
       <div class="people-card-avatar portrait-frame" style="background:${cast.color}">${portraitGlyph(cast.emoji)}</div><div style="font-size:0.83rem;color:#ecf0f1">${esc(cast.name)}</div>
       <div style="font-size:0.72rem;color:#f39c12">Relationship ${R.rel[pid]||0}</div></button>`;
   });
   h+=`</div>`;
-  h+=`<div style="text-align:center;margin-top:12px;color:#7f8c8d;font-size:0.83rem">Outings raise relationships. Higher relationships mean more visits at your desk — and friendlier chats.</div>`;
-  showOverlay(h);
+  h+=`<div style="text-align:center;margin-top:12px;color:#7f8c8d;font-size:0.83rem">Outings raise relationships. Higher relationships mean more visits at your desk and friendlier chats. Coworkers give you their bonus when you meet with them during the workday.</div>`;
+  owShowNightOverlay(h);
 }
 window.pickOutingPid=function(pid){
   nightState.outingPid=pid;
@@ -6406,7 +7140,7 @@ function renderOutingActivities(hPrefix){
   h+=`<button class="btn" style="border-color:#2ecc71;color:#2ecc71" onclick="confirmOuting()">YES</button> `;
   h+=`<button class="btn" onclick="cancelOuting()">NO</button></div>`;
   h+=`<div style="text-align:center;margin-top:10px"><button class="btn" onclick="nightState.outingPid=null;renderOutingsUI()">← BACK</button></div>`;
-  showOverlay(h);
+  owShowNightOverlay(h);
 }
 window.selectOuting=function(slot){
   nightState.pendingOuting=slot;
@@ -6446,7 +7180,7 @@ function showOutingStory(pid,idx,relGain){
   h+=`<div style="color:#2ecc71;font-weight:bold">+${relGain} relationship (${R.rel[pid]}/100)</div>`;
   h+=`<button class="btn" style="margin-top:14px" onclick="nightState.outingPid=null;nightSwitchTab('home')">HEAD HOME</button>`;
   h+=`</div>`;
-  showOverlay(h);
+  owShowNightOverlay(h);
 }
 // ── RELATIONSHIPS TAB ──
 function renderRelationshipsUI(){
@@ -6466,7 +7200,7 @@ function renderRelationshipsUI(){
       <div style="font-size:0.72rem;color:#f39c12">Relationship ${R.rel[pid]||0}</div></button>`;
   });
   h+=`</div>`;
-  showOverlay(h);
+  owShowNightOverlay(h);
 }
 window.pickRelPid=function(pid){nightState.relPid=pid;renderRelationshipsUI();};
 function renderRelSheet(hPrefix){
@@ -6502,7 +7236,7 @@ function renderRelSheet(hPrefix){
   h+=`<div class="abar-label" style="margin-top:8px">RELATIONSHIP — ${rel}/100</div>`;
   h+=`<div class="abar"><div class="abar-fill" style="width:${rel}%;background:${pid==='chad'?'#e74c3c':'#2ecc71'}"></div></div>`;
   h+=`</div></div>`;
-  showOverlay(h);
+  owShowNightOverlay(h);
 }
 // ── HOME TAB ──
 function renderNightUI(){
@@ -6671,6 +7405,7 @@ window.doSellUpgrade=function(id){
   R.cash+=sellPrice(u);
   const p=document.getElementById('sell-popup');if(p)p.remove();
   updateHUD(); // stays in sell state
+  owPersistCheckpoint('night');
 };
 function rerollNight(){
   if(R.rerollsNight<=0)return;
@@ -6685,6 +7420,7 @@ function rerollNight(){
   const fresh=genNightCards(exclude);
   R.nightCards=R.nightCards.map((c,i)=>nightState.bought.has(i)?c:(fresh.shift()||c));
   renderNightUI();
+  owPersistCheckpoint('night');
 }
 function finishNight(){
   let heal=autoSleepAmt();
@@ -6726,6 +7462,7 @@ function weekendEvent(nextAction){
   });
   h+=`</div>`;
   showOverlay(h);
+  owPersistCheckpoint('weekend');
 }
 async function owPickWeekend(evId,ci){
   if(R.phase!=='weekend')return;
@@ -6777,6 +7514,7 @@ async function owPickWeekend(evId,ci){
   if(lines.length)h+=`<div style="text-align:center;margin-top:10px;color:#f39c12;font-size:0.95rem">${lines.map(esc).join(' · ')}</div>`;
   h+=`<div style="text-align:center;margin-top:14px"><button class="btn" onclick="afterWeekend()">MONDAY AWAITS</button></div>`;
   showOverlay(h);
+  owPersistCheckpoint('weekendResult');
 }
 function pickWeekend(evId,ci){
   return owWithResolutionLock(()=>owPickWeekend(evId,ci));
@@ -6795,13 +7533,21 @@ function afterWeekend(){
 // ═══════════════════════════════════════════════════════════════
 const CASINO={chips:0, buyIn:0, pokerHands:0, bjHands:0};
 const CASINO_MINIMUMS={poker:20,slots:50,blackjack:50};
+let owCasinoView='lobby';
+let OW_SLOT_PENDING=null;
 function enterCasino(){
   casinoOpen=true;
+  owCasinoView='lobby';
+  OW_SLOT_PENDING=null;
+  PK=null;
+  BJ=null;
   CASINO.chips=0;CASINO.buyIn=0;CASINO.pokerHands=0;CASINO.bjHands=0;
   openCasino();
+  owPersistCheckpoint('weekendCasino');
 }
 function openCasino(){
   casinoOpen=true;
+  owCasinoView='lobby';
   const pokerOpen=CASINO.pokerHands<3;
   const blackjackOpen=CASINO.bjHands<5;
   let h=chipHud()+`<h2>🎰 THE CASINO</h2>`;
@@ -6813,6 +7559,7 @@ function openCasino(){
   h+=`</div>`;
   h+=`<div style="text-align:center;margin-top:8px"><button class="btn" onclick="exitCasino()">WALK AWAY & CASH OUT</button></div>`;
   showOverlay(h);
+  owPersistCheckpoint('weekendCasino');
 }
 // Buy-in/top-up popup: stepper buttons, never a text box.
 function casinoBuyIn(game){
@@ -6851,6 +7598,8 @@ window.startCasinoGame=function(game){
   CASINO.chips+=CASINO.buyIn;
   CASINO.buyIn=0;
   updateHUD();
+  owCasinoView='lobby';
+  owPersistCheckpoint('weekendCasino');
   if(game==='poker')pokerStart();
   else if(game==='slots')slotsRender();
   else bjStart();
@@ -6865,6 +7614,7 @@ function exitCasino(){
   h+=`<div style="max-width:32rem;margin:0 auto;font-size:0.95rem;line-height:1.6;text-align:center">You step back into the daylight. It judges you gently. Sunday happens. Monday looms.</div>`;
   h+=`<div style="text-align:center;margin-top:14px"><button class="btn" onclick="afterWeekend()">MONDAY AWAITS</button></div>`;
   showOverlay(h);
+  owPersistCheckpoint('weekendResult');
 }
 function chipHud(){
   return`<div style="position:absolute;top:0.6rem;right:0.8rem;color:#f39c12;font-weight:bold;font-size:0.95rem;z-index:5">Chips: $<span id="chip-count">${CASINO.chips}</span></div>`;
@@ -7005,6 +7755,8 @@ function pokerNewHand(){
   PK.lastAggressor=bb;
   PK.actedThisRound=new Set();
   pokerRender('Blinds posted. Hand '+CASINO.pokerHands+' of 3.');
+  owCasinoView='pokerResolving';
+  owPersistCheckpoint('weekendCasino');
   setTimeout(pokerAdvance,900);
 }
 function pokerBet(seat,amt){
@@ -7067,6 +7819,8 @@ function pokerActions(){
     h+=`<button class="btn" style="border-color:#e74c3c;color:#e74c3c" onclick="pkAct('allin')">ALL IN</button>`;
   }
   wrap.innerHTML=h;
+  owCasinoView='poker';
+  owPersistCheckpoint('weekendCasino');
 }
 window.pkAdjRaise=function(d){
   const me=PK.seats[0];
@@ -7084,6 +7838,8 @@ window.pkAct=function(act){
   PK.actedThisRound.add(0);
   PK.turn=pokerNextActorIndex(0);
   pokerRender('');
+  owCasinoView='pokerResolving';
+  owPersistCheckpoint('weekendCasino');
   setTimeout(pokerAdvance,700);
 };
 // Bot decision: real hand strength + personality
@@ -7258,6 +8014,8 @@ function pokerShowdown(){
   if(canContinue)h+=`<button class="btn" style="border-color:#2ecc71;color:#2ecc71" onclick="pokerNewHand()">NEXT HAND (${CASINO.pokerHands}/3)</button>`;
   h+=`<button class="btn" onclick="returnPokerToCasino()">CASINO LOBBY</button>`;
   if(wrap)wrap.innerHTML=h;
+  owCasinoView='lobby';
+  owPersistCheckpoint('weekendCasino');
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -7275,6 +8033,7 @@ function slotGrossPayout(result,bet){
   return Math.round(bet*(pair==='7️⃣'?1.5:1));
 }
 function slotsRender(spinning,result,msg){
+  owCasinoView='slots';
   const reels=result||['☕','📎','💼'];
   let h=chipHud();
   h+=`<h2>🎰 SLOTS</h2>`;
@@ -7301,12 +8060,15 @@ function slotsRender(spinning,result,msg){
 window.slotAdjBet=function(d){SLOT_BET=Math.max(50,Math.min(CASINO.chips||50,SLOT_BET+d));slotsRender();};
 window.slotSpin=function(){
   if(CASINO.chips<SLOT_BET)return;
-  CASINO.chips-=SLOT_BET;
+  const bet=SLOT_BET;
+  CASINO.chips-=bet;
   slotsRender(true);
   updateChips();
   // Weighted reels and pair returns produce ~80.8732% RTP.
   const roll=()=>{const r=random();if(r<0.34)return'☕';if(r<0.60)return'📎';if(r<0.80)return'💼';if(r<0.94)return'🖨️';return'7️⃣';};
   const result=[roll(),roll(),roll()];
+  OW_SLOT_PENDING={bet,result};
+  owPersistCheckpoint('weekendCasino');
   let t=0;
   result.forEach((sym,i)=>{
     setTimeout(()=>{
@@ -7315,14 +8077,22 @@ window.slotSpin=function(){
     },400+i*450);
   });
   setTimeout(()=>{
-    const win=slotGrossPayout(result,SLOT_BET);
-    CASINO.chips+=win;
-    const profit=win-SLOT_BET;
-    const msg=win===0?'The machine hums. Your chips do not.'
-      :(profit===0?'PAIR — bet returned.':'WINNER! +$'+profit+' profit · $'+win+' returned');
-    slotsRender(false,result,msg);
+    owSettlePendingSlot();
   },1900);
 };
+function owSettlePendingSlot(){
+  if(!OW_SLOT_PENDING)return;
+  const pending=OW_SLOT_PENDING;
+  OW_SLOT_PENDING=null;
+  const win=slotGrossPayout(pending.result,pending.bet);
+  CASINO.chips+=win;
+  const profit=win-pending.bet;
+  const msg=win===0?'The machine hums. Your chips do not.'
+    :(profit===0?'PAIR — bet returned.':'WINNER! +$'+profit+' profit · $'+win+' returned');
+  slotsRender(false,pending.result,msg);
+  updateChips();
+  owPersistCheckpoint('weekendCasino');
+}
 
 // ═══════════════════════════════════════════════════════════════
 // BLACKJACK — vs the dealer. Dealer hits soft 17. BJ pays 3:2. 5 hands.
@@ -7350,6 +8120,7 @@ function bjNewHand(){
   bjRender();
 }
 function bjRender(msg){
+  owCasinoView='blackjack';
   const phase=BJ.phase;
   let h=chipHud();
   h+=`<h2>🂡 BLACKJACK</h2>`;
@@ -7388,6 +8159,7 @@ function bjRender(msg){
   }
   h+=`</div></div>`;
   showOverlay(h);
+  owPersistCheckpoint('weekendCasino');
 }
 window.bjAdjBet=function(d){BJ.bet=Math.max(50,Math.min(CASINO.chips,d>=999999?CASINO.chips:BJ.bet+d));bjRender();};
 window.bjDeal=function(){
@@ -7496,6 +8268,7 @@ function cutsceneBanner(text,color){
 function defeat(type){
   R.phase='gameOver';
   R.gameResult=type;
+  owPersistCheckpoint('gameOver');
   if(owHeadlessRunActive)return;
   hideOverlay();hideOverlayToggle();
   document.getElementById('day-ticker').classList.remove('active');
@@ -7531,6 +8304,7 @@ function defeat(type){
 function victory(){
   R.phase='gameOver';
   R.gameResult='victory';
+  owPersistCheckpoint('gameOver');
   if(owHeadlessRunActive)return;
   hideOverlay();hideOverlayToggle();
   cutsceneBanner('YOU TOOK THE CEO\'S JOB','#2ecc71');
@@ -7575,6 +8349,7 @@ function runSummary(type){
   rows+=`<tr><td>Meetings survived</td><td>${R.stats.meetings}</td></tr>`;
   document.getElementById('go-tbl').innerHTML=rows;
   document.getElementById('screen-gameover').classList.add('active');
+  owPersistCheckpoint('gameOver');
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -7586,6 +8361,58 @@ const OW_HUD_FAMILY_COLORS={
   Design:'#d68ebd',
   Sales:'#4fc77a',
   Operations:'#58c5c7'
+};
+const OW_FAMILY_RESUME={
+  Coding:{
+    identity:'Build, automate, and integrate work into dependable systems.',
+    flavor:[
+      'Your coding section is waiting for its first shipped task.',
+      'You can navigate the codebase and close a well-scoped ticket.',
+      'You ship useful fixes with a repeatable workflow.',
+      'Coworkers trust you with systems that matter.',
+      'You define how the company builds and integrates software.'
+    ]
+  },
+  Management:{
+    identity:'Coordinate people, shape schedules, and amplify successful work.',
+    flavor:[
+      'Your calendar is currently free of leadership obligations.',
+      'You can keep a small assignment moving in the same direction.',
+      'You coordinate useful work without adding unnecessary meetings.',
+      'Teams rely on you to turn plans into consistent execution.',
+      'You make the whole office operate above its individual parts.'
+    ]
+  },
+  Design:{
+    identity:'Observe information, iterate on ideas, and transform existing value.',
+    flavor:[
+      'Your portfolio is ready for its first case study.',
+      'You can spot a rough edge and explain why it matters.',
+      'You turn feedback into deliberate, useful revisions.',
+      'Your prototypes increasingly shape what the company chooses to build.',
+      'Your design language influences every part of the product.'
+    ]
+  },
+  Sales:{
+    identity:'Earn, spend, and convert relationships into business leverage.',
+    flavor:[
+      'Your pipeline is open and conspicuously empty.',
+      'You can identify a useful lead and make a credible introduction.',
+      'You create buying power and know when to spend it.',
+      'Your network consistently opens valuable options for the company.',
+      'Your signature can change the economics of an entire run.'
+    ]
+  },
+  Operations:{
+    identity:'Reserve resources, stabilize outcomes, and deliver dependable throughput.',
+    flavor:[
+      'Your operating manual currently contains a title page.',
+      'You can keep a simple process from losing important work.',
+      'You build reliable handoffs and useful contingency plans.',
+      'The office depends on your systems when conditions become unstable.',
+      'You turn complicated workflows into predictable delivery.'
+    ]
+  }
 };
 let owResumeBookFamily='Coding';
 let owPendingContactPid=null;
@@ -7632,26 +8459,22 @@ function owFamilyRailCopy(family){
       detail
     };
   }
-  let path=trait?trait.name:'No path selected';
-  let detail;
-  if(!trait&&xp>=3)detail='TRAIT CHOICE READY';
-  else{
-    const next=owFamilyNextGate(xp);
-    detail=next?`NEXT MILESTONE: ${next} XP`:`${xp} TOTAL XP`;
-  }
+  const path=trait?trait.name:'';
+  let detail='';
   if(family==='Design'&&R.brandStrategyUnlocked){
     const brand=owBrandState();
     const campaign=owCurrentCampaign();
     if(campaign&&brand){
-      detail+=` · ${campaign.name} ${brand.step+1}/${campaign.steps.length}`;
+      detail=`${campaign.name} ${brand.step}/${campaign.steps.length}`;
     }else if(brand&&brand.finalRewardActive){
-      detail+=' · GLOBAL BRAND ACTIVE';
+      detail='GLOBAL BRAND ACTIVE';
     }
   }
   return{
     track:`<span class="resume-xp-track">${owResumeXpTrack(family,xp)}</span>`,
     path,
-    detail
+    detail,
+    choiceReady:!trait&&xp>=3
   };
 }
 function owRenderResumeRail(){
@@ -7660,11 +8483,18 @@ function owRenderResumeRail(){
   host.innerHTML=Object.keys(FAMILIES).map(family=>{
     const copy=owFamilyRailCopy(family);
     const color=OW_HUD_FAMILY_COLORS[family];
-    return`<button class="resume-family" type="button" style="--family-color:${color}" onclick="openResumeBook('${family}')">
+    const xp=R.familyXP[family]||0;
+    const next=owFamilyNextGate(xp);
+    const status=[`${family}, ${xp} XP`];
+    if(copy.path)status.push(copy.path);
+    if(next)status.push(`next milestone ${next} XP`);
+    return`<button class="resume-family${copy.choiceReady?' choice-ready':''}" type="button"
+        style="--family-color:${color}" aria-label="${esc(status.join(', '))}"
+        onclick="openResumeBook('${family}')">
       <span class="resume-family-initial">${esc(family[0])}</span>
       <span class="resume-family-name">${esc(family.toUpperCase())}</span>
       ${copy.track}
-      <span class="resume-family-path">${esc(copy.path)}<span class="resume-family-next">${esc(copy.detail)}</span></span>
+      ${copy.path||copy.detail?`<span class="resume-family-path">${esc(copy.path)}${copy.detail?`<span class="resume-family-next">${esc(copy.detail)}</span>`:''}</span>`:''}
     </button>`;
   }).join('');
   const cap=document.getElementById('resume-capstone');
@@ -7991,6 +8821,7 @@ window.owConfirmContact=function(){
   updateHUD();
   if(R.phase==='night')renderNightTabs();
   owRenderResumeBook();
+  owAutosaveStablePhase('contact-assigned');
 };
 function owRenderResumeBook(){
   const host=document.getElementById('resume-book-content');
@@ -8000,7 +8831,11 @@ function owRenderResumeBook(){
   const xp=R.familyXP[family]||0;
   const activePath=R.paths[family];
   const tabs=Object.keys(FAMILIES).map(name=>
-    `<button class="resume-book-tab${name===family?' active':''}" type="button" style="--tab-color:${OW_HUD_FAMILY_COLORS[name]}" onclick="owResumeBookFamily='${name}';owRenderResumeBook()">${esc(name)}</button>`
+    `<button class="resume-book-tab${name===family?' active':''}" type="button"
+      id="resume-tab-${name}" role="tab" aria-selected="${name===family?'true':'false'}"
+      tabindex="${name===family?'0':'-1'}" style="--tab-color:${OW_HUD_FAMILY_COLORS[name]}"
+      onclick="owResumeBookFamily='${name}';owRenderResumeBook()"
+      onkeydown="owResumeTabKey(event,'${name}')">${esc(name)}</button>`
   ).join('');
   let paths=Object.entries(OW_TRAITS[family]).map(([key,trait])=>{
     const active=key===activePath;
@@ -8030,8 +8865,22 @@ function owRenderResumeBook(){
     const reward=OW_CLOSE_REWARD_BY_ID.get(id);
     return reward?`<div class="resume-effect-line"><strong>${esc(reward.name)}</strong> · ${esc(owCloseRewardDescription(reward,R.salesCycle))}</div>`:'';
   }).join('');
-  host.innerHTML=`<div class="resume-book-top"><div><h2>RESUME BOOK</h2><div>${esc(curRank().rank)} · ${xp} ${esc(family)} XP</div></div><div>${R.capstone?'CAPSTONE: '+esc(owCapstoneName(R.capstone.path)):'CAPSTONE OPEN'}</div></div>
-    <div class="resume-book-tabs">${tabs}</div>
+  const profile=OW_FAMILY_RESUME[family];
+  const flavorIndex=xp<=0?0:(xp<3?1:(xp<6?2:(xp<10?3:4)));
+  host.innerHTML=`<div class="resume-book-top">
+      <div><h2>PLAYER RESUME</h2><div class="resume-book-role">${esc(curRank().rank)} · Floor ${R.floor}</div></div>
+      <div class="resume-book-capstone">${R.capstone?'CAPSTONE: '+esc(owCapstoneName(R.capstone.path)):'CAPSTONE OPEN'}</div>
+    </div>
+    <div class="resume-book-tabs" role="tablist" aria-label="Resume families">${tabs}</div>
+    <section class="resume-family-summary" style="--family-color:${color}" role="tabpanel" aria-labelledby="resume-tab-${family}">
+      <div>
+        <h3>${esc(family.toUpperCase())}</h3>
+        <div class="resume-family-identity">${esc(profile.identity)}</div>
+        <div class="resume-proficiency">"${esc(profile.flavor[flavorIndex])}"</div>
+      </div>
+      <div class="resume-xp-total">${xp} XP<small>UNCAPPED EXPERIENCE</small></div>
+      <div class="resume-book-track" style="--family-color:${color}">${owResumeXpTrack(family,xp)}</div>
+    </section>
     <div class="resume-path-grid">${paths}</div>
     <section class="resume-effect-list"><h3>ACTIVE EFFECTS</h3>
       ${effects.length?effects.map(item=>`<div class="resume-effect-line"><strong>${esc(item.label)}</strong> · ${esc(item.detail)}</div>`).join(''):'<div class="resume-effect-line">No delayed effects.</div>'}
@@ -8039,6 +8888,19 @@ function owRenderResumeBook(){
     </section>
     ${family==='Sales'&&activePath==='schmoozing'?owContactBookMarkup():''}`;
 }
+window.owResumeTabKey=function(event,family){
+  if(!['ArrowLeft','ArrowRight','Home','End'].includes(event.key))return;
+  const families=Object.keys(FAMILIES);
+  let index=families.indexOf(family);
+  if(event.key==='ArrowLeft')index=(index-1+families.length)%families.length;
+  else if(event.key==='ArrowRight')index=(index+1)%families.length;
+  else if(event.key==='Home')index=0;
+  else index=families.length-1;
+  owResumeBookFamily=families[index];
+  owRenderResumeBook();
+  requestAnimationFrame(()=>document.getElementById(`resume-tab-${owResumeBookFamily}`)?.focus());
+  event.preventDefault();
+};
 function openHomeInventory(){
   updateHUD();
   openHudModal('home-inventory');
@@ -8064,12 +8926,26 @@ function updateHUD(){
   document.getElementById('sp-floor').textContent=`F${R.floor} — ${rk.rank}`;
   document.getElementById('sp-day').textContent=R.day>0?`${dayName()} · Day ${R.stats.days} · Week ${R.week}`:'Starting...';
   document.getElementById('sp-home-label').textContent=curHome().name;
-  document.getElementById('hud-project-name').textContent=R.project.name||'CURRENT PROJECT';
+  const projectName=R.project.name||'CURRENT PROJECT';
+  document.getElementById('hud-project-name').textContent=projectName;
   // Project
   const progressDisplay=workdayProgressForecast();
   const pct=R.project.size?Math.min(100,progressDisplay.value/R.project.size*100):0;
   document.getElementById('sp-prog-fill').style.width=pct+'%';
   document.getElementById('sp-prog-val').textContent=`${fmt1(progressDisplay.value)}/${R.project.size}`;
+  const projectHud=document.getElementById('project-hud');
+  const projectTrack=projectHud.querySelector('.project-hud-track');
+  const projectKey=`${R.floor}|${projectName}|${R.project.size}`;
+  const previousKey=projectHud.dataset.projectKey;
+  const previousValue=Number(projectHud.dataset.progressValue);
+  if(previousKey===projectKey&&Number.isFinite(previousValue)&&previousValue!==progressDisplay.value){
+    projectTrack.classList.remove('progress-pulse');
+    void projectTrack.offsetWidth;
+    projectTrack.classList.add('progress-pulse');
+  }
+  projectHud.dataset.projectKey=projectKey;
+  projectHud.dataset.progressValue=String(progressDisplay.value);
+  projectHud.setAttribute('aria-label',`Current project: ${projectName}, ${fmt1(progressDisplay.value)} of ${R.project.size} progress`);
   TIP_TEXTS['sp-prog-tip']=progressDisplay.active
     ?`"${R.project.name}" — live workday projection. Includes the selected task, guaranteed bonuses, and resolved day events. Finalized at Clock Out.`
     :`"${R.project.name}" — finish before the deadline.`;
@@ -8141,7 +9017,7 @@ function showHowToPlay(){
   document.getElementById('overlay').style.right='0';
   const pages=[
     {title:'The Climb',text:'Climb 7 floors of the corporate ladder, from INTERN to the CEO\'s office. Each floor gives you a project and a deadline. Finish the project before the deadline to get promoted. Beat floor 7 to take the CEO\'s job and win.'},
-    {title:'Your Day',text:'Every workday:\n• MORNING — pick 1 of 3 task cards\n• LIVE STATS — task gains resolve when confirmed; the bars then show guaranteed bonuses and each resolved day event.\n• WORKDAY — watch 5 scheduled actions play out (6 with Espresso; lunch is always third)\n• PLAYBACK — choose 1x, 2x, or 4x at the bottom right. SKIP DAY fast-forwards every remaining action and interaction; speed never changes outcomes.\n• TRACKER — your portrait follows the current action. Hover or tap completed points for details; future points stay hidden as ???\n• DAY ACTIONS — the legend beside the tracker explains every scheduled action using your current upgrades. On smaller screens, open it with the ACTIONS button.\n• CLOCK OUT — finalize the workday, collect pay, and settle interest\n• NIGHT — use Outings, Home, and Deals in any legal order, then choose FINALIZE NIGHT'},
+    {title:'Your Day',text:'Every workday:\n• MORNING — compare task gains, costs, timing, and effects before choosing one.\n• LIVE STATS — task gains resolve when confirmed; the bars then show guaranteed bonuses and each resolved day event.\n• WORKDAY — watch 5 scheduled actions play out (6 with Espresso; lunch is always third).\n• PLAYBACK — click the current-speed button at the bottom right to cycle 1x, 2x, and 4x. SKIP DAY fast-forwards every remaining action and interaction; speed never changes outcomes.\n• TRACKER — your portrait follows the current action. Hover, focus, or tap completed points for exact details; future points stay hidden as ???.\n• ACTION GUIDE — open GUIDE in the ticker for current action rules. It stays closed until requested so the office remains visible.\n• CLOCK OUT — review grouped Progress, Stress, Cash, Relationships, carryover effects, and the expandable source log.\n• NIGHT — use Outings, Home, and Deals in any legal order. The footer previews recovery, controls Lights Out, and finalizes the night.'},
     {title:'Task Cards',text:'Every task has its own fixed rarity, base project progress, base stress, and printed effect. Completing an ordinary task grants 1 XP to its family.\n\nFamily XP unlocks trait choices at promotions. Common cards are dependable, while higher rarities bend or combine more systems. Pinned Tasks remain separate from the generated offer and use the normal primary-task choice when selected.'},
     {title:'Card Resolution',text:'Selection: confirming the morning primary task. It happens once per workday.\n\nComplete Play: resolves base progress, base stress, the full printed effect, family XP, counters, and card-play triggers.\n\nReplay: another Complete Play of the same card. It does not repeat Selection or primary-only triggers.\n\nComplete Additional Play: a Complete Play of another card without making it primary.\n\nPrinted-Effect Resolution: resolves only copied rules text. It grants no copied base values, XP, counters, or card-play triggers.\n\nAssist: Schmoozing secondary value. It is neither a card play nor a Printed-Effect Resolution.\n\nSource: the card that owns copied text. Host: the card currently resolving it.\n\nResolution Chain: one Selection and every play or effect it creates, resolved in order.'},
     {title:'Schedule Resolution',text:'Schedule Entry: one action placed on the workday timeline.\n\nNatural Schedule Entry: an entry made by the base schedule before cards and traits change it.\n\nAction Resolution: one execution of a Schedule Entry with one Outcome and its triggers.\n\nTriggered Schedule Entry: a temporary action created during playback; it resolves immediately after its parent.\n\nWorkday Event: a timed occurrence that is not a Schedule Entry, such as a desk visit or sabotage.\n\nOutcome: the favorable, unfavorable, or fixed result of an action.\n\nCoworker Bonus Activation: one application of a coworker bonus. Triggering twice differs from doubled strength.\n\nStandard Bonus Opportunity: each non-Chad coworker normally has one per workday. Forced Bonus Activation ignores and does not consume it.\n\nFlat Stress: stress without floor scaling or numerical stress modifiers. Focus and Guardian Angel can still protect you.'},
@@ -8163,7 +9039,8 @@ function showHowToPlay(){
     h+=`<span style="color:#7f8c8d;font-size:0.83rem">Page ${page+1}/${pages.length}</span>`;
     h+=`<button class="btn" onclick="htpNext()" ${page===pages.length-1?'disabled style="opacity:0.3;pointer-events:none"':''}>NEXT &#8594;</button>`;
     h+=`</div>`;
-    h+=`<button class="btn" style="margin-top:1rem" onclick="document.getElementById('overlay-bg').style.background='';document.getElementById('overlay').style.right='';hideOverlay();showMenu()">CLOSE</button>`;
+    if(page===0)h+=`<button class="btn" id="orientation-replay-button" style="margin-top:1rem" onclick="owRequestOrientationReplay()">REPLAY ORIENTATION ON NEXT NEW RUN</button>`;
+    h+=`<button class="btn" style="margin-top:1rem" onclick="document.getElementById('overlay-bg').style.background='';document.getElementById('overlay').style.right='';hideOverlay();showMenu();owRefreshMenu()">CLOSE</button>`;
     h+=`</div>`;
     showOverlay(h);
   }
@@ -8189,8 +9066,553 @@ async function owWithResolutionLock(action){
     return await action();
   }finally{
     owResolutionLock=false;
+    owAutosaveStablePhase('committed-decision');
   }
 }
+
+// ═══════════════════════════════════════════════════════════════
+// RUN PERSISTENCE AND FIRST-DAY ORIENTATION
+// ═══════════════════════════════════════════════════════════════
+const OW_SAVE_KEY='officewars.save.v1';
+const OW_META_KEY='officewars.meta.v1';
+const OW_SAVE_SCHEMA=1;
+const OW_META_SCHEMA=1;
+const OW_STABLE_CHECKPOINTS=new Set([
+  'floorIntro','morning','clockOut','night','weekend','weekendResult',
+  'weekendCasino','promotion','postTask','workdayPrepared','gameOver'
+]);
+let owCachedActiveSave=null;
+let owLastSaveError='';
+
+function owStorageGet(key){
+  try{return localStorage.getItem(key);}
+  catch(error){owLastSaveError=error.message;return null;}
+}
+function owStorageSet(key,value){
+  try{localStorage.setItem(key,value);return true;}
+  catch(error){owLastSaveError=error.message;return false;}
+}
+function owStorageRemove(key){
+  try{localStorage.removeItem(key);}
+  catch(error){owLastSaveError=error.message;}
+}
+function owSaveReplacer(key,value){
+  if(value instanceof Set)return{__owType:'Set',values:[...value]};
+  if(value instanceof Map)return{__owType:'Map',entries:[...value.entries()]};
+  if(typeof value==='number'&&!Number.isFinite(value)){
+    return{__owType:'Number',value:String(value)};
+  }
+  return value;
+}
+function owSaveReviver(key,value){
+  if(!value||typeof value!=='object'||!value.__owType)return value;
+  if(value.__owType==='Set')return new Set(value.values||[]);
+  if(value.__owType==='Map')return new Map(value.entries||[]);
+  if(value.__owType==='Number'){
+    if(value.value==='Infinity')return Infinity;
+    if(value.value==='-Infinity')return-Infinity;
+    return NaN;
+  }
+  return value;
+}
+function owDefaultMeta(){
+  return{
+    schema:OW_META_SCHEMA,
+    tutorial:{completed:false,nextStep:0,skipped:false,replayRequested:false}
+  };
+}
+function owReadMeta(){
+  const raw=owStorageGet(OW_META_KEY);
+  if(!raw)return owDefaultMeta();
+  try{
+    const meta=JSON.parse(raw);
+    if(!meta||meta.schema!==OW_META_SCHEMA)throw new Error('Unsupported meta schema.');
+    meta.tutorial=Object.assign(owDefaultMeta().tutorial,meta.tutorial||{});
+    return meta;
+  }catch(error){
+    owStorageRemove(OW_META_KEY);
+    return owDefaultMeta();
+  }
+}
+function owWriteMeta(meta){
+  meta.schema=OW_META_SCHEMA;
+  return owStorageSet(OW_META_KEY,JSON.stringify(meta));
+}
+function owRehydrateRunState(run){
+  if(!run||typeof run!=='object')return null;
+  const managerById=new Map(MANAGERS.map(manager=>[manager.id,manager]));
+  const dealById=typeof OW_DEAL_BY_ID!=='undefined'?OW_DEAL_BY_ID:new Map();
+  const seen=new Set();
+  const visit=value=>{
+    if(!value||typeof value!=='object'||seen.has(value))return;
+    seen.add(value);
+    if(value.task&&value.task.id&&TASK_BY_ID.has(value.task.id)){
+      value.task=TASK_BY_ID.get(value.task.id);
+    }
+    if(value.deal&&value.deal.id&&dealById.has(value.deal.id)){
+      value.deal=dealById.get(value.deal.id);
+    }
+    if(Array.isArray(value))value.forEach(visit);
+    else if(value instanceof Set)[...value].forEach(visit);
+    else if(value instanceof Map)[...value.values()].forEach(visit);
+    else Object.values(value).forEach(visit);
+  };
+  visit(run);
+  if(run.manager&&managerById.has(run.manager.id))run.manager=managerById.get(run.manager.id);
+  if(Array.isArray(run.managerOrder)){
+    run.managerOrder=run.managerOrder.map(manager=>
+      manager&&managerById.get(manager.id)||manager
+    );
+  }
+  run.debugSnapshots=[];
+  return run;
+}
+function owValidateSave(envelope){
+  return!!(
+    envelope&&envelope.schema===OW_SAVE_SCHEMA&&
+    OW_STABLE_CHECKPOINTS.has(envelope.checkpoint)&&
+    envelope.run&&typeof envelope.run==='object'&&
+    Number.isInteger(envelope.run.floor)&&envelope.run.floor>=1&&
+    envelope.run.project&&envelope.run.stats
+  );
+}
+function owReadActiveSave(discardInvalid){
+  const raw=owStorageGet(OW_SAVE_KEY);
+  if(!raw){owCachedActiveSave=null;return null;}
+  try{
+    const envelope=JSON.parse(raw,owSaveReviver);
+    if(!owValidateSave(envelope))throw new Error('Incompatible or invalid save.');
+    owCachedActiveSave=envelope;
+    return envelope;
+  }catch(error){
+    owLastSaveError=error.message;
+    owCachedActiveSave=null;
+    if(discardInvalid!==false)owStorageRemove(OW_SAVE_KEY);
+    return null;
+  }
+}
+function owSavePreview(){
+  if(!R)return null;
+  const rank=ranks()[Math.max(0,R.floor-1)];
+  return{
+    floor:R.floor,
+    rank:rank&&rank.rank||'Unknown',
+    day:R.stats&&R.stats.days||0,
+    stress:Math.round((R.stress||0)*10)/10,
+    result:R.gameResult||null
+  };
+}
+function owOverlaySaveState(){
+  const overlay=document.getElementById('overlay');
+  const panel=document.getElementById('overlay-panel');
+  return{
+    active:overlay.classList.contains('active'),
+    html:panel.innerHTML,
+    label:overlay.getAttribute('aria-label')||'OfficeWars decision'
+  };
+}
+function owBuildSaveEnvelope(checkpoint){
+  const run=Object.assign({},R,{debugSnapshots:[]});
+  return{
+    schema:OW_SAVE_SCHEMA,
+    savedAt:new Date().toISOString(),
+    checkpoint,
+    run,
+    rng:RNG.snapshot(),
+    nightState,
+    weekendNext,
+    preferredDayPlaybackRate,
+    casino:{
+      open:casinoOpen,
+      state:Object.assign({},CASINO),
+      poker:typeof PK==='undefined'?null:PK,
+      blackjack:typeof BJ==='undefined'?null:BJ,
+      slotBet:typeof SLOT_BET==='undefined'?50:SLOT_BET,
+      view:typeof owCasinoView==='undefined'?'lobby':owCasinoView,
+      pendingSlot:typeof OW_SLOT_PENDING==='undefined'?null:OW_SLOT_PENDING
+    },
+    sellMode:!!sellMode,
+    ui:owOverlaySaveState(),
+    preview:owSavePreview()
+  };
+}
+function owPersistCheckpoint(checkpoint){
+  if(!R||owHeadlessRunActive||!OW_STABLE_CHECKPOINTS.has(checkpoint))return false;
+  try{
+    const envelope=owBuildSaveEnvelope(checkpoint);
+    const raw=JSON.stringify(envelope,owSaveReplacer);
+    if(!owStorageSet(OW_SAVE_KEY,raw))return false;
+    owCachedActiveSave=envelope;
+    owRefreshMenu();
+    return true;
+  }catch(error){
+    owLastSaveError=error.message;
+    return false;
+  }
+}
+function owCheckpointFromLabel(label){
+  return{
+    'floor-intro':'floorIntro',
+    morning:'morning',
+    'clock-out':'clockOut',
+    night:'night',
+    promotion:'promotion'
+  }[label]||null;
+}
+function owAutosaveFromSnapshot(label){
+  const checkpoint=owCheckpointFromLabel(label);
+  if(checkpoint)owPersistCheckpoint(checkpoint);
+}
+function owAutosaveStablePhase(){
+  if(!R||owChoiceState||owHeadlessRunActive)return false;
+  if(R.phase==='weekend'&&casinoOpen){
+    return owPersistCheckpoint('weekendCasino');
+  }
+  const checkpoint={
+    floorIntro:'floorIntro',
+    morning:'morning',
+    clockOut:'clockOut',
+    night:'night',
+    weekend:'weekend',
+    weekendResult:'weekendResult',
+    promotion:'promotion',
+    gameOver:'gameOver'
+  }[R.phase];
+  return checkpoint?owPersistCheckpoint(checkpoint):false;
+}
+function owUpdateSavedPlaybackPreference(){
+  const save=owReadActiveSave(false);
+  if(!save)return;
+  save.preferredDayPlaybackRate=preferredDayPlaybackRate;
+  save.savedAt=new Date().toISOString();
+  owStorageSet(OW_SAVE_KEY,JSON.stringify(save,owSaveReplacer));
+  owCachedActiveSave=save;
+}
+function owClearActiveSave(){
+  owCachedActiveSave=null;
+  owStorageRemove(OW_SAVE_KEY);
+  owRefreshMenu();
+}
+function owRefreshMenu(){
+  const button=document.getElementById('menu-continue');
+  const detail=document.getElementById('menu-continue-detail');
+  if(!button||!detail)return;
+  const save=owReadActiveSave();
+  button.hidden=!save;
+  if(!save){detail.textContent='';return;}
+  const preview=save.preview||{};
+  detail.textContent=preview.result
+    ?'Run summary ready'
+    :`Floor ${preview.floor||save.run.floor} · Day ${preview.day||0} · ${fmt1(preview.stress||0)}% stress`;
+}
+function owCloseMenuDialog(){
+  const dialog=document.getElementById('menu-dialog');
+  dialog.classList.remove('open');
+  dialog.setAttribute('aria-hidden','true');
+}
+function owOpenMenuDialog(onConfirm){
+  const dialog=document.getElementById('menu-dialog');
+  const confirm=document.getElementById('menu-dialog-confirm');
+  confirm.onclick=onConfirm;
+  dialog.classList.add('open');
+  dialog.setAttribute('aria-hidden','false');
+  requestAnimationFrame(()=>confirm.focus());
+}
+function owRequestNewRun(){
+  if(owReadActiveSave(false)){
+    owOpenMenuDialog(()=>{
+      owCloseMenuDialog();
+      owBeginNewRun();
+    });
+    return;
+  }
+  owBeginNewRun();
+}
+function owResetRuntimePresentation(){
+  dayActive=false;
+  daySkipMode=false;
+  daySkipResolver=null;
+  clearDayTimeouts();
+  stopAmbientLife();
+  activeConvos=0;
+  pendingAmbientConvos=0;
+  busyCast.clear();
+  walkingCast.clear();
+  clearCubicleReservations();
+  casinoOpen=false;
+  if(typeof owCasinoView!=='undefined')owCasinoView='lobby';
+  if(typeof OW_SLOT_PENDING!=='undefined')OW_SLOT_PENDING=null;
+  sellMode=false;
+  pendingMorning=null;
+  owChoiceState=null;
+  owResolutionLock=false;
+  hideGlobalTooltip();
+  closeDayActionLegend();
+  owHideOrientation();
+  hideOverlay();
+  hideOverlayToggle();
+  document.querySelectorAll('.hud-modal.open').forEach(modal=>{
+    modal.classList.remove('open');
+    modal.setAttribute('aria-hidden','true');
+  });
+  document.getElementById('screen-gameover').classList.remove('active');
+  document.getElementById('day-ticker').classList.remove('active');
+  document.body.classList.remove('ow-workday');
+  updateDayPlaybackControls();
+}
+function owBeginNewRun(){
+  owClearActiveSave();
+  owResetRuntimePresentation();
+  R=null;
+  startRun();
+}
+function owReturnToMainMenu(){
+  owClearActiveSave();
+  owResetRuntimePresentation();
+  R=null;
+  document.getElementById('office-scene').classList.remove('active');
+  document.getElementById('side-panel').classList.remove('active');
+  showMenu();
+  owRefreshMenu();
+}
+function owRestoreOverlay(ui){
+  if(!ui||!ui.active)return false;
+  const overlay=document.getElementById('overlay');
+  const panel=document.getElementById('overlay-panel');
+  panel.innerHTML=ui.html||'';
+  panel.style.display='';
+  document.getElementById('overlay-bg').style.display='';
+  overlay.setAttribute('aria-label',ui.label||'OfficeWars decision');
+  overlay.classList.add('active');
+  overlay.setAttribute('aria-hidden','false');
+  return true;
+}
+async function owRestorePreparedWorkday(){
+  hideOverlayToggle();
+  hideOverlay();
+  R.phase='workday';
+  dayActive=true;
+  updateHUD();
+  resetDayPlayback();
+  initDayProgress((R.today.scheduleEntries||[]).map(entry=>entry.kind));
+  await owMaybeShowOrientationForPhase('workday');
+  dayActive=false;
+  updateDayPlaybackControls();
+  showOverlay('<div style="text-align:center;padding:1rem"><h2>FINISHING SAVED WORKDAY</h2><div class="sub">Resolving the locked schedule to Clock Out.</div></div>');
+  await owRunWorkDayHeadless({prepared:true,label:'restored-clock-out'});
+}
+async function owContinueRun(){
+  const save=owReadActiveSave();
+  if(!save){owRefreshMenu();return false;}
+  owCloseMenuDialog();
+  owResetRuntimePresentation();
+  R=owRehydrateRunState(save.run);
+  RNG.restore(save.rng);
+  nightState=save.nightState||null;
+  if(nightState&&nightState.recPicked&&owNightPurchasesBlockLightsOut()){
+    nightState.recPicked=false;
+  }
+  weekendNext=save.weekendNext||'startDay';
+  preferredDayPlaybackRate=DAY_PLAYBACK_SPEEDS.includes(save.preferredDayPlaybackRate)
+    ?save.preferredDayPlaybackRate
+    :1;
+  Object.assign(CASINO,save.casino&&save.casino.state||{chips:0,buyIn:0,pokerHands:0,bjHands:0});
+  if(typeof PK!=='undefined')PK=save.casino&&save.casino.poker||null;
+  if(typeof BJ!=='undefined')BJ=save.casino&&save.casino.blackjack||null;
+  if(typeof SLOT_BET!=='undefined')SLOT_BET=save.casino&&save.casino.slotBet||50;
+  if(typeof owCasinoView!=='undefined')owCasinoView=save.casino&&save.casino.view||'lobby';
+  if(typeof OW_SLOT_PENDING!=='undefined')OW_SLOT_PENDING=save.casino&&save.casino.pendingSlot||null;
+  sellMode=!!save.sellMode;
+  hideMenu();
+  showOffice();
+  renderCast();
+  updateHUD();
+  if(save.checkpoint==='gameOver'){
+    runSummary(R.gameResult);
+    return true;
+  }
+  if(save.checkpoint==='postTask'){
+    R.phase='morningResolution';
+    await runWorkDay();
+    return true;
+  }
+  if(save.checkpoint==='workdayPrepared'){
+    await owRestorePreparedWorkday();
+    return true;
+  }
+  if(save.checkpoint==='weekendCasino'){
+    R.phase='weekend';
+    casinoOpen=true;
+    if(owCasinoView==='blackjack'&&BJ)bjRender('Saved hand restored.');
+    else if(owCasinoView==='slots'){
+      if(OW_SLOT_PENDING)owSettlePendingSlot();
+      else slotsRender(false);
+    }else if(owCasinoView==='poker'&&PK){
+      pokerRender('Saved hand restored.');
+      pokerActions();
+    }else if(owCasinoView==='pokerResolving'&&PK){
+      pokerRender('Finishing the saved action...');
+      setTimeout(pokerAdvance,0);
+    }else openCasino();
+    return true;
+  }
+  if(!owRestoreOverlay(save.ui)){
+    if(R.phase==='morning')renderMorningUI();
+    else if(R.phase==='night')renderNightTabs();
+    else if(R.phase==='gameOver')runSummary(R.gameResult);
+  }
+  await owMaybeShowOrientationForPhase(R.phase);
+  return true;
+}
+
+const OW_ORIENTATION_STEPS=[
+  {
+    id:'race',phase:'floorIntro',target:'#project-hud',title:'THE PROJECT RACE',
+    copy:'Fill the green bar behind your project name before Chad fills his red one. Reaching 100% stress or running out of workdays ends the run.'
+  },
+  {
+    id:'task',phase:'morning',target:'.morning-window',title:'CHOOSE TODAY\'S TASK',
+    copy:'Each morning, compare immediate project progress and stress before choosing. The printed effect tells you what makes that task different.'
+  },
+  {
+    id:'resume',phase:'morning',target:'#side-panel',title:'BUILD YOUR RESUME',
+    copy:'Ordinary tasks earn one XP for their family. Open the Resume to track family progress, trait choices, and active effects.'
+  },
+  {
+    id:'workday',phase:'workday',target:'#day-playback-controls',title:'LET THE OFFICE WORK',
+    copy:'The Workday resolves on its own after your morning decisions. Cycle 1x, 2x, and 4x or Skip; the outcome never changes.'
+  },
+  {
+    id:'clockOut',phase:'clockOut',target:'.clockout-summary',title:'REVIEW CLOCK OUT',
+    copy:'Clock Out groups today\'s progress, stress, cash, and relationship changes. Check the carryover section before going home.'
+  },
+  {
+    id:'night',phase:'night',target:'.night-tabs',title:'PLAN THE NIGHT',
+    copy:'Use Outings, Home, and Deals in any legal order. Finalize Night when you are ready to apply sleep and begin the next day.'
+  }
+];
+let owOrientationResolve=null;
+let owOrientationStepIndex=-1;
+let owOrientationTarget=null;
+let owOrientationRoot=null;
+
+function owOrientationMeta(){
+  return owReadMeta().tutorial;
+}
+function owOrientationIndexForPhase(phase){
+  const meta=owOrientationMeta();
+  const index=Math.max(0,Math.min(OW_ORIENTATION_STEPS.length-1,meta.nextStep||0));
+  return OW_ORIENTATION_STEPS[index]&&OW_ORIENTATION_STEPS[index].phase===phase
+    ?index
+    :-1;
+}
+function owPositionOrientation(){
+  if(!owOrientationTarget)return;
+  const ring=document.getElementById('tutorial-focus-ring');
+  const callout=document.getElementById('tutorial-callout');
+  const rect=owOrientationTarget.getBoundingClientRect();
+  const pad=6;
+  const ringLeft=Math.max(4,rect.left-pad);
+  const ringTop=Math.max(4,rect.top-pad);
+  const ringRight=Math.min(innerWidth-4,rect.right+pad);
+  const ringBottom=Math.min(innerHeight-4,rect.bottom+pad);
+  ring.style.left=ringLeft+'px';
+  ring.style.top=ringTop+'px';
+  ring.style.width=Math.max(1,ringRight-ringLeft)+'px';
+  ring.style.height=Math.max(1,ringBottom-ringTop)+'px';
+  const callRect=callout.getBoundingClientRect();
+  const gap=12;
+  let top=rect.bottom+gap;
+  if(top+callRect.height>innerHeight-8)top=rect.top-callRect.height-gap;
+  top=Math.max(8,Math.min(innerHeight-callRect.height-8,top));
+  const left=Math.max(8,Math.min(innerWidth-callRect.width-8,rect.left+rect.width/2-callRect.width/2));
+  callout.style.left=left+'px';
+  callout.style.top=top+'px';
+}
+function owHideOrientation(){
+  document.getElementById('tutorial-backdrop').classList.remove('active');
+  document.getElementById('tutorial-focus-ring').classList.remove('active');
+  const callout=document.getElementById('tutorial-callout');
+  callout.classList.remove('active');
+  callout.setAttribute('aria-hidden','true');
+  if(owOrientationRoot)owOrientationRoot.classList.remove('tutorial-stack-root');
+  owOrientationTarget=null;
+  owOrientationRoot=null;
+  owOrientationStepIndex=-1;
+}
+function owShowOrientationStep(index){
+  if(owOrientationResolve)return Promise.resolve(false);
+  const step=OW_ORIENTATION_STEPS[index];
+  const target=document.querySelector(step.target);
+  if(!step||!target||!target.getClientRects().length)return Promise.resolve(false);
+  owOrientationStepIndex=index;
+  owOrientationTarget=target;
+  owOrientationRoot=target.closest('#overlay')||target;
+  owOrientationRoot.classList.add('tutorial-stack-root');
+  document.getElementById('tutorial-kicker').textContent=`ORIENTATION · ${index+1}/${OW_ORIENTATION_STEPS.length}`;
+  document.getElementById('tutorial-title').textContent=step.title;
+  document.getElementById('tutorial-copy').textContent=step.copy;
+  document.getElementById('tutorial-next').textContent=index===OW_ORIENTATION_STEPS.length-1?'FINISH':'NEXT';
+  document.getElementById('tutorial-backdrop').classList.add('active');
+  document.getElementById('tutorial-focus-ring').classList.add('active');
+  const callout=document.getElementById('tutorial-callout');
+  callout.classList.add('active');
+  callout.setAttribute('aria-hidden','false');
+  requestAnimationFrame(()=>{
+    owPositionOrientation();
+    document.getElementById('tutorial-next').focus();
+  });
+  return new Promise(resolve=>{owOrientationResolve=resolve;});
+}
+function owFinishOrientationPromise(result){
+  const resolve=owOrientationResolve;
+  owOrientationResolve=null;
+  owHideOrientation();
+  if(resolve)resolve(result);
+}
+function owAdvanceOrientation(){
+  if(owOrientationStepIndex<0)return;
+  const meta=owReadMeta();
+  meta.tutorial.nextStep=owOrientationStepIndex+1;
+  meta.tutorial.skipped=false;
+  meta.tutorial.replayRequested=false;
+  if(meta.tutorial.nextStep>=OW_ORIENTATION_STEPS.length){
+    meta.tutorial.completed=true;
+  }
+  owWriteMeta(meta);
+  const finishedIndex=owOrientationStepIndex;
+  owFinishOrientationPromise(true);
+  const next=OW_ORIENTATION_STEPS[finishedIndex+1];
+  if(next&&R&&next.phase===R.phase){
+    setTimeout(()=>owMaybeShowOrientationForPhase(R.phase),0);
+  }
+}
+function owSkipOrientation(){
+  const meta=owReadMeta();
+  meta.tutorial.completed=true;
+  meta.tutorial.skipped=true;
+  meta.tutorial.replayRequested=false;
+  meta.tutorial.nextStep=OW_ORIENTATION_STEPS.length;
+  owWriteMeta(meta);
+  owFinishOrientationPromise(false);
+}
+function owMaybeShowOrientationForPhase(phase){
+  const meta=owOrientationMeta();
+  if(meta.completed||owHeadlessRunActive)return Promise.resolve(false);
+  const index=owOrientationIndexForPhase(phase);
+  return index<0?Promise.resolve(false):owShowOrientationStep(index);
+}
+function owRequestOrientationReplay(){
+  const meta=owReadMeta();
+  meta.tutorial={completed:false,nextStep:0,skipped:false,replayRequested:true};
+  owWriteMeta(meta);
+  const button=document.getElementById('orientation-replay-button');
+  if(button){
+    button.textContent='ORIENTATION READY FOR NEXT NEW RUN';
+    button.disabled=true;
+  }
+}
+window.addEventListener('resize',owPositionOrientation);
 
 function owOptionCard(option,index,selected){
   const disabled=option.disabled?'opacity:.4;':'';
@@ -9744,54 +11166,192 @@ morningPick=async function(){
   owMarkHotLead();
   renderMorningUI();
 };
+const OW_RARITY_COLORS={
+  common:'#54a8dc',
+  uncommon:'#4fc77a',
+  rare:'#f2b84b',
+  legendary:'#ef625e',
+  special:'#edf3f5',
+  campaign:'#e84393',
+  cycle:'#f1c40f'
+};
+function owTaskTimingLabel(card){
+  const text=String(card.task.effect||'').toLowerCase();
+  if(text.includes('next two workdays')||text.includes('next 2 workdays'))return'NEXT 2 WORKDAYS';
+  if(text.includes('next two days')||text.includes('next 2 days'))return'NEXT 2 DAYS';
+  if(text.includes('tomorrow')||text.includes('next morning'))return'TOMORROW';
+  if(text.includes('tonight')||text.includes('lights out'))return'TONIGHT';
+  if(text.includes('clock out'))return'CLOCK OUT';
+  if(text.includes('next workday'))return'NEXT WORKDAY';
+  if(text.includes('when selected')||text.includes('selecting this'))return'ON SELECTION';
+  return'WHEN PLAYED';
+}
+function owMorningCardNotes(card,source){
+  const notes=[];
+  if(owIsCampaignCard(card)&&card.rarity!=='campaign'){
+    notes.push(`<div class="task-card-note campaign">${esc(owCampaignBonusText(card))}</div>`);
+  }
+  if(card.hotLead){
+    notes.push('<div class="task-card-note hot-lead">HOT LEAD · Starts a Sales Cycle tomorrow.</div>');
+  }
+  if(source==='pin'){
+    const pin=R.pins.find(item=>item.id===card.pinId)||{sources:['Effect']};
+    notes.push(`<div class="task-card-note pin">PINNED · ${esc(pin.sources.join(' + '))}</div>`);
+  }
+  return notes.join('');
+}
+function owStressMetric(preview){
+  if(preview.netStress<0){
+    return{kind:'recovery',label:'RECOVERY',value:`-${fmt1(Math.abs(preview.netStress))}%`};
+  }
+  return{
+    kind:preview.netStress>0?'cost':'recovery',
+    label:preview.netStress>0?'COST':'STRESS',
+    value:`${preview.netStress>0?'+':''}${fmt1(preview.netStress)}%`
+  };
+}
 function owMorningCardMarkup(card,index,source){
-  const fam=FAMILIES[card.task.family]||{icon:'★'};
+  const family=owEffectiveFamily(card);
+  const fam=FAMILIES[family]||{icon:'★'};
   const preview=owCardPreview(card,{primary:true});
+  const stress=owStressMetric(preview);
   const click=`selectMorning(${index},'${source}')`;
   const rarityLabel=card.rarity.toUpperCase()+
     (owIsCampaignCard(card)&&card.rarity!=='campaign'?' + CAMPAIGN':'');
-  const sourceLabel=source==='pin'
-    ?`<div class="cd2" style="color:#3498db">PINNED · ${esc((R.pins.find(pin=>pin.id===card.pinId)||{sources:['Effect']}).sources.join(' + '))}</div>`
-    :''; 
-  const hotLead=card.hotLead
-    ?`<div class="cd2" style="color:#f1c40f;font-weight:bold">HOT LEAD · Selecting this starts a Sales Cycle tomorrow.</div>`
-    :'';
-  return`<button type="button" class="card rarity-${card.rarity}" id="mcard-${source}-${index}" onclick="${click}">
-    <div class="ct">${fam.icon} ${esc(card.task.name)} <span style="font-size:.72rem;opacity:.7">${rarityLabel}</span></div>
-    <div class="cd" style="color:#2ecc71">+${fmt1(preview.progress)} project progress</div>
-    <div class="cd" style="color:${preview.netStress>0?'#e74c3c':'#2ecc71'}">${preview.netStress>0?'+':''}${fmt1(preview.netStress)}% immediate stress</div>
-    <div class="cd2">⚡ ${esc(card.task.effect)}</div>
-    ${owIsCampaignCard(card)&&card.rarity!=='campaign'?`<div class="cd2" style="color:#e84393">${esc(owCampaignBonusText(card))}</div>`:''}
-    ${hotLead}
-    ${sourceLabel}
-    <div class="cd2" style="margin-top:auto;padding-top:6px;color:#f39c12">+${card.rarity==='special'?0:1} ${esc(card.task.family)} XP</div>
+  const familyColor=OW_HUD_FAMILY_COLORS[family]||'#edf3f5';
+  const rarityColor=OW_RARITY_COLORS[card.rarity]||'#9fb0ba';
+  return`<button type="button" class="card task-card rarity-${card.rarity}" id="mcard-${source}-${index}"
+      style="--family-color:${familyColor};--rarity-color:${rarityColor}" onclick="${click}">
+    <span class="task-family-banner"><span>${fam.icon} ${esc(family.toUpperCase())}</span></span>
+    <span class="task-card-body">
+      <span class="task-card-title-row">
+        <span class="task-card-title">${esc(card.task.name)}</span>
+        <span class="task-rarity">${rarityLabel}</span>
+      </span>
+      <span class="task-metrics">
+        <span class="task-metric gain"><span class="task-metric-label">GAIN</span><span class="task-metric-value">+${fmt1(preview.progress)} PP</span></span>
+        <span class="task-metric ${stress.kind}"><span class="task-metric-label">${stress.label}</span><span class="task-metric-value">${stress.value}</span></span>
+      </span>
+      <span class="task-effect-block">
+        <span class="task-timing">${owTaskTimingLabel(card)}</span>
+        <span class="task-effect">${esc(card.task.effect)}</span>
+        ${owMorningCardNotes(card,source)}
+      </span>
+    </span>
   </button>`;
 }
+function owMorningCompactOption(card,index,source){
+  const family=owEffectiveFamily(card);
+  const preview=owCardPreview(card,{primary:true});
+  const familyColor=OW_HUD_FAMILY_COLORS[family]||'#edf3f5';
+  const rarityColor=OW_RARITY_COLORS[card.rarity]||'#9fb0ba';
+  return`<button type="button" class="morning-compact-option${index===0?' active':''}"
+      id="mcompact-${source}-${index}"
+      style="--family-color:${familyColor};--rarity-color:${rarityColor}"
+      onclick="owInspectMorningCard(${index},'${source}')">
+    <span class="morning-compact-family">${esc(family.toUpperCase())} · ${esc(card.rarity.toUpperCase())}</span>
+    <span class="morning-compact-name">${esc(card.task.name)}</span>
+    <span class="morning-compact-values"><span class="gain">+${fmt1(preview.progress)} PP</span><span class="cost">${preview.netStress>0?'+':''}${fmt1(preview.netStress)}% STRESS</span></span>
+  </button>`;
+}
+function owMorningCompactDetail(card,index,source){
+  const family=owEffectiveFamily(card);
+  const familyColor=OW_HUD_FAMILY_COLORS[family]||'#edf3f5';
+  return`<div class="morning-compact-detail" style="--family-color:${familyColor}">
+    <div><div class="morning-compact-family">${esc(family.toUpperCase())} · ${esc(card.rarity.toUpperCase())}</div><div class="morning-compact-detail-title">${esc(card.task.name)}</div></div>
+    <div class="morning-compact-detail-effect"><strong>${owTaskTimingLabel(card)}</strong><br>${esc(card.task.effect)}${owMorningCardNotes(card,source)}</div>
+    <button type="button" class="btn morning-compact-select" onclick="selectMorning(${index},'${source}')">SELECT</button>
+  </div>`;
+}
+function owMorningWindowMarkup(cards,source){
+  if(!cards.length)return'';
+  return`<div class="morning-window" data-morning-source="${source}">
+    <div class="card-row morning-full-cards">${cards.map((card,index)=>owMorningCardMarkup(card,index,source)).join('')}</div>
+    <div class="morning-compact">
+      <div class="morning-compact-options">${cards.map((card,index)=>owMorningCompactOption(card,index,source)).join('')}</div>
+      <div id="mcompact-detail-${source}">${owMorningCompactDetail(cards[0],0,source)}</div>
+    </div>
+  </div>`;
+}
+function owCampaignStatusMarkup(brand,campaign){
+  if(!brand)return'';
+  const completed=Math.max(0,Number(brand.campaignsCompleted)||0);
+  const required=campaign?owCampaignRequiredTask():null;
+  const step=campaign
+    ?Math.max(0,Math.min(campaign.steps.length,Number(brand.step)||0))
+    :0;
+  const family=required&&required.family||'';
+  const familyColor=OW_HUD_FAMILY_COLORS[family]||'#e84393';
+  const campaignName=campaign
+    ?campaign.name
+    :(brand.blocked?'Brand Strategy Paused':'Brand Strategy');
+  const targetName=required
+    ?required.name
+    :(brand.blocked?'No campaign available':'No active step');
+  const progressText=campaign
+    ?`${step} OF ${campaign.steps.length} STEPS`
+    :`${completed} OF ${BRAND_CAMPAIGNS.length} CAMPAIGNS`;
+  const segments=campaign
+    ?campaign.steps.map((unused,index)=>
+      `<span class="campaign-progress-segment${index<step?' filled':''}"></span>`
+    ).join('')
+    :'';
+  return`<section class="campaign-status" aria-label="Brand Strategy campaign status"
+      data-campaign-id="${campaign?esc(campaign.id):''}" data-campaign-step="${step}"
+      style="--campaign-family-color:${familyColor}">
+    <div class="campaign-status-cell">
+      <span class="campaign-status-label">CAMPAIGN</span>
+      <strong class="campaign-status-value">${esc(campaignName)}</strong>
+    </div>
+    <div class="campaign-status-cell campaign-status-target">
+      <span class="campaign-status-label">LOOKING FOR</span>
+      <strong class="campaign-status-value">${esc(targetName)}</strong>
+      ${family?`<span class="campaign-status-family">${esc(family.toUpperCase())}</span>`:''}
+    </div>
+    <div class="campaign-status-cell">
+      <span class="campaign-status-label">PROGRESS</span>
+      <strong class="campaign-status-value">${esc(progressText)}</strong>
+      ${segments?`<span class="campaign-progress-track" style="--campaign-steps:${campaign.steps.length}" aria-hidden="true">${segments}</span>`:''}
+    </div>
+    <div class="campaign-status-cell">
+      <span class="campaign-status-label">CAMPAIGNS COMPLETED</span>
+      <strong class="campaign-status-value">${completed}</strong>
+    </div>
+  </section>`;
+}
+function owMorningCardBySource(index,source){
+  if(source==='pin')return owPinToCard(owActivePins()[index]);
+  if(source==='stored'){
+    const task=R.storedTask&&TASK_BY_ID.get(R.storedTask.taskId);
+    return task?{task,rarity:task.rarity,source:'stored',stored:true,modifiers:Object.assign({},R.storedTask.modifiers||{})}:null;
+  }
+  return R.morningCards[index];
+}
+window.owInspectMorningCard=function(index,source){
+  const card=owMorningCardBySource(index,source);
+  const detail=document.getElementById(`mcompact-detail-${source}`);
+  if(!card||!detail)return;
+  document.querySelectorAll(`[id^="mcompact-${source}-"]`).forEach((button,buttonIndex)=>{
+    button.classList.toggle('active',buttonIndex===index);
+  });
+  detail.innerHTML=owMorningCompactDetail(card,index,source);
+};
 renderMorningUI=function(){
   let h=`<h2>☀ DAY ${R.stats.days} — ${dayName()}</h2>`;
   h+=`<div class="sub">Pick today's task · ${R.daysLeft-1<1?'<span style="color:#e74c3c">LAST DAY before the deadline!</span>':(R.daysLeft-1)+' workdays left after today'}</div>`;
   const brand=owBrandState();
   const campaign=owCurrentCampaign();
-  if(brand){
-    let brandText=`Campaigns completed: ${brand.campaignsCompleted||0}`;
-    if(campaign){
-      const required=owCampaignRequiredTask();
-      brandText+=` · ${campaign.name} ${brand.step+1}/${campaign.steps.length} · Next: ${required.name} (${required.family})`;
-    }else if(brand.blocked){
-      brandText+=' · Market Expansion blocked by the owned capstone';
-    }
-    h+=`<div class="sub" style="color:#e84393">${esc(brandText)}</div>`;
-  }
-  h+=`<div class="card-row">${R.morningCards.map((card,index)=>owMorningCardMarkup(card,index,'offer')).join('')}</div>`;
+  h+=owCampaignStatusMarkup(brand,campaign);
+  h+=owMorningWindowMarkup(R.morningCards,'offer');
   const pins=owActivePins().map(owPinToCard);
   if(pins.length){
-    h+=`<div style="max-width:48rem;margin:12px auto 0;border-top:1px solid #34495e;padding-top:10px"><div class="sub" style="margin-bottom:6px">📌 PINNED TASKS</div><div class="card-row">${pins.map((card,index)=>owMorningCardMarkup(card,index,'pin')).join('')}</div></div>`;
+    h+=`<div style="max-width:48rem;margin:12px auto 0;border-top:1px solid #34495e;padding-top:10px"><div class="sub" style="margin-bottom:6px">📌 PINNED TASKS</div>${owMorningWindowMarkup(pins,'pin')}</div>`;
   }
   if(R.storedTask){
     const task=TASK_BY_ID.get(R.storedTask.taskId);
     if(task){
       const stored={task,rarity:task.rarity,source:'stored',stored:true,modifiers:Object.assign({},R.storedTask.modifiers||{})};
-      h+=`<div style="max-width:48rem;margin:12px auto 0;border-top:1px solid #34495e;padding-top:10px"><div class="sub" style="margin-bottom:6px">STOCKROOM - ${R.storedTask.turnsHeld} Turns Held</div><div class="card-row">${owMorningCardMarkup(stored,0,'stored')}</div></div>`;
+      h+=`<div style="max-width:48rem;margin:12px auto 0;border-top:1px solid #34495e;padding-top:10px"><div class="sub" style="margin-bottom:6px">STOCKROOM - ${R.storedTask.turnsHeld} Turns Held</div>${owMorningWindowMarkup([stored],'stored')}</div>`;
     }
   }
   h+=`<div id="morning-confirm" style="display:none;text-align:center;margin-top:10px">
@@ -9822,14 +11382,18 @@ selectMorning=function(index,source){
     el.style.opacity='.5';
     el.style.pointerEvents='none';
   });
+  document.querySelectorAll('[id^="mcompact-"]').forEach(el=>{
+    if(el.tagName==='BUTTON'){
+      el.disabled=true;
+      el.style.opacity='.5';
+      el.style.pointerEvents='none';
+    }
+  });
   const selected=document.getElementById(`mcard-${pendingMorning.source}-${index}`);
   if(selected){selected.style.opacity='1';selected.style.transform='translateY(-6px)';selected.style.borderColor='#2ecc71';}
-  let card;
-  if(pendingMorning.source==='pin')card=owPinToCard(owActivePins()[index]);
-  else if(pendingMorning.source==='stored'){
-    const task=R.storedTask&&TASK_BY_ID.get(R.storedTask.taskId);
-    card=task?{task,rarity:task.rarity,source:'stored',stored:true,modifiers:Object.assign({},R.storedTask.modifiers||{})}:null;
-  }else card=R.morningCards[index];
+  const compact=document.getElementById(`mcompact-${pendingMorning.source}-${index}`);
+  if(compact){compact.style.opacity='1';compact.style.borderColor='#2ecc71';}
+  let card=owMorningCardBySource(index,pendingMorning.source);
   if(!card)return;
   document.getElementById('mc-name').textContent=card.task.name;
   document.getElementById('morning-confirm').style.display='block';
@@ -9862,6 +11426,7 @@ rerollMorning=async function(kind){
   R.morningCards=genMorningCards({paid});
   owMarkHotLead();
   renderMorningUI();
+  owPersistCheckpoint('morning');
 };
 function owPendingCard(){
   if(!pendingMorning)return null;
@@ -10694,6 +12259,7 @@ async function owDeliverStored(existingContext){
   return owResolveStoredExtras(card,context,turnsHeld);
 }
 function owResolveSelectedWorkday(options){
+  owPersistCheckpoint('postTask');
   return options&&options.headless
     ?owRunWorkDayHeadless(options)
     :runWorkDay();
@@ -11641,16 +13207,20 @@ runWorkDay=async function(){
   R.today.scheduleEntries=entries;
   R.todaySlots=entries.map(entry=>entry.kind);
   await owFinishScheduleDesk(entries);
+  R.phase='workdayPrepared';
+  owPersistCheckpoint('workdayPrepared');
   hideOverlay();hideOverlayToggle();
   R.phase='workday';
   dayActive=true;
   updateHUD();
   resetDayPlayback();
   initDayProgress(entries.map(entry=>entry.kind));
+  await owMaybeShowOrientationForPhase('workday');
   simulateRivalDay();
   const ticker=document.getElementById('day-ticker');
   document.getElementById('dt-title').textContent=`DAY ${R.stats.days} — ${dayName()}`;
   document.getElementById('dt-action').textContent='☕ Clocking in...';
+  owUpdateTickerResult(null);
   ticker.classList.add('active');
   renderDayActionLegend();
   if(R.outingChadBadRel){
@@ -11754,6 +13324,7 @@ runWorkDay=async function(){
     resolution++;
     if(!owSettleAccumulatorDelta(state.packageStart,progressActionName(state.resolvedKind)))return false;
     if(!owResolveTriggeredWorks())return false;
+    owUpdateTickerResult(line);
     updateOverheadBars();updateHUD();
     return true;
   }
@@ -11818,6 +13389,7 @@ runWorkDay=async function(){
     };
     currentResolution=state;
     document.getElementById('dt-action').textContent=definition.label+(entry.repeats?' ('+(resolution+1)+'/'+(entry.repeats+1)+')':'');
+    owUpdateTickerResult(null,true);
     animateRivalDay(Math.min(trackerIndex,(R.rival.today&&R.rival.today.workSlots)||trackerIndex));
     walkTo('you',WAYPOINTS[definition.wp],()=>{
       if(!dayActive||fastForwarding||currentResolution!==state)return;
@@ -11950,13 +13522,19 @@ function owRunHeadlessDeskVisit(selectedPid,trackerIndex){
 }
 async function owRunWorkDayHeadless(options){
   const opts=options||{};
-  R.phase='scheduleDesk';
-  const entries=owPrepareSchedule(R.today.naturalSlots);
-  await owApplyLeadership(entries);
-  owApplyCapacityPlanning(entries);
-  R.today.scheduleEntries=entries;
-  R.todaySlots=entries.map(entry=>entry.kind);
-  await owFinishScheduleDesk(entries);
+  let entries;
+  if(opts.prepared){
+    entries=R.today.scheduleEntries||[];
+    R.todaySlots=entries.map(entry=>entry.kind);
+  }else{
+    R.phase='scheduleDesk';
+    entries=owPrepareSchedule(R.today.naturalSlots);
+    await owApplyLeadership(entries);
+    owApplyCapacityPlanning(entries);
+    R.today.scheduleEntries=entries;
+    R.todaySlots=entries.map(entry=>entry.kind);
+    await owFinishScheduleDesk(entries);
+  }
   R.phase='workday';
   R.today.dayProgress=[];
   R.today.activeProgressIndex=-1;
@@ -12210,34 +13788,65 @@ dayResults=function(){
   owExpireWorkdayEffects();
   updateHUD();updateOverheadBars();
 
-  const totalPts=R.project.progress-progFrom;
-  const pctFrom=Math.min(100,progFrom/R.project.size*100);
+  const startProgress=R.today.startProjectProgress||0;
+  const startStress=R.today.startStress||0;
+  const startCash=R.today.startCash||0;
+  const workdayProgress=progFrom-startProgress;
+  const clockOutProgressGain=R.project.progress-progFrom;
+  const totalPts=R.project.progress-startProgress;
+  const dayStress=stressFrom-startStress;
+  const clockOutStress=R.stress-stressFrom;
+  const netCash=R.cash-startCash;
+  const cashAdjustments=R.cash-cashFrom-pay-interest-returnedCapital;
+  const relationshipRows=Object.keys(R.rel||{}).map(pid=>{
+    const before=(R.today.startRelationships&&R.today.startRelationships[pid])||0;
+    const delta=(R.rel[pid]||0)-before;
+    return{pid,delta};
+  }).filter(item=>item.delta!==0);
+  const carryover=owActiveEffectEntries();
+  const pctFrom=Math.min(100,startProgress/R.project.size*100);
   const pctTo=Math.min(100,R.project.progress/R.project.size*100);
   const rvFrom=Math.min(100,rivalFrom/R.project.size*100);
   const rvTo=Math.min(100,R.rival.progress/R.project.size*100);
   let h=`<h2>🕐 DAY ${R.stats.days} — ${dayName()} — CLOCKING OUT</h2>`;
   h+=`<div class="sub">${card?esc(card.task.name)+' · '+card.rarity.toUpperCase():'No primary task'}</div>`;
-  h+=`<div style="max-width:38rem;margin:0 auto;width:100%">`;
-  h+=`<div class="abar-label">PROJECT — ${totalPts>=0?'+':''}${fmt1(totalPts)} progress</div>`;
-  h+=`<div class="abar"><div class="abar-fill" id="dr-prog" style="width:${pctFrom}%;background:#2ecc71"></div><div class="abar-num" id="dr-prog-num">${fmt1(progFrom)}/${R.project.size}</div></div>`;
-  h+=`<div class="abar-label" style="color:#e74c3c">${esc(RIVAL.name)}'S PROJECT — +${fmt1(rivalGain)}</div>`;
-  h+=`<div class="abar" style="height:12px"><div class="abar-fill" id="dr-rival" style="width:${rvFrom}%;background:#e74c3c"></div></div>`;
-  h+=`<div class="abar-label">STRESS — ${actionStress.net>=0?'+':''}${fmt1(actionStress.net)} action net${clockOutRecovery?' · -'+fmt1(clockOutRecovery)+' Clock Out recovery':''}${mandatoryStress?' · +'+fmt1(mandatoryStress)+' flat debt stress':''}</div>`;
-  h+=`<div class="abar"><div class="abar-fill" id="dr-str" style="width:${stressFrom}%;background:#e74c3c"></div><div class="abar-num" id="dr-str-num">${fmt1(stressFrom)}%</div></div>`;
-  h+=`<div style="text-align:center;margin:10px 0;font-size:.95rem">💰 Pay & rewards: <span style="color:#f39c12">+$${pay}</span> · Interest: <span style="color:#f39c12">+$${interest}</span>${returnedCapital?' · Capital returned: <span style="color:#f39c12">+$'+returnedCapital+'</span>':''} · Spendable: <span style="color:#f39c12;font-weight:bold" id="dr-cash">$${cashFrom}</span></div>`;
-  h+=`<div style="text-align:center;color:#f39c12;font-size:.83rem">📜 ${card&&card.rarity!=='special'?esc(owEffectiveFamily(card))+' XP: '+R.familyXP[owEffectiveFamily(card)]:'No ordinary family XP'}</div>`;
-  h+=`<div style="border-top:1px solid #2c3e50;margin:8px 0"></div>`;
-  h+=`<div style="font-size:.83rem;color:#bdc3c7;line-height:1.7;max-height:12rem;overflow-y:auto;padding-right:4px">${R.today.log.map(renderLogLine).join('<br>')}</div>`;
+  h+=`<div class="clockout-summary">`;
+  h+=`<div class="abar-label">PROJECT · ${totalPts>=0?'+':''}${fmt1(totalPts)} TODAY</div>`;
+  h+=`<div class="abar"><div class="abar-fill" id="dr-prog" style="width:${pctFrom}%;background:#2ecc71"></div><div class="abar-num" id="dr-prog-num">${fmt1(startProgress)}/${R.project.size}</div></div>`;
+  h+=`<div class="clockout-grid">`;
+  h+=`<section class="clockout-group" style="--group-color:#59d98b"><h3><span>PROGRESS</span><span>${totalPts>=0?'+':''}${fmt1(totalPts)}</span></h3>`;
+  h+=`<div class="clockout-row"><span>Morning + Workday</span><strong>${workdayProgress>=0?'+':''}${fmt1(workdayProgress)}</strong></div>`;
+  h+=`<div class="clockout-row"><span>Clock Out effects</span><strong>${clockOutProgressGain>=0?'+':''}${fmt1(clockOutProgressGain)}</strong></div>`;
+  h+=`<div class="clockout-row"><span>${esc(RIVAL.name)}</span><strong>+${fmt1(rivalGain)}</strong></div></section>`;
+  h+=`<section class="clockout-group" style="--group-color:#ff7772"><h3><span>STRESS</span><span>${R.stress-startStress>=0?'+':''}${fmt1(R.stress-startStress)}%</span></h3>`;
+  h+=`<div class="clockout-row"><span>Morning + Workday</span><strong>${dayStress>=0?'+':''}${fmt1(dayStress)}%</strong></div>`;
+  h+=`<div class="clockout-row"><span>Clock Out</span><strong>${clockOutStress>=0?'+':''}${fmt1(clockOutStress)}%</strong></div>`;
+  if(clockOutRecovery)h+=`<div class="clockout-row"><span>Recovery included</span><strong>-${fmt1(clockOutRecovery)}%</strong></div>`;
+  if(mandatoryStress)h+=`<div class="clockout-row"><span>Flat obligations</span><strong>+${fmt1(mandatoryStress)}%</strong></div>`;
+  h+=`</section>`;
+  h+=`<section class="clockout-group" style="--group-color:#f2b84b"><h3><span>CASH</span><span id="dr-cash">${netCash>=0?'+':''}$${fmt1(netCash)}</span></h3>`;
+  h+=`<div class="clockout-row"><span>Pay + rewards</span><strong>+$${fmt1(pay)}</strong></div>`;
+  h+=`<div class="clockout-row"><span>Interest</span><strong>+$${fmt1(interest)}</strong></div>`;
+  if(returnedCapital)h+=`<div class="clockout-row"><span>Capital returned</span><strong>+$${fmt1(returnedCapital)}</strong></div>`;
+  if(cashAdjustments)h+=`<div class="clockout-row"><span>Debts + reserves</span><strong>${cashAdjustments>=0?'+':''}$${fmt1(cashAdjustments)}</strong></div>`;
+  h+=`<div class="clockout-row"><span>Spendable</span><strong>$${fmt1(R.cash)}</strong></div></section>`;
+  h+=`<section class="clockout-group" style="--group-color:#d68ebd"><h3><span>RELATIONSHIPS</span><span>${relationshipRows.length?relationshipRows.length+' CHANGED':'STEADY'}</span></h3>`;
+  h+=relationshipRows.length?relationshipRows.map(item=>`<div class="clockout-row"><span>${esc(castByPid(item.pid).name)}</span><strong>${item.delta>=0?'+':''}${fmt1(item.delta)}</strong></div>`).join(''):'<div class="clockout-row"><span>No relationship changes</span><strong>—</strong></div>';
+  h+=`</section></div>`;
+  h+=`<section class="clockout-group" style="--group-color:#58c5c7;margin-top:.65rem"><h3><span>CARRYOVER</span><span>${carryover.length} ACTIVE</span></h3>`;
+  h+=carryover.length?carryover.slice(0,4).map(item=>`<div class="clockout-row"><span>${esc(item.label)}</span><strong>${esc(item.detail)}</strong></div>`).join(''):'<div class="clockout-row"><span>No delayed effects</span><strong>Clear</strong></div>';
+  if(carryover.length>4)h+=`<div class="clockout-row"><span>Additional effects</span><strong>+${carryover.length-4} in Resume</strong></div>`;
+  h+=`</section>`;
+  h+=`<details class="clockout-log"><summary>FULL SOURCE LOG · ${R.today.log.length} ENTRIES</summary><div class="clockout-log-body">${R.today.log.map(renderLogLine).join('<br>')}</div></details>`;
   h+=`</div><div style="text-align:center;margin-top:12px"><button class="btn" style="font-size:1.05rem;padding:.6rem 1.6rem" onclick="afterDayResults()">GO HOME</button></div>`;
   showOverlay(h);
   capturePhaseSnapshot('clock-out');
+  void owMaybeShowOrientationForPhase('clockOut');
   setTimeout(()=>{
     const pr=document.getElementById('dr-prog');if(pr)pr.style.width=pctTo+'%';
     const rv=document.getElementById('dr-rival');if(rv)rv.style.width=rvTo+'%';
     const st=document.getElementById('dr-str');if(st)st.style.width=R.stress+'%';
-    const pn=document.getElementById('dr-prog-num');if(pn)animateNum({set textContent(v){pn.textContent=v+'/'+R.project.size;}},progFrom,R.project.progress);
-    const sn=document.getElementById('dr-str-num');if(sn)animateNum(sn,stressFrom,R.stress,'%');
-    const cn=document.getElementById('dr-cash');if(cn)animateNum({set textContent(v){cn.textContent='$'+Math.round(parseFloat(v));}},cashFrom,R.cash);
+    const pn=document.getElementById('dr-prog-num');if(pn)animateNum({set textContent(v){pn.textContent=v+'/'+R.project.size;}},startProgress,R.project.progress);
   },100);
 };
 
@@ -12296,12 +13905,81 @@ function owNightTabBar(){
   h+=`</div>`;
   return h;
 }
+function owNightPurchaseUsed(){
+  return!!(nightState&&(
+    (nightState.homeUsed||0)>0||
+    (nightState.dealUsed||0)>0
+  ));
+}
+function owNightLightsOutPurchaseException(){
+  return owHasCapstone('moodboard')||
+    !!(nightState&&nightState.allowLightsOutPurchases);
+}
+function owLightsOutBlocksNightPurchases(){
+  return!!(nightState&&nightState.recPicked&&!owNightLightsOutPurchaseException());
+}
+function owNightPurchasesBlockLightsOut(){
+  return owNightPurchaseUsed()&&!owNightLightsOutPurchaseException();
+}
+function owNightFooter(){
+  const forcedLightsOut=owHasCapstone('moodboard');
+  const lightsOut=forcedLightsOut||nightState.recPicked;
+  const purchaseLocked=owLightsOutBlocksNightPurchases();
+  const lightsOutUnavailable=owNightPurchasesBlockLightsOut();
+  const recoveryCapacity=autoSleepAmt()+(lightsOut?recSleepAmt():0);
+  const actualRecovery=Math.min(R.stress,recoveryCapacity);
+  const finalStress=Math.max(0,R.stress-recoveryCapacity);
+  const remaining=[];
+  if(!nightState.outingUsed)remaining.push('Outing available');
+  if(purchaseLocked){
+    remaining.push('Home and Deal purchases unavailable');
+  }else{
+    const homeRemaining=Math.max(0,(nightState.homeLimit||0)-(nightState.homeUsed||0));
+    const dealRemaining=Math.max(0,(nightState.dealLimit||0)-(nightState.dealUsed||0));
+    if(homeRemaining)remaining.push(`${homeRemaining} Home purchase`);
+    if(dealRemaining)remaining.push(`${dealRemaining} Deal purchase`);
+    if(nightState.extraPurchaseCredits)remaining.push(`${nightState.extraPurchaseCredits} flexible purchase`);
+  }
+  if(R.expenseCredit)remaining.push(`$${fmt1(R.expenseCredit)} credit`);
+  const remainingText=remaining.length?remaining.join(' · '):'All available actions used';
+  return`<footer class="night-footer" aria-label="Night summary and finalization">
+    <div class="night-footer-summary">
+      <strong>TONIGHT · ${fmt1(R.stress)}% → ${fmt1(finalStress)}% STRESS</strong><br>
+      Recover ${fmt1(actualRecovery)}% of ${fmt1(recoveryCapacity)}% available · ${esc(remainingText)}
+    </div>
+    <div class="night-footer-actions">
+      <label class="night-lights-toggle${lightsOutUnavailable?' unavailable':''}">
+        <input type="checkbox" ${lightsOut?'checked':''} ${forcedLightsOut||lightsOutUnavailable?'disabled':''}
+          onchange="owToggleLightsOut(this.checked)">
+        <span><strong>LIGHTS OUT</strong><br>+${fmt1(recSleepAmt())}% recovery${forcedLightsOut?' · automatic':(lightsOutUnavailable?' · unavailable after purchase':'')}</span>
+      </label>
+      <button class="btn night-finalize" type="button" onclick="owFinalizeNight()">FINALIZE NIGHT</button>
+    </div>
+  </footer>`;
+}
+function owShowNightOverlay(html){
+  showOverlay(html+owNightFooter());
+}
+window.owToggleLightsOut=function(value){
+  if(owHasCapstone('moodboard'))return;
+  if(value&&owNightPurchasesBlockLightsOut()){
+    nightState.recPicked=false;
+    renderNightTabs();
+    owPersistCheckpoint('night');
+    return;
+  }
+  nightState.recPicked=!!value;
+  if(nightState.recPicked)nightState.financeMode=false;
+  renderNightTabs();
+  owPersistCheckpoint('night');
+};
 nightTabBar=owNightTabBar;
 nightSwitchTab=function(id){
   nightState.tab=id;
   nightState.outingPid=null;
   nightState.relPid=null;
   renderNightTabs();
+  owPersistCheckpoint('night');
 };
 renderNightTabs=function(){
   if(nightState.tab==='outings')renderOutingsUI();
@@ -12332,6 +14010,7 @@ nightPhase=function(){
   R.dealCards=owWeightedDeals(3);
   renderNightTabs();
   capturePhaseSnapshot('night');
+  void owMaybeShowOrientationForPhase('night');
 };
 function owNightSpendAvailable(){
   return R.cash+(R.expenseCredit||0);
@@ -12369,6 +14048,7 @@ function owConsumePurchaseSlot(category){
   return false;
 }
 function owCanPurchaseCategory(category){
+  if(owLightsOutBlocksNightPurchases())return false;
   const used=category==='home'?nightState.homeUsed:nightState.dealUsed;
   const limit=category==='home'?nightState.homeLimit:nightState.dealLimit;
   return used<limit||nightState.extraPurchaseCredits>0;
@@ -12485,14 +14165,17 @@ window.owBuyDeal=async function(dealId){
 };
 window.owToggleFinance=function(){
   if(!effectsOf('net30Contract').some(effect=>effect.tonight))return;
+  if(owLightsOutBlocksNightPurchases())return;
   nightState.financeMode=!nightState.financeMode;
   renderNightTabs();
+  owPersistCheckpoint('night');
 };
 window.owRerollDeals=function(){
   if(!nightState.dealRerollAvailable)return;
   nightState.dealRerollAvailable=false;
   R.dealCards=owWeightedDeals(3,[...nightState.purchasedDealIds]);
   owRenderDeals();
+  owPersistCheckpoint('night');
 };
 async function owBuyScopeUnlocked(){
   if(R.phase!=='night'||!owHasCapstone('negotiation')||R.floorCompleted||
@@ -12509,8 +14192,9 @@ window.owBuyScope=function(){
   return owWithResolutionLock(owBuyScopeUnlocked);
 };
 function owRenderDeals(){
+  const purchaseLocked=owLightsOutBlocksNightPurchases();
   let h=nightTabBar();
-  h+=`<div class="sub">Deal purchases ${(nightState.dealUsed||0)}/${nightState.dealLimit} - Expense Credit $${fmt1(R.expenseCredit||0)}</div>`;
+  h+=`<div class="sub">Deal purchases ${(nightState.dealUsed||0)}/${nightState.dealLimit} - Expense Credit $${fmt1(R.expenseCredit||0)}${purchaseLocked?' - Lights Out selected':''}</div>`;
   h+=`<div class="card-row">`;
   (R.dealCards||[]).forEach(deal=>{
     const bought=nightState.purchasedDealIds.has(deal.id);
@@ -12524,19 +14208,20 @@ function owRenderDeals(){
   h+=`</div><div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:10px">`;
   if(nightState.dealRerollAvailable)h+=`<button class="btn" onclick="owRerollDeals()">FREE DEAL REROLL</button>`;
   if(effectsOf('net30Contract').some(effect=>effect.tonight)){
-    h+=`<button class="btn" style="${nightState.financeMode?'border-color:#2ecc71;color:#2ecc71':''}" onclick="owToggleFinance()">${nightState.financeMode?'NET 30 ACTIVE':'USE NET 30'}</button>`;
+    h+=`<button class="btn" ${purchaseLocked?'disabled':''} style="${nightState.financeMode?'border-color:#2ecc71;color:#2ecc71;':''}${purchaseLocked?'opacity:.45;':''}" onclick="owToggleFinance()">${nightState.financeMode?'NET 30 ACTIVE':'USE NET 30'}</button>`;
   }
   if(owHasCapstone('negotiation')&&!R.floorCompleted&&!R.scopeRenegotiatedFloors.includes(R.floor)){
-    h+=`<button class="btn" onclick="owBuyScope()">SCOPE RENEGOTIATION - $1,500</button>`;
+    h+=`<button class="btn" ${purchaseLocked?'disabled style="opacity:.45"':''} onclick="owBuyScope()">SCOPE RENEGOTIATION - $1,500</button>`;
   }
   if(effectsOf('comparisonShopping').some(effect=>effect.tonight)){
-    h+=`<button class="btn" onclick="owUseComparison()">COMPARISON SHOPPING</button>`;
+    h+=`<button class="btn" ${purchaseLocked?'disabled style="opacity:.45"':''} onclick="owUseComparison()">COMPARISON SHOPPING</button>`;
   }
-  h+=`<button class="btn" onclick="owFinalizeNight()">FINALIZE NIGHT</button></div>`;
-  showOverlay(h);
+  h+=`</div>`;
+  owShowNightOverlay(h);
 }
 async function owUseComparisonUnlocked(){
   if(R.phase!=='night')return;
+  if(owLightsOutBlocksNightPurchases())return;
   const effect=effectsOf('comparisonShopping').find(item=>item.tonight);
   if(!effect)return;
   const visibleHome=R.nightCards.map((card,index)=>({type:'home',card,index}));
@@ -12602,8 +14287,9 @@ window.owUseComparison=function(){
 };
 renderNightUI=function(){
   const home=curHome();
+  const purchaseLocked=owLightsOutBlocksNightPurchases();
   let h=nightTabBar();
-  h+=`<div class="sub">${home.name} - Slots ${R.house.length}/${home.slots} - Home purchase ${nightState.homeUsed}/${nightState.homeLimit} - Cash $${fmt1(R.cash)} - Credit $${fmt1(R.expenseCredit||0)}</div>`;
+  h+=`<div class="sub">${home.name} - Slots ${R.house.length}/${home.slots} - Home purchase ${nightState.homeUsed}/${nightState.homeLimit} - Cash $${fmt1(R.cash)} - Credit $${fmt1(R.expenseCredit||0)}${purchaseLocked?' - Lights Out selected':''}</div>`;
   h+=`<div class="card-row">`;
   R.nightCards.forEach((card,index)=>{
     const bought=nightState.bought.has(index);
@@ -12614,21 +14300,19 @@ renderNightUI=function(){
     h+=`<button type="button" class="card" ${eligible?'':'disabled'} style="${eligible?'':'opacity:.45;'}" onclick="${eligible?`owBuyHome(${index})`:''}">`;
     h+=`<div class="ct">${esc(name)}</div><div class="cd">${esc(detail)}</div><div class="cd2" style="margin-top:auto;color:#f39c12">$${price}${nightState.financeMode?' - NET 30':''}</div></button>`;
   });
-  h+=`<button type="button" class="card" aria-pressed="${nightState.recPicked?'true':'false'}" style="${nightState.recPicked?'border-color:#2ecc71;':''}" onclick="nightState.recPicked=!nightState.recPicked;renderNightUI()">`;
-  h+=`<div class="ct">Lights Out</div><div class="cd">Recover ${fmt1(recSleepAmt())}% more stress tonight.</div><div class="cd2" style="margin-top:auto">${nightState.recPicked?'SELECTED':'OPTIONAL'}</div></button>`;
   h+=`</div><div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:10px">`;
   if(R.rerollsNight>0)h+=`<button class="btn" onclick="rerollNight()">HOME REROLL (${R.rerollsNight})</button>`;
   if(R.house.length)h+=`<button class="btn" onclick="toggleSellMode()">SELL</button>`;
   if(effectsOf('net30Contract').some(effect=>effect.tonight)){
-    h+=`<button class="btn" style="${nightState.financeMode?'border-color:#2ecc71;color:#2ecc71':''}" onclick="owToggleFinance()">${nightState.financeMode?'NET 30 ACTIVE':'USE NET 30'}</button>`;
+    h+=`<button class="btn" ${purchaseLocked?'disabled':''} style="${nightState.financeMode?'border-color:#2ecc71;color:#2ecc71;':''}${purchaseLocked?'opacity:.45;':''}" onclick="owToggleFinance()">${nightState.financeMode?'NET 30 ACTIVE':'USE NET 30'}</button>`;
   }
-  if(effectsOf('comparisonShopping').some(effect=>effect.tonight))h+=`<button class="btn" onclick="owUseComparison()">COMPARISON SHOPPING</button>`;
-  h+=`<button class="btn" onclick="owFinalizeNight()">FINALIZE NIGHT</button></div>`;
-  showOverlay(h);
+  if(effectsOf('comparisonShopping').some(effect=>effect.tonight))h+=`<button class="btn" ${purchaseLocked?'disabled style="opacity:.45"':''} onclick="owUseComparison()">COMPARISON SHOPPING</button>`;
+  h+=`</div>`;
+  owShowNightOverlay(h);
 };
 buyUpgrade=function(index){owBuyHome(index);};
 buyMoveOut=function(index){owBuyHome(index);};
-pickRecSleep=function(){nightState.recPicked=!nightState.recPicked;renderNightUI();};
+pickRecSleep=function(){owToggleLightsOut(!nightState.recPicked);};
 afterPick=function(){renderNightUI();};
 window.confirmOuting=function(){
   if(R.phase!=='night'||nightState.outingUsed)return;
@@ -12646,13 +14330,16 @@ window.confirmOuting=function(){
   nightState.outingUsed=true;
   updateHUD();
   showOutingStory(pid,index,actualGain);
+  owPersistCheckpoint('night');
 };
 async function owFinalizeNightUnlocked(){
   if(R.phase!=='night')return;
   const warnings=[];
   if(!nightState.outingUsed)warnings.push('unused Outing');
-  if(nightState.homeUsed<nightState.homeLimit)warnings.push('unused Home purchase');
-  if(nightState.dealUsed<nightState.dealLimit)warnings.push('unused Deal purchase');
+  if(!owLightsOutBlocksNightPurchases()){
+    if(nightState.homeUsed<nightState.homeLimit)warnings.push('unused Home purchase');
+    if(nightState.dealUsed<nightState.dealLimit)warnings.push('unused Deal purchase');
+  }
   if((R.expenseCredit||0)>0)warnings.push('$'+fmt1(R.expenseCredit)+' unspent Expense Credit');
   if(warnings.length){
     const answer=await owChooseOne(
@@ -13134,9 +14821,24 @@ Object.assign(window.OfficeWarsTest,{
   },
   timingScale(){return dayTimingScale;},
   resolveWorkdayHeadless(options){return owRunWorkDayHeadless(options);},
-  simulateRun(options){return owSimulateRun(options);}
+  simulateRun(options){return owSimulateRun(options);},
+  saveNow(checkpoint){return owPersistCheckpoint(checkpoint||owCheckpointFromLabel(R&&R.phase));},
+  readSave(){return cloneForTest(owReadActiveSave(false));},
+  clearSave(){owClearActiveSave();},
+  continueRun(){return owContinueRun();},
+  saveRoundTrip(value){
+    return JSON.parse(JSON.stringify(value,owSaveReplacer),owSaveReviver);
+  },
+  meta(){return cloneForTest(owReadMeta());},
+  resetOrientation(){owRequestOrientationReplay();return cloneForTest(owReadMeta());},
+  orientationSteps(){return cloneForTest(OW_ORIENTATION_STEPS);}
 });
 
+document.addEventListener('visibilitychange',()=>{
+  if(document.visibilityState==='hidden')owAutosaveStablePhase('visibilitychange');
+});
+window.addEventListener('beforeunload',()=>owAutosaveStablePhase('beforeunload'));
+owRefreshMenu();
 document.documentElement.dataset.officewarsReady='true';
 </script>
 </body>

@@ -2,14 +2,15 @@
 
 ## Current Status
 
-The Phase 0-6 implementation candidate exists. The first `full verification`
-ran on 2026-08-06; its item-level Pass, Fail, Not Run, and Blocked evidence is
-in `verification/FULL_VERIFICATION_2026-08-06.md`. It failed ship signoff.
-Findings F1-F4 are resolved and passed the focused retest in
-`verification/BLOCKERS_1_4_RETEST_2026-08-06.md`. All eight targeted high-risk
-groups passed
-`verification/ADVANCED_INTERACTION_VERIFICATION_2026-08-06.md`; F5 and rows
-outside that suite's scope remain open.
+The rollout and readability candidate exists. The current `full verification`
+ran on 2026-08-07; its Pass, Fail, Not Run, and Blocked evidence is in
+`verification/FULL_VERIFICATION_2026-08-07_30214B7F.md`. Player-facing
+implementation, readability, deterministic playback, persistence, and
+distribution pass. The headless Night policy fails the same purchase-versus-
+Lights-Out rule that the player UI enforces, so current balance simulation is
+Blocked. The current focused persistence and orientation suite is recorded in
+`verification/PERSISTENCE_TUTORIAL_2026-08-07.md`. The broad report still names
+every group that remains unverified.
 
 The boxes below remain a reusable requirement inventory rather than a claim of
 completion. An unchecked box does not mean the feature is absent, and a result
@@ -77,6 +78,32 @@ during a verification-only request unless the user separately asks for fixes.
 - [ ] 1x, 2x, 4x, and Skip produce identical final state.
 - [ ] Animation timing never changes random calls or outcomes.
 - [ ] Saving and restoring at phase boundaries preserves the next result.
+
+## Persistence And Orientation
+
+- [ ] Continue Run appears only for a valid compatible active save.
+- [ ] Corrupt and incompatible saves are discarded without blocking New Run.
+- [ ] New Run requires confirmation before replacing an active save.
+- [ ] Stable phases and committed irreversible decisions autosave.
+- [ ] Refreshing Morning preserves the exact offer and random state.
+- [ ] A prepared Workday restores its deterministic checkpoint, resolves
+  headlessly to Clock Out, and never duplicates task rewards.
+- [ ] Night restores its active tab, Lights Out choice, catalogs, limits, and
+  committed purchases without refunding or rerolling them.
+- [ ] Restoring an older Night state that contains both a committed Home or
+  Deal purchase and manual Lights Out preserves the purchase and clears manual
+  Lights Out; automatic Moodboard Lights Out remains exempt.
+- [ ] Active casino chips, game state, and hand limits restore. Pending Slots
+  settle exactly once; Blackjack and Poker return to a legal continuation.
+- [ ] Victory and defeat summaries survive refresh and Return to Main Menu
+  clears only the active run.
+- [ ] Tutorial completion is stored separately from the run save.
+- [ ] The six orientation steps spotlight the correct existing UI at Floor
+  Intro, Morning, pre-Workday, Clock Out, and Night.
+- [ ] Skip Orientation persists, and How to Play can schedule a replay for the
+  next New Run.
+- [ ] The orientation never rigs offers or outcomes and never interrupts
+  Workday playback after it starts.
 
 ## Core Balance
 
@@ -172,7 +199,11 @@ during a verification-only request unless the user separately asks for fixes.
 - [ ] Ordinary days, non-final project completions, and final victory use their
   distinct documented Night, Weekend, promotion, and next-floor routes.
 - [ ] Night purchases remain available in any legal order until explicit
-  finalization; automatic sleep and Lights Out resolve only then.
+  finalization. Manual Lights Out and Home or Deal purchases lock each other
+  out in both directions unless an explicit exception applies; Outings remain
+  independent. Automatic sleep and Lights Out resolve only at finalization.
+- [ ] Every headless simulation policy obeys the same Night purchase,
+  Lights Out, exception, recovery, and finalization rules as a player.
 
 ## Coworker Activations
 
@@ -328,15 +359,15 @@ its details, or the appropriate phase summary.
 | Agile | Resume and workday show uncapped Velocity, exact favorable chance, current meeting and Work progress, Daily Stand-Up, and Continuous Delivery child actions. |
 | Leadership | Schedule Desk shows each optional Team Briefing, replacement or capstone bonus mode, bound target, repeat count, and invalid target reason. |
 | Eye for Detail | Cards and Resume Book expose per-card Polish; Pinned Tasks show Revision or Masterpiece source, exact scaling, and permanence. |
-| Moodboard | HUD and Resume show current Focus, cap, expiration or carryover, absorption, progress conversion, refresh, and automatic Lights Out. |
-| Brand Strategy | Resume shows the separate questline, current Campaign and ordered step, multiplier and unlocked rewards; morning marks the protected Campaign card and final-capstone two-card selection. |
+| Moodboard | HUD and Resume show current Focus, cap, expiration or carryover, absorption, progress conversion, refresh, and automatic Lights Out; its automatic Lights Out does not block Home or Deal purchases. |
+| Brand Strategy | Resume shows the separate questline, current Campaign and ordered step, multiplier and unlocked rewards; Morning shows the Campaign name, requested task and family, completed-step count, Campaigns completed, protected Campaign card, and final-capstone two-card selection. |
 | Negotiation | Night Desk shows Deal weights through actual distinct offers, free reroll, purchase count, exact Client Call values, pay and interest modifiers, Scope eligibility, and capstone strength. |
 | Schmoozing | Resume Book shows optional pending slots and eligible Contacts during every non-workday phase without blocking progression; morning previews each secondary Assist, specialty, Raj payment, Priya XP, cap, and up to two Inner Circle targets. |
 | Closing | Morning marks the Hot Lead or fully replaces the offer with two Cycle cards and Close; Deal Ladder shows actual and reward Chain, exact next stress, Close tier, tokens, Seasoned stacks, and persistent rewards. |
 | Efficiency | Promotion chooses Standard Procedures; Schedule Desk and playback mark their source, order, repeats, and exact positive-action progress. |
 | Logistics | Morning shows the committed stored-task slot, Turns Held, current delivery bonus, eligibility, projected extra effects or plays, and irreversible store or deliver choice. |
 | Compound Interest | Economy details show Accounted Cash, Reserve Levels, cap, per-level benefits, eligible principal, exact interest estimate, and Infinite Runway state. |
-| Rebrand Initiative | The task is visibly Special, explains that it grants no family XP, leaves the Special pool after unlock, and opens the Brand Strategy questline exactly once. |
+| Rebrand Initiative | The task is visibly Special, explains Campaign replacement, ordered completion, and powerful rewards, leaves the Special pool after unlock, grants no family XP by Special-card rules, and opens Brand Strategy exactly once. |
 | Campaign tasks | Use a Campaign label, displayed family and Bonus, current multiplier, step-completion reward, Hot Lead state, Management reward picker, and final-capstone additional-play eligibility without presenting a false ordinary rarity. |
 | Sales Cycle cards and Close | Show family-derived Cycle identity, 10 progress, exact floor-scaled Cycle stress after modifiers, no family XP, reward preview rules, Close-day consequences, and burnout risk before confirmation. |
 
@@ -383,13 +414,13 @@ its details, or the appropriate phase summary.
 |---|---|
 | Morning Task Desk | Generated offer, Pinned drawer, no duplicate identities, rarity and Special or Campaign labels, final task forecasts, reroll source and cost, targeted effects, multi-card order, Assists, stored task, Hot Lead, Sales Cycle, and Close. |
 | Schedule Desk | Candidate schedule choice, automatic guarantees, replacements, bonus entries, Team Briefings, repeats, accepted Outcomes, participant choices, source badges, and final locked count in one consolidated flow. |
-| Workday playback | Natural, replacement, bonus, repeated, and Triggered actions; fixed Workday Events; Standard and Forced coworker activations; source and Outcome feedback; deterministic 1x, 2x, 4x, and Skip. |
+| Workday playback | Natural, replacement, bonus, repeated, and Triggered actions; fixed Workday Events; Standard and Forced coworker activations; source and Outcome feedback synchronized to the action as it settles; deterministic 1x, 2x, 4x, and Skip. |
 | Clock Out summary | Recovery and conversion, progress, Chad and Joint Venture, performance conditions, pay, interest, debt stress, returned and new reserves, duration changes, and final-result priority in exact order. |
-| Night Desk | Home, Deal, and Outing actions in any order; spendable cash, Expense Credit, discounts, financing, rebates, purchase limits, family and item pickers, unused-resource warnings, sleep, Lights Out, and explicit finalization. |
+| Night Desk | Home, Deal, and Outing actions in any legal order; spendable cash, Expense Credit, discounts, financing, rebates, purchase limits, family and item pickers, the two-way manual Lights Out purchase lock and exceptions, unused-resource warnings, sleep, and explicit finalization. |
 | Weekend | Exact event choices and outcomes, Hackathon study family picker, Networking Brunch coworker picker, Focus and Guardian Angel handling, and due promotion route. |
 | Promotion Review | Five-family rail, exact XP, path and milestone choices, Delegates, Contacts, Standard Procedures, Masterpiece, simultaneous capstones, losing consequences, revision, and one final batch confirmation. |
 | Resume rail and Book | Exact XP over 10; paths and capstone; Codebase, Commit, per-card Polish and completion history, Velocity, Focus, Delegates, Contacts, Procedures, stored task, Reserve state, Campaigns, Deal Ladder, Seasoned stacks, and persistent Closing rewards. |
-| Coworker views and pickers | Relationship, exact complete bonus including stress drawbacks, Standard opportunity state when relevant, Delegate and Contact flags, specialty or multiplier preview, selection limits, and pending visits or Networks. |
+| Coworker views and pickers | Relationship, exact complete bonus including stress drawbacks, concise bonus tooltips without redundant scaling labels, Workday-meeting explanation, Standard opportunity state when relevant, Delegate and Contact flags, specialty or multiplier preview, selection limits, and pending visits or Networks. |
 | Economy breakdown | Spendable cash, Expense Credit, Overnight Reserve, Working Capital, Accrual value, Net 30 debt, Reserve Levels, eligible principal, estimated interest, and relevant return or due times. |
 | Active-effect strip | Guardian Angel, Escalation and Objection charges, task, Home, and Deal rerolls, delayed card effects, pins, guarantees, Sponsor visits, Commission deadline, Client Calls, Campaign and Cycle modifiers, and every duration or stack that can change the next decision. |
 | Logs and Help | Plain-language Resolution Glossary, source-attributed values, no obsolete Resume terms, and enough history to explain every generated play, repeat, copy, activation, action, payment, and status consumption. |
@@ -403,7 +434,12 @@ its details, or the appropriate phase summary.
   Weekend, or Promotion Review.
 - [ ] No named counter, charge, token, reserve, debt, delayed effect,
   expiration, modifier, or irreversible choice exists only in hidden state.
-- [ ] Player portrait and two bars remain readable at bottom-left.
+- [ ] The top-center project title contains the player's green progress fill
+  and exact current/required value under a fixed dark readability overlay.
+- [ ] Project progress changes briefly pulse without shifting layout, and
+  reduced motion disables that pulse.
+- [ ] The bottom-left player portrait has one readable health-style Stress bar
+  and no duplicate project-progress bar.
 - [ ] Chad and workdays remain readable at top-right.
 - [ ] Manager and Today controls fit at top-left.
 - [ ] Manager hover, focus, and activation expose the complete current modifier

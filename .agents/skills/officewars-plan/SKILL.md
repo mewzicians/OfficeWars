@@ -60,8 +60,12 @@ Resolve paths relative to the repository root containing this skill.
 
 ## Current Repository Phase
 
-- The active HTML contains the approved rollout candidate through
-  implementation Phases 0-6.
+- The active HTML contains the approved rollout, readability candidate,
+  cycling playback-speed update, versioned active-run persistence, and
+  contextual first-day orientation. Its relationship copy, two-way manual
+  Lights Out purchase rule, active Campaign status band, consolidated player
+  project HUD, and synchronized Workday ticker are current at SHA-256
+  `30214B7FFF8FB4ED44690B90B64EE991E8F300ACE1A4E66E9100BBDAFCC81D12`.
 - Do not restart or reimplement the overhaul from the rollout plan unless a
   verified finding requires a fix.
 - The first full bidirectional verification ran on 2026-08-06 and failed ship
@@ -72,9 +76,30 @@ Resolve paths relative to the repository root containing this skill.
 - All eight targeted high-risk interaction groups passed the deterministic
   suite recorded in
   `/verification/ADVANCED_INTERACTION_VERIFICATION_2026-08-06.md`.
-- Balance finding F5, final structural simulation and tuning, remaining
-  lower-risk verification rows, and the deferred Home set design remain
-  unfinished.
+- The deterministic Skip repair and expanded browser suite passed local
+  validation on 2026-08-07. Read
+  `/verification/SKIP_FIX_LOCAL_VALIDATION_2026-08-07.md` for that snapshot's
+  evidence and cross-version simulation comparison.
+- The current hash passes focused smoke, persistence, automated, advanced, and
+  17-case visual checks. Read
+  `/verification/RELATIONSHIP_NIGHT_CAMPAIGN_UI_2026-08-07.md` for current-hash
+  presentation and regression evidence,
+  `/verification/WORKDAY_TICKER_SYNC_2026-08-07.md` for the preceding ticker
+  snapshot,
+  `/verification/PROJECT_HUD_CONSOLIDATION_2026-08-07.md` for the preceding
+  HUD snapshot,
+  `/verification/PERSISTENCE_TUTORIAL_2026-08-07.md` for the preceding
+  persistence and orientation snapshot,
+  `/verification/PLAYBACK_SPEED_CONTROL_2026-08-07.md` for the preceding speed
+  snapshot, and
+  `/verification/FULL_VERIFICATION_2026-08-07_30214B7F.md` for the current
+  Pass, Fail, Not Run, and Blocked matrix.
+- The player-facing Night rule passes, but the headless Night policy grants
+  manual Lights Out after purchasing. Current balance simulation is therefore
+  Blocked. The prior 58.4 percent scripted-skilled result is historical
+  snapshot telemetry, not current balance evidence.
+- Balance finding F5, structural tuning, explicitly unverified rows, human
+  evidence, and the deferred Home set design remain unfinished.
 - Read `/docs/HANDOFF.md` for current implementation status and
   `/docs/BALANCE_LEDGER.md` for exact mechanics and decision status.
 
@@ -103,9 +128,9 @@ Resolve paths relative to the repository root containing this skill.
   final numeric tuning until implementation is accurate and structural values
   are settled.
 - Treat `qa cleanup` as a full active-document verification pass:
-  1. Read every active OfficeWars design document, handoff, project-status
-     file, verification checklist, repository instruction, and generated
-     public copy.
+  1. Read every active OfficeWars design document, handoff, decision-gate file,
+     implementation plan, verification checklist, repository instruction, and
+     portable copy.
   2. Compare planning status with `GAME_DESIGN.md`, `BALANCE_LEDGER.md`, and the
      implemented HTML. Keep old behavior only when clearly labeled as the
      current Implemented Baseline.
@@ -117,8 +142,8 @@ Resolve paths relative to the repository root containing this skill.
      `ARCHIVE_SUPERSEDED.md`. Keep transient verification output in the final
      response instead of turning it into design documentation.
   5. Verify Locked, Draft, and Open labels; the 50-card family and rarity
-     counts; active file references; generated-copy equality when applicable;
-     and documented hashes.
+     counts; active file references; portable-copy equality; and documented
+     hashes.
   6. Do not edit gameplay code during this cleanup unless the user separately
      requests implementation.
 - Treat `full verification` as the exhaustive implementation audit defined in
