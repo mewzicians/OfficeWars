@@ -1,6 +1,6 @@
 # OfficeWars Superseded Design Archive
 
-Last updated: 2026-08-06
+Last updated: 2026-08-07
 
 This document is an index to historical OfficeWars material. Nothing listed
 here is active or approved for implementation unless it was later restored to
@@ -17,8 +17,8 @@ here is active or approved for implementation unless it was later restored to
 - `archive/officewars-home-handoff-2026-07-30/` preserves the older portable
   planning snapshot and its source copies.
 
-The full archive files remain only in the private source workspace and are
-intentionally omitted from this public development snapshot.
+The full archive files remain only in the source workspace and are
+intentionally omitted from portable rollout packages.
 
 Use these only when the reason behind an old decision matters. Do not use them
 to resume current planning.
@@ -56,8 +56,9 @@ to resume current planning.
 
 - Statements dated before 2026-08-06 that describe the real HTML as the old
   task, random-rarity, or stackable Resume implementation are superseded. The
-  active HTML now contains the Phase 0-6 overhaul candidate; full verification
-  and balance simulation remain separate unfinished work.
+  active HTML now contains the rollout and readability candidate. The current
+  full verification passes readability and automated implementation checks;
+  structural tuning and explicitly unverified rows remain separate work.
 - The August 3-4 roster-restart phase, including notes that Sales or Operations
   still needed cards, is complete. All 50 ordinary family cards are now
   individually approved.

@@ -43,6 +43,9 @@ with sync_playwright() as playwright:
             print(f"TIMEOUT:{stage}:{page.title()}:{difference}")
             raise
         else:
-            print(page.title())
+            title = page.title()
+            print(title)
+            if not title.startswith("PASS:"):
+                raise SystemExit(1)
     finally:
         browser.close()

@@ -12,6 +12,18 @@ document.getElementById('game').addEventListener('load', function () {
         document.title = 'NOT_READY';
         return;
       }
+      frame.contentWindow.localStorage.setItem(
+        'officewars.meta.v1',
+        JSON.stringify({
+          schema: 1,
+          tutorial: {
+            completed: true,
+            nextStep: 6,
+            skipped: false,
+            replayRequested: false
+          }
+        })
+      );
       var result = await frame.contentWindow.eval(`(async function () {
         startRun({seed: 41017});
         R.today = {log: [], cardFlags: {}, automationCombo: 0};
@@ -1164,6 +1176,42 @@ document.getElementById('game').addEventListener('load', function () {
           var originalRequestFinishWorkDay = requestFinishWorkDay;
           var originalPlaybackActionDef = actionDef;
           var originalMeetingFavorableChance = owMeetingFavorableChance;
+          var originalTickerUpdate = owUpdateTickerResult;
+          var originalCompleteProgress = completeDayProgressPoint;
+          var completingProgress = false;
+          var tickerEvidence = {
+            pendingClears: 0,
+            pendingMatches: 0,
+            liveResults: 0,
+            liveMatches: 0
+          };
+          if (fixture.captureTickerSync) {
+            completeDayProgressPoint = function (index, line) {
+              completingProgress = true;
+              try {
+                return originalCompleteProgress(index, line);
+              } finally {
+                completingProgress = false;
+              }
+            };
+            owUpdateTickerResult = function (line, pending) {
+              var result = originalTickerUpdate(line, pending);
+              var text = document.getElementById('dt-result').textContent;
+              if (!line && pending) {
+                tickerEvidence.pendingClears++;
+                if (text === 'Resolving...') tickerEvidence.pendingMatches++;
+              } else if (line && !completingProgress) {
+                tickerEvidence.liveResults++;
+                var expected = line.e || line.t || 'No direct stat change';
+                if (text.indexOf(expected) >= 0) tickerEvidence.liveMatches++;
+              }
+              return result;
+            };
+          }
+          function restoreTickerHooks() {
+            owUpdateTickerResult = originalTickerUpdate;
+            completeDayProgressPoint = originalCompleteProgress;
+          }
           var wrappingStallInstalled = false;
           var throwOnceArmed = !!(fixture.throwOnce || fixture.throwAfterMutation);
           if (fixture.finalMeetingConvertsAway) {
@@ -1261,6 +1309,7 @@ document.getElementById('game').addEventListener('load', function () {
                 actionDef = originalPlaybackActionDef;
                 requestFinishWorkDay = originalRequestFinishWorkDay;
                 owMeetingFavorableChance = originalMeetingFavorableChance;
+                restoreTickerHooks();
                 daySkipMode = false;
                 if (dayActive) finishWorkDay();
                 return 'RETRY_NOT_READY:' + fixture.name;
@@ -1272,8 +1321,19 @@ document.getElementById('game').addEventListener('load', function () {
           actionDef = originalPlaybackActionDef;
           requestFinishWorkDay = originalRequestFinishWorkDay;
           owMeetingFavorableChance = originalMeetingFavorableChance;
+          restoreTickerHooks();
+          var tickerSyncPassed = !fixture.captureTickerSync || (
+            tickerEvidence.pendingClears >= 5 &&
+            tickerEvidence.pendingMatches === tickerEvidence.pendingClears &&
+            tickerEvidence.liveResults >= 5 &&
+            tickerEvidence.liveMatches === tickerEvidence.liveResults
+          );
+          if (fixture.captureTickerSync) window.__tickerSyncEvidence = tickerEvidence;
           if (!forcedAmbientStarted) return 'AMBIENT_NOT_STARTED:' + fixture.name;
           if (!triggerReached) return 'TRIGGER_TIMEOUT:' + fixture.trigger + ':' + R.phase;
+          if (!tickerSyncPassed) {
+            return 'TICKER_DESYNC:' + JSON.stringify(tickerEvidence);
+          }
           var lifecycleClean = !dayActive && !daySkipMode && daySkipResolver === null &&
             dayWaits.size === 0 && activeConvos === 0 && pendingAmbientConvos === 0 &&
             !scriptedSceneActive && busyCast.size === 0 && walkingCast.size === 0 &&
@@ -1287,6 +1347,9 @@ document.getElementById('game').addEventListener('load', function () {
         var playback1 = await runPlaybackFixture({name: 'one', mode: 1});
         var playback2 = await runPlaybackFixture({name: 'two', mode: 2});
         var playback4 = await runPlaybackFixture({name: 'four', mode: 4});
+        var playbackTickerSync = await runPlaybackFixture({
+          name: 'ticker-sync', mode: 1, captureTickerSync: true
+        });
         var playbackSkip = await runPlaybackFixture({name: 'skip', skip: true});
         var playbackMeetingSetup = await runPlaybackFixture({
           name: 'skip-meeting-setup', skip: true, trigger: 'meeting-setup'
@@ -1355,6 +1418,7 @@ document.getElementById('game').addEventListener('load', function () {
         var deterministicPlayback =
           playback1 === playback2 &&
           playback1 === playback4 &&
+          playback1 === playbackTickerSync &&
           playback1 === playbackSkip &&
           skipMeetingSetup &&
           skipMeetingDialogue &&
@@ -1372,6 +1436,7 @@ document.getElementById('game').addEventListener('load', function () {
           var playbackCases = {
             two: playback2,
             four: playback4,
+            tickerSync: playbackTickerSync,
             skip: playbackSkip,
             meetingSetup: playbackMeetingSetup,
             meetingDialogue: playbackMeetingDialogue,
@@ -1550,10 +1615,19 @@ document.getElementById('game').addEventListener('load', function () {
             return Number(cubicle.dataset.cubicle) === index;
           }) &&
           document.querySelectorAll('.water-station').length === 1 &&
-          ['day-speed-1', 'day-speed-2', 'day-speed-4', 'day-skip-button'].every(function (id) {
+          ['day-speed-button', 'day-skip-button'].every(function (id) {
             var control = document.getElementById(id);
             return control && control.tagName === 'BUTTON' && control.getAttribute('aria-label');
-          });
+          }) &&
+          !!document.querySelector('#project-hud #sp-prog-fill') &&
+          !!document.querySelector('#project-hud #sp-prog-val') &&
+          !!document.querySelector('#project-hud .project-hud-scrim') &&
+          !document.querySelector('#player-hud #sp-prog-fill') &&
+          !!document.querySelector('#player-hud #sp-str-fill') &&
+          !document.getElementById('day-speed-1') &&
+          !document.getElementById('day-speed-2') &&
+          !document.getElementById('day-speed-4') &&
+          DAY_PLAYBACK_BASE_RATE === 2;
 
         var overlay = document.getElementById('overlay');
         var overlayPanel = document.getElementById('overlay-panel');

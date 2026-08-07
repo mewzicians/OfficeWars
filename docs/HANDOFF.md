@@ -1,14 +1,21 @@
 # OfficeWars Current Handoff
 
-Last updated: 2026-08-06
+Last updated: 2026-08-07
 
 ## Read First
 
 1. `AGENTS.md`
 2. `docs/GAME_DESIGN.md`
 3. `docs/BALANCE_LEDGER.md`
-4. This file
-5. `docs/PATCH_NOTES_SKIP_FIX_2026-08-06.md` for the current Skip repair
+4. `docs/PROJECT_STATUS.md`
+5. This file
+6. `docs/PATCH_NOTES_SKIP_FIX_2026-08-06.md`
+7. `verification/PERSISTENCE_TUTORIAL_2026-08-07.md`
+8. `verification/PROJECT_HUD_CONSOLIDATION_2026-08-07.md`
+9. `verification/WORKDAY_TICKER_SYNC_2026-08-07.md`
+10. `docs/PATCH_NOTES_RELATIONSHIP_NIGHT_CAMPAIGN_UI_2026-08-07.md`
+11. `verification/RELATIONSHIP_NIGHT_CAMPAIGN_UI_2026-08-07.md`
+12. `verification/FULL_VERIFICATION_2026-08-07_30214B7F.md`
 
 Read `docs/ARCHIVE_SUPERSEDED.md` only when historical reasoning is needed.
 
@@ -18,8 +25,8 @@ Read `docs/ARCHIVE_SUPERSEDED.md` only when historical reasoning is needed.
 - `docs/GAME_DESIGN.md` is the stable product model.
 - `docs/BALANCE_LEDGER.md` contains active Implemented, Locked, Draft, and Open
   decisions.
-- `docs/PROJECT_STATUS.md` records the latest public snapshot and balance
-  evidence.
+- `docs/PROJECT_STATUS.md` records the current candidate and balance evidence.
+- `officewars-ui-prototype.html` is a visual reference, not gameplay truth.
 
 ## Implementation Status
 
@@ -27,41 +34,58 @@ Read `docs/ARCHIVE_SUPERSEDED.md` only when historical reasoning is needed.
 candidate through rollout Phase 6: core balance, the fixed-rarity 50-card
 roster, shared card and schedule resolution, family-XP traits and capstones,
 advanced family systems, centralized Home effects, legacy replacements, the
-real HUD, deterministic playback controls, and the office port.
+real HUD, deterministic cycling playback controls, the office port, versioned
+active-run persistence, and the contextual first-day orientation.
 
-The current post-snapshot HTML fixes Skip so it resolves the active action and
-remaining locked workday without relying on animation timers. Gameplay now
-prelocks meeting and Office Chat participants and Outcomes, the daily visitor,
-and sabotage identity before presentation; meeting records use canonical
-gameplay IDs; sabotage resolves at the fixed midpoint after the daily visit;
-and an unexpected resolver error rolls back gameplay state and both RNG streams
-before restoring Skip with the prepared resolution for retry. Burnout also
-clears the Workday playback lifecycle.
+The current HTML includes the deterministic Skip repair described in
+`docs/PATCH_NOTES_SKIP_FIX_2026-08-06.md`. It prelocks meeting and Office Chat
+participants and outcomes, the daily visitor, and sabotage; stores canonical
+gameplay IDs; resolves sabotage immediately after the midpoint desk visit; and
+rolls back gameplay state and both random streams if Skip resolution throws.
 
-The expanded smoke source compares full gameplay state and gameplay RNG across
-1x/2x/4x/Skip, real ambient contention, meeting/chat setup and dialogue, desk
-visits, sabotage, stalled wrap-up, double invocation, exceptions before and
-after gameplay mutation, opening-event burnout, and a final converted meeting.
-Game and smoke JavaScript syntax, repository-diff checks, and focused Node
-behavioral checks pass. The updated browser suite was not executed here because
-no browser backend is connected, and the Python runner is unavailable. The
-dated verification reports still apply to the prior snapshot hash.
+The current HTML has SHA-256
+`30214B7FFF8FB4ED44690B90B64EE991E8F300ACE1A4E66E9100BBDAFCC81D12`.
+It replaces the three speed buttons with one cycling 1x/2x/4x button and makes
+the new 1x equal to the previous 2x presentation pace. It also replaces
+Endless with Continue Run, autosaves committed state, restores prepared
+Workdays deterministically to Clock Out, preserves casino games and run
+results, and teaches the basic loop through six contextual callouts. The
+player's project progress now fills behind the top-center project title under
+a fixed readability scrim, shows the exact fraction, and pulses on change. The
+bottom-left player HUD now contains only the portrait and Stress bar. Workday
+action results now clear when the next action starts and update in the same
+settlement step as the HUD, rather than remaining one action behind.
 
-The first full bidirectional verification ran on 2026-08-06 and is recorded in
-`verification/FULL_VERIFICATION_2026-08-06.md`. The candidate failed ship
-signoff. Findings F1-F4 were subsequently fixed and passed the focused retest
-in `verification/BLOCKERS_1_4_RETEST_2026-08-06.md`: exact delayed-effect and
-economy disclosure, all nine card disclosures, Help glossary coverage, and
-behavioral keyboard scrolling now pass.
+Relationship tooltips now show only each coworker's actual bonus, and the
+Outings footer explains that coworkers grant bonuses when met during the
+Workday. Manual Lights Out and Home or Deal purchases now exclude one another
+in both directions; Outings stay independent, and Moodboard's automatic Lights
+Out remains the explicit exception. Active Brand Strategy mornings use a
+four-part Campaign status band showing the Campaign name, requested task and
+family, completed steps, and Campaigns completed. `Rebrand Initiative` now
+explains Campaign replacement, ordered completion, and its reward promise.
 
-The smoke harness now uses state-based accessibility waits and passed four
-consecutive post-fix runs. The responsive visual matrix found no sampled
-viewport overflow or persistent-HUD overlap. All eight targeted high-risk
-interaction groups passed
-`verification/ADVANCED_INTERACTION_VERIFICATION_2026-08-06.md`. F5 remains
-open at a 55.3 percent scripted-skilled win rate.
+The current hash passes the smoke, persistence, advanced, and 17-case visual
+suites. Persistence and orientation evidence is recorded in
+`verification/PERSISTENCE_TUTORIAL_2026-08-07.md`; the speed-control snapshot
+remains recorded in `verification/PLAYBACK_SPEED_CONTROL_2026-08-07.md`; and
+the current relationship, Night, and Campaign evidence is recorded in
+`verification/RELATIONSHIP_NIGHT_CAMPAIGN_UI_2026-08-07.md`.
 
-## Current Implementation Status
+The current full verification is recorded in
+`verification/FULL_VERIFICATION_2026-08-07_30214B7F.md`. It finds one
+implementation-verification failure: the headless Night policy buys a Home
+item and then unconditionally grants itself manual Lights Out, despite the
+player UI correctly enforcing mutual exclusion. This makes current balance
+simulation Blocked until that policy is repaired and rerun. The earlier 58.4
+percent scripted-skilled result is historical snapshot telemetry, not valid
+current balance evidence.
+
+Exhaustive screen-reader, every-picker, every-boundary save/restore, reset,
+rapid-input, and memory-profile rows remain explicitly Not Run or Blocked; do
+not imply that the focused suites close those broader rows.
+
+## Implemented Scope
 
 - All 50 ordinary family cards are implemented: each family has four Common,
   three Uncommon, two Rare, and one Legendary card.
@@ -81,8 +105,11 @@ open at a 55.3 percent scripted-skilled win rate.
 - All eight decision gates are represented in the candidate, including the
   legacy Resume replacements, advanced family systems, deterministic playback,
   real HUD, and responsive office.
-- `verification/VERIFICATION_CHECKLIST.md` remains the requirement inventory.
-  The dated
+- One active run persists in browser storage. Continue Run, replacement-run
+  confirmation, deterministic prepared-Workday restore, casino continuation,
+  persistent results, return to menu, tutorial completion, skip, and replay
+  are implemented.
+- The verification checklist remains the requirement inventory. The dated
   full-verification report records item-level Pass, Fail, Not Run, and Blocked
   evidence; unchecked checklist boxes must not be interpreted as passes.
 
@@ -102,15 +129,16 @@ open at a 55.3 percent scripted-skilled win rate.
 
 ## Simulation Status And Priorities
 
-The initial audit completed 3,000 seeded runs without simulation errors:
-baseline won 0.7 percent, random won 12.2 percent, and scripted-skilled won
-55.3 percent. The skilled heuristic is evidence, not a human-expert model.
-`Regression Tests` was selected 2,567 times and is the first targeted
-watchpoint, not an automatic balance change.
+The current headless Night policy is not rules-faithful. After making automated
+Home or Deal purchases, it sets `nightState.recPicked=true` and receives manual
+Lights Out recovery without the Moodboard exception. Do not use a simulation
+run from this policy as current balance evidence.
 
-A later focused policy completed 159 actual Chain 9 Closes and won 62 of those
-runs, a 39.0 percent conditional win rate. This remains simulation evidence,
-not an approved Closing change. Human Closing playtests are pending.
+The prior exact-snapshot audit completed 3,000 seeded runs without runtime
+errors: baseline won 0.7 percent, random won 12.2 percent, and
+scripted-skilled won 58.4 percent. `Regression Tests` was the policy's largest
+selection outlier. Preserve those numbers only as historical telemetry until a
+rules-faithful rerun replaces them.
 
 The advanced suite found no rules defects. Its maximal action fixture did,
 however, resolve 121 actions for 2,403 project progress. Treat that as a
@@ -138,15 +166,18 @@ particular attention to:
 Treat measured outliers as evidence rather than automatic nerfs. Any balance
 change still requires explicit approval and a ledger update.
 
-## Remaining Decisions
+## Remaining Work
 
-No implementation rules gate remains Open, and the eight highest-risk
-interaction groups now have deterministic coverage. Balance work next needs to
-define the structural simulation matrix and address the 55.3 percent
-scripted-skilled result against the 25-35 percent target. Numeric changes still
-require explicit approval. UI, accessibility, reset, and lifecycle rows not
-exercised by the targeted suite remain Not Run or Blocked as recorded in the
-full report.
+Run persistence and first-day onboarding are implemented. Focused restoration
+coverage passes, including pending Slots, Blackjack, and Poker. Exhaustive
+every-picker and every-transition restoration remains part of the broader
+unverified matrix rather than an implementation blocker discovered in this
+pass.
+
+Repair the headless Night policy before running or interpreting another balance
+matrix. Then test the structural curve and all trait paths against the 25-35
+percent skilled target. Numeric changes require explicit approval. Unverified
+rows retain their exact status in the current full report.
 
 Home effects are centralized and optional inert set metadata is supported.
 Actual Home sets, thresholds, bonuses, prices, and resale tuning remain
@@ -165,18 +196,20 @@ deliberately deferred until after implementation verification.
 - `<family> review` means a candid preliminary review of that family's complete
   roster against all locked systems and multiplier interactions.
 - `qa cleanup` means audit every active OfficeWars planning document and
-  generated public copy for stale status, contradictions, legacy mechanics,
-  broken references, and synchronization drift. Rewrite, consolidate, move, or
-  remove existing sections instead of appending verification notes; preserve
-  useful history only in `ARCHIVE_SUPERSEDED.md`.
+  portable copy for stale status, contradictions, legacy mechanics, broken
+  references, and synchronization drift. Rewrite, consolidate, move, or remove
+  existing sections instead of appending verification notes; preserve useful
+  history only in `ARCHIVE_SUPERSEDED.md`.
 - `full verification` means reconstruct every requirement from the sources of
   truth, trace it to implementation, UI, and test evidence, and run the full
   static, behavioral, deterministic, browser, accessibility, distribution,
   and simulation checklist. Report Pass, Fail, Not Run, or Blocked for every
   item and never hide unverified scope.
 
-## Public Continuation
+## Portable Handoff
 
-New contributors and agents should begin with `README.md`, `AGENTS.md`,
-`docs/PROJECT_STATUS.md`, and `docs/WORKING_WITH_AGENTS.md`. Do not infer that a
-dated verification result still applies after the game hash changes.
+`officewars-rollout-handoff-2026-07-31/` is the current portable package.
+`officewars-public-repo-2026-08-07/` is the source workspace's public
+repository package; its contents become the repository root when exported.
+Both packages' mapped game, guidance, active documents, verifiers, reports, and
+hashes were synchronized with the root candidate on 2026-08-07.

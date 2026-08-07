@@ -13,12 +13,35 @@ in `BALANCE_LEDGER.md`.
 
 - Support short bursts of player attention in an office environment.
 - Put meaningful decisions at the morning, night, weekend, and promotion.
-- Let the workday play autonomously with 1x, 2x, 4x, and skip controls.
+- Let the workday play autonomously with one cycling 1x, 2x, and 4x speed
+  button plus Skip.
 - Make builds legible through task families, permanent progression, homes, and
   relationships.
 - Create varied runs without allowing a single unlucky roll to decide one.
 - Target an approximately 25-35 percent win rate for a skilled player.
 - Keep the complete game usable as one standalone HTML file.
+
+## Run Continuity And Onboarding
+
+OfficeWars keeps one versioned active-run save in browser storage. The main
+menu offers Continue Run when that save is valid and requires confirmation
+before a new run replaces it. Committed choices and stable phase transitions
+autosave without allowing a refresh to reroll an offer or undo a cost.
+
+A first-play contextual orientation teaches only the basic loop across the
+first workday. Each short callout spotlights its relevant existing interface
+while darkening the rest of the screen. It introduces the project race and
+stress, morning task anatomy, the Resume, autonomous Workday controls, Clock
+Out, and Night. The first Workday pauses once before playback for its callout;
+playback is not interrupted after it begins. Players can skip the orientation
+at any step or replay it through How to Play. The tutorial does not rig cards
+or outcomes, and advanced traits and card interactions remain discoveries.
+
+If the page closes during a prepared Workday, continuing the run restores its
+deterministic checkpoint and automatically skips the remaining playback to
+Clock Out. Victory and defeat summaries persist across refreshes and return
+cleanly to the main menu. Casino checkpoints preserve chips and active game
+state; a pending Slots result settles exactly once after restoration.
 
 ## Run Structure
 
@@ -39,9 +62,11 @@ floor wins the run.
 2. Workday: watch scheduled actions resolve automatically.
 3. Clock Out: settle workday-triggered effects, ordinary pay, interest, and
    effects explicitly assigned to Clock Out.
-4. Night: use available Outing, Home, and Deal actions in any legal order,
-   then explicitly finalize the night with automatic sleep and optional
-   Lights Out.
+4. Night: use available Outing, Home, and Deal actions in any legal order.
+   Unless an effect explicitly provides an exception, manually selecting
+   Lights Out forfeits Home and Deal purchases, while making either purchase
+   makes manual Lights Out unavailable. Then explicitly finalize the night
+   with automatic sleep.
 5. Weekend: after every fifth run-wide workday, resolve a mystery event or
    casino visit.
 6. Promotion: carry the build forward and enter the next floor.
@@ -204,7 +229,9 @@ Entry, and armed sabotage resolves immediately after that visit.
   participant bonuses.
 - Boss floors inject hostile manager actions.
 
-Playback controls change presentation speed, never game outcomes.
+Playback controls change presentation speed, never game outcomes. One button
+shows the current speed and cycles `1x -> 2x -> 4x`; player-facing 1x uses
+twice the original presentation baseline.
 
 ## Stress And Recovery
 
@@ -240,11 +267,14 @@ already-completed project are unavailable.
 
 Night is one flexible decision phase. Generate its Home and Deal catalogs at
 the start, then let the player use available Outing, Home, and Deal actions in
-any order. Purchases do not end Night automatically. An explicit finalization
-applies sleep and Lights Out, expires night-only resources, and advances the
-run. Newly purchased Home effects apply immediately. Repeated effects remain
-separate but do not bypass normal Night limits unless they explicitly add an
-action, purchase, or Outing.
+any legal order. Outings remain independent of the recovery choice. Manual
+Lights Out and Home or Deal purchases are mutually exclusive unless an effect
+explicitly permits both; Moodboard's automatic Lights Out is the current
+exception. Purchases do not end Night automatically. An explicit finalization
+applies sleep and any available Lights Out recovery, expires night-only
+resources, and advances the run. Newly purchased Home effects apply
+immediately. Repeated effects remain separate but do not bypass normal Night
+limits unless they explicitly add an action, purchase, or Outing.
 
 ## Coworkers And Relationships
 
@@ -299,6 +329,8 @@ The progression system uses family XP rather than random per-skill stacks:
 - Brand Strategy is a hidden exception unlocked only by the Special card
   `Rebrand Initiative`; it can coexist with an ordinary Design path and
   advances through named, ordered task Campaigns rather than Design XP;
+- while Brand Strategy is active, the Morning Task Desk shows its Campaign
+  name, requested task and family, completed steps, and Campaigns completed;
 - traits create natural cross-system synergies instead of named pair bonuses;
 - trait paths use setup, payoff, and capstone interactions that can become
   exceptionally strong in the right build without being automatic.

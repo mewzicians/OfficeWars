@@ -101,7 +101,7 @@ The smoke source now compares gameplay state and gameplay random state across
 
 ## Validation Status
 
-Passed in the implementation environment:
+Initial implementation checks passed:
 
 - game JavaScript syntax;
 - smoke-wrapper and evaluated smoke-script JavaScript syntax;
@@ -110,7 +110,16 @@ Passed in the implementation environment:
 - standalone-file integrity and static playback invariants; and
 - Git whitespace/error checks.
 
-The updated browser smoke suite was not executed in this environment because
-no browser backend was connected. Its Python runner was also unavailable. The
-browser scenarios remain encoded in `.officewars-smoke.html` for the next
-environment with browser support.
+Subsequent local validation on 2026-08-07 also passed:
+
+- four consecutive runs of the expanded browser smoke suite;
+- all eight targeted advanced-interaction groups;
+- the full runtime, static, disclosure, accessibility, and sampled-layout
+  audit; and
+- seven visual captures spanning desktop, compact desktop, landscape phone,
+  portrait rotation, Morning, Workday, and Night.
+
+See
+[`SKIP_FIX_LOCAL_VALIDATION_2026-08-07.md`](../verification/SKIP_FIX_LOCAL_VALIDATION_2026-08-07.md)
+for current-hash evidence and the cross-version simulation comparison.
+Structural balance remains open.

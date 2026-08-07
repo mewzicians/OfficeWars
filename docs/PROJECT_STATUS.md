@@ -1,9 +1,9 @@
 # OfficeWars Project Status
 
-Snapshot date: 2026-08-06
+Snapshot date: 2026-08-07
 
 Implemented game SHA-256:
-`41A3CC9823C032C1D80518DB61E0C9289C5CDAADFD9EAE3C16F1E587092A71A0`
+`30214B7FFF8FB4ED44690B90B64EE991E8F300ACE1A4E66E9100BBDAFCC81D12`
 
 Skip repair details and validation scope are recorded in
 `docs/PATCH_NOTES_SKIP_FIX_2026-08-06.md`.
@@ -18,7 +18,26 @@ through rollout Phases 0-6:
 - shared card, schedule, coworker, Clock Out, and transition resolution;
 - centralized Home effects and legacy-system replacements;
 - the real HUD, Resume Book, deterministic playback, responsive office, and
-  portrait rotation gate.
+  portrait rotation gate;
+- a consolidated player project HUD with the progress fill behind the
+  top-center project title, a fixed readability scrim, exact progress, and a
+  brief change pulse; the bottom-left player HUD is portrait plus Stress only;
+- Workday ticker outcomes clear at the start of each action and update when
+  that action settles, in sync with the persistent HUD;
+- one cycling 1x/2x/4x playback button, with the new 1x using the previous 2x
+  presentation pace;
+- one versioned active-run save with Continue Run, replacement confirmation,
+  deterministic prepared-Workday restore, casino continuation, persistent
+  results, and return to menu;
+- a six-step contextual first-day orientation with spotlighted existing UI,
+  Skip Orientation, persisted progress, and replay through How to Play;
+- the readability overhaul for Morning cards, Resume, resolved Workday
+  feedback, Clock Out grouping, and the Night decision surface; and
+- concise relationship bonuses plus a Workday-bonus explanation in Outings;
+- a two-way lock between manual Lights Out and Home or Deal purchases, with
+  Outings independent and automatic Moodboard Lights Out exempt;
+- a dedicated active-Campaign status band and clearer `Rebrand Initiative`
+  description; and
 - Skip now resolves the active action and remaining locked schedule directly,
   bypassing presentation-only walking and conversation waits while preserving
   action, desk-visit, sabotage, and Clock Out resolution. Meeting and Office
@@ -31,37 +50,65 @@ through rollout Phases 0-6:
 
 - Findings F1-F4 from the first full audit are fixed.
 - All eight targeted high-risk interaction groups pass deterministic fixtures.
-- The smoke suite passed four consecutive post-fix runs.
-- The sampled responsive matrix found no persistent-HUD overlap or viewport
-  overflow.
+- On the preceding broad-verification hash, the final smoke suite passed four
+  consecutive runs.
+- The 17-case readability matrix found no sampled clipped text,
+  persistent-HUD overlap, or viewport overflow.
+- The current candidate hash passes smoke, persistence, the focused automated
+  player-surface audit, all eight advanced interaction groups, and the
+  refreshed 17-case visual matrix. Evidence is recorded in
+  `../verification/RELATIONSHIP_NIGHT_CAMPAIGN_UI_2026-08-07.md`.
 - The current Skip fix passes game, smoke-wrapper, and evaluated-smoke
   JavaScript syntax; repository-diff checks; and focused Node behavioral checks
   for legacy participant normalization, prepared converted meetings, and Skip
   transactional error recovery.
-- The smoke source now compares full gameplay state and gameplay RNG across
+- The smoke source compares full gameplay state and gameplay RNG across
   1x/2x/4x/Skip, real ambient contention, meeting/chat setup and dialogue,
   desk visits, sabotage, stalled wrap-up, double invocation, exceptions before
   and after gameplay mutation, opening-event burnout, and a final converted
-  meeting. This updated browser suite was not executed in the implementation
-  environment because no browser backend is connected; the Python runner is
-  also unavailable.
-- The current candidate is still not ready for final ship signoff because
-  structural balance and several exhaustive UI, accessibility, reset, and
-  lifecycle rows remain open.
+  meeting. It passed again on the current speed-control hash.
+- The current hash passed the advanced interaction suite, full automated
+  runtime audit, sampled accessibility checks, and expanded visual inspection
+  without page errors, console errors, or external requests. The focused
+  persistence suite passed 23 checks, including deterministic Workday restore,
+  pending Slots settlement exactly once, active Blackjack and Poker restore,
+  and all orientation transitions. Current-hash evidence is in
+  `../verification/PERSISTENCE_TUTORIAL_2026-08-07.md`.
+- `../verification/FULL_VERIFICATION_2026-08-07_30214B7F.md` is the current
+  exhaustive verdict. It passes player-facing implementation, deterministic
+  playback, persistence, responsive UI, and distribution, but fails the
+  headless Night policy's rules parity. Exhaustive every-picker,
+  assistive-technology, save/restore, reset, rapid-input, and memory-profile
+  rows remain explicitly Not Run or Blocked.
 
-The dated reports under `verification/` apply to the prior
-`2A4880220763678436C6BDFA043EAD7777BB71F01547F8B17B047768206C1D78`
-snapshot. See those reports for their exact evidence and limitations.
+Older dated reports remain exact-snapshot historical evidence. Use
+`RELATIONSHIP_NIGHT_CAMPAIGN_UI_2026-08-07.md` for the current-hash rerun,
+`WORKDAY_TICKER_SYNC_2026-08-07.md` for the preceding ticker snapshot,
+`PROJECT_HUD_CONSOLIDATION_2026-08-07.md` for the preceding HUD snapshot,
+`PERSISTENCE_TUTORIAL_2026-08-07.md` for detailed continuity evidence, and
+`FULL_VERIFICATION_2026-08-07_30214B7F.md` for the current Pass, Fail, Not Run,
+and Blocked matrix. `FULL_VERIFICATION_2026-08-07.md` remains historical
+evidence for its named preceding hash.
 
-## Current Balance Evidence
+## Historical Balance Evidence
 
-Across the original 1,000 scripted-skilled seeds:
+Across the last 1,000 scripted-skilled seeds before the two-way Night rule:
 
-- victories: 553;
-- burnouts: 206;
-- Chad losses: 183;
-- deadline losses: 58;
-- scripted-skilled win rate: 55.3 percent against a 25-35 percent target.
+- victories: 584;
+- burnouts: 179;
+- Chad losses: 177;
+- deadline losses: 60;
+- scripted-skilled win rate: 58.4 percent against a 25-35 percent target.
+
+The prior hash produced 55.3 percent skilled wins on the same seeds. The Skip
+repair changes no numeric balance constants, but prelocking gameplay changes
+RNG consumption and therefore cross-version run trajectories. `Regression
+Tests` selections increased from 2,567 to 3,160.
+
+These results are not valid current balance evidence. The headless policy
+currently purchases a Home item and then also grants itself manual Lights Out,
+which the player cannot do. The policy must be repaired and the fixed seed
+matrix rerun before drawing current win-rate or Closing conclusions.
 
 The difficulty curve is misshapen rather than uniformly low. Floor 3 is the
 largest competitive wall, while successful builds accelerate sharply after
@@ -85,12 +132,15 @@ Record human results using `docs/PLAYTEST_GUIDE.md`.
 
 ## Next Engineering Gate
 
-1. Collect human playtest evidence.
-2. Run a structural matrix that holds Floors 1-3 stable while testing Floors
+1. Make the headless Night policy obey the Locked purchase-versus-Lights-Out
+   rule and add its regression assertion to the full verifier.
+2. Collect human playtest evidence.
+3. Run a structural matrix that holds Floors 1-3 stable while testing Floors
    4-7 project requirements and late Chad pressure.
-3. Test all trait paths with policies capable of selecting and using them.
-4. Apply only explicitly approved tuning.
-5. Re-run full verification before calling the candidate release-ready.
+4. Test all trait paths with policies capable of selecting and using them.
+5. Apply only explicitly approved tuning.
+6. Close or explicitly accept the current full report's Not Run and Blocked
+   rows, then rerun verification after approved tuning.
 
 Home item sets remain deferred until the current verification and balance gate
 is closed.

@@ -21,9 +21,11 @@ stress, deadlines, or your rival end the run.
 ![OfficeWars workday](docs/assets/officewars-workday.png)
 
 > **Current status:** OfficeWars is a playable development candidate, not a
-> finished balance release. The core game and its highest-risk interactions
-> pass the current verification suites; human playtesting is the next source
-> of evidence.
+> finished balance release. Readability, run persistence, first-day
+> orientation, and the highest-risk interactions pass the current verification
+> suites. The current headless Night policy fails one player-rules parity
+> check, so fresh balance simulation and human playtesting remain the next
+> release gates.
 
 ## Play
 
@@ -32,7 +34,8 @@ No installation, server, account, or build step is required.
 1. [Play in your browser](https://mewzicians.github.io/OfficeWars/), or download
    this repository and open `officewarsautobattler.html`.
 2. Pick a task, shape your build, and let the workday play out.
-3. On a phone, rotate to landscape.
+3. Continue an active run after refreshing or leaving the page.
+4. On a phone, rotate to landscape.
 
 ## The Workday, Weaponized
 
@@ -64,9 +67,10 @@ Cycle.
 
 ## Project Status
 
-Structural balance remains open: the scripted skilled policy currently exceeds
-the target win rate, while high-chain Closing appears too weak. Read
-[Project Status](docs/PROJECT_STATUS.md) before changing balance.
+Structural balance remains open. Prior simulation telemetry is historical
+until the headless Night policy obeys the same purchase-versus-Lights-Out rule
+as players. Read [Project Status](docs/PROJECT_STATUS.md) before changing
+balance.
 
 ## Project Map
 
@@ -101,6 +105,7 @@ HTML, and clearly distinguishes proposals from approved decisions.
 python -m pip install -r requirements-dev.txt
 python -m playwright install chromium
 python .officewars-smoke-run.py
+python .officewars-persistence-verify.py
 python .officewars-advanced-verify.py
 python .officewars-full-verify.py 0
 ```
