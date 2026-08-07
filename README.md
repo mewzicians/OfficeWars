@@ -7,7 +7,7 @@
 A single-file office autobattler about climbing seven corporate floors before
 stress, deadlines, or your rival end the run.
 
-[**▶ Play OfficeWars**](https://mewzicians.github.io/OfficeWars/) ·
+[**▶ Play OfficeWars**](https://mewzicians.github.io/OfficeWars/officewarsautobattler.html) ·
 [Project status](docs/PROJECT_STATUS.md) ·
 [Contributing](CONTRIBUTING.md) ·
 [Playtest guide](docs/PLAYTEST_GUIDE.md)
@@ -31,7 +31,7 @@ stress, deadlines, or your rival end the run.
 
 No installation, server, account, or build step is required.
 
-1. [Play in your browser](https://mewzicians.github.io/OfficeWars/), or download
+1. [Play in your browser](https://mewzicians.github.io/OfficeWars/officewarsautobattler.html), or download
    this repository and open `officewarsautobattler.html`.
 2. Pick a task, shape your build, and let the workday play out.
 3. Continue an active run after refreshing or leaving the page.
