@@ -3,7 +3,10 @@
 Snapshot date: 2026-08-06
 
 Implemented game SHA-256:
-`A33645E9CC7F1A9F8CC6BD7A700377875D45825F4A8CD8FC5A40B2A7C154197A`
+`41A3CC9823C032C1D80518DB61E0C9289C5CDAADFD9EAE3C16F1E587092A71A0`
+
+Skip repair details and validation scope are recorded in
+`docs/PATCH_NOTES_SKIP_FIX_2026-08-06.md`.
 
 ## Current Candidate
 
@@ -18,7 +21,11 @@ through rollout Phases 0-6:
   portrait rotation gate.
 - Skip now resolves the active action and remaining locked schedule directly,
   bypassing presentation-only walking and conversation waits while preserving
-  action, desk-visit, sabotage, and Clock Out resolution.
+  action, desk-visit, sabotage, and Clock Out resolution. Meeting and Office
+  Chat participants and Outcomes, the daily visitor, and the saboteur are
+  prelocked; participant records use canonical gameplay IDs; and an unexpected
+  resolver error rolls back gameplay state and both RNG streams before
+  restoring Skip for a deterministic retry.
 
 ## Verification
 
@@ -27,9 +34,17 @@ through rollout Phases 0-6:
 - The smoke suite passed four consecutive post-fix runs.
 - The sampled responsive matrix found no persistent-HUD overlap or viewport
   overflow.
-- The current Skip fix passes JavaScript syntax and repository-diff checks and
-  adds a stalled-conversation regression fixture. That browser fixture was not
-  run in the implementation environment because no browser was available.
+- The current Skip fix passes game, smoke-wrapper, and evaluated-smoke
+  JavaScript syntax; repository-diff checks; and focused Node behavioral checks
+  for legacy participant normalization, prepared converted meetings, and Skip
+  transactional error recovery.
+- The smoke source now compares full gameplay state and gameplay RNG across
+  1x/2x/4x/Skip, real ambient contention, meeting/chat setup and dialogue,
+  desk visits, sabotage, stalled wrap-up, double invocation, exceptions before
+  and after gameplay mutation, opening-event burnout, and a final converted
+  meeting. This updated browser suite was not executed in the implementation
+  environment because no browser backend is connected; the Python runner is
+  also unavailable.
 - The current candidate is still not ready for final ship signoff because
   structural balance and several exhaustive UI, accessibility, reset, and
   lifecycle rows remain open.

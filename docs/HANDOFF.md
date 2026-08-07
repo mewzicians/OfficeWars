@@ -8,6 +8,7 @@ Last updated: 2026-08-06
 2. `docs/GAME_DESIGN.md`
 3. `docs/BALANCE_LEDGER.md`
 4. This file
+5. `docs/PATCH_NOTES_SKIP_FIX_2026-08-06.md` for the current Skip repair
 
 Read `docs/ARCHIVE_SUPERSEDED.md` only when historical reasoning is needed.
 
@@ -29,11 +30,22 @@ advanced family systems, centralized Home effects, legacy replacements, the
 real HUD, deterministic playback controls, and the office port.
 
 The current post-snapshot HTML fixes Skip so it resolves the active action and
-remaining locked workday without relying on animation timers. The smoke harness
-now includes a deliberately stalled ambient-conversation fixture. JavaScript
-syntax and repository-diff checks pass; the new browser regression was not run
-in the implementation environment because no browser was available. The dated
-verification reports still apply to the prior snapshot hash.
+remaining locked workday without relying on animation timers. Gameplay now
+prelocks meeting and Office Chat participants and Outcomes, the daily visitor,
+and sabotage identity before presentation; meeting records use canonical
+gameplay IDs; sabotage resolves at the fixed midpoint after the daily visit;
+and an unexpected resolver error rolls back gameplay state and both RNG streams
+before restoring Skip with the prepared resolution for retry. Burnout also
+clears the Workday playback lifecycle.
+
+The expanded smoke source compares full gameplay state and gameplay RNG across
+1x/2x/4x/Skip, real ambient contention, meeting/chat setup and dialogue, desk
+visits, sabotage, stalled wrap-up, double invocation, exceptions before and
+after gameplay mutation, opening-event burnout, and a final converted meeting.
+Game and smoke JavaScript syntax, repository-diff checks, and focused Node
+behavioral checks pass. The updated browser suite was not executed here because
+no browser backend is connected, and the Python runner is unavailable. The
+dated verification reports still apply to the prior snapshot hash.
 
 The first full bidirectional verification ran on 2026-08-06 and is recorded in
 `verification/FULL_VERIFICATION_2026-08-06.md`. The candidate failed ship
