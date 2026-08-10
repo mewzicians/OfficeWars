@@ -1,0 +1,4 @@
+interface:
+  display_name: "OfficeWars Full Verification"
+  short_description: "Verify the complete OfficeWars release candidate"
+  default_prompt: "Use $officewars-full-verification to reconstruct the complete requirement matrix and verify OfficeWars across rules, code, UI, persistence, accessibility, packages, edge cases, and legal simulations."

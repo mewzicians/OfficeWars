@@ -1,9 +1,9 @@
 # OfficeWars Project Status
 
-Snapshot date: 2026-08-07
+Snapshot date: 2026-08-10
 
 Implemented game SHA-256:
-`30214B7FFF8FB4ED44690B90B64EE991E8F300ACE1A4E66E9100BBDAFCC81D12`
+`470F4146FBA177FD6B7062A0093DDCF7C2826B797FE9AE74317BD1D146050FF7`
 
 Skip repair details and validation scope are recorded in
 `docs/PATCH_NOTES_SKIP_FIX_2026-08-06.md`.
@@ -14,7 +14,7 @@ Skip repair details and validation scope are recorded in
 through rollout Phases 0-6:
 
 - the fixed-rarity 50-card roster;
-- family XP, ordinary trait paths, capstones, and advanced family systems;
+- Skill XP, ordinary career paths, capstones, and advanced Skill systems;
 - shared card, schedule, coworker, Clock Out, and transition resolution;
 - centralized Home effects and legacy-system replacements;
 - the real HUD, Resume Book, deterministic playback, responsive office, and
@@ -29,8 +29,16 @@ through rollout Phases 0-6:
 - one versioned active-run save with Continue Run, replacement confirmation,
   deterministic prepared-Workday restore, casino continuation, persistent
   results, and return to menu;
-- a six-step contextual first-day orientation with spotlighted existing UI,
-  Skip Orientation, persisted progress, and replay through How to Play;
+- a thirteen-step contextual orientation covering the first day, Home Shop,
+  Outings, Relationships, ending the night, the first path choice, milestone
+  growth, the first boss floor, and the first claimed Capstone, with
+  spotlighted existing UI, persisted progress, Skip Orientation, and reset
+  through Options for the next New Run;
+- a first-Workday tutorial pause that opens the live Action Guide and explains
+  Work on Task, Lunch, Water Cooler, Office Chat, Slumped at Desk, and Team
+  Meeting using current values;
+- an Options screen with a persistent master-volume slider prepared for future
+  audio and the tutorial reset command;
 - the readability overhaul for Morning cards, Resume, resolved Workday
   feedback, Clock Out grouping, and the Night decision surface; and
 - concise relationship bonuses plus a Workday-bonus explanation in Outings;
@@ -38,6 +46,58 @@ through rollout Phases 0-6:
   Outings independent and automatic Moodboard Lights Out exempt;
 - a dedicated active-Campaign status band and clearer `Rebrand Initiative`
   description; and
+- a dedicated Home scene that removes the office HUD at Night and uses room
+  objects for Home Shop, Relationships, Outings, unlocked Deals, Lights Out,
+  and End Day;
+- prominent Home Cash and Credit, accessible visual item slots with sale
+  confirmation, a top Stress bar, current and projected Stress, moon phases,
+  pixel-room decor, and Apartment through Penthouse scene variants;
+- flat side-view room geometry across every Home tier, with the larger bed,
+  Relationships phone, complete PC desk, Deal laptop, plant, and Outings door
+  grounded on one shallow patterned floor boundary; Home item slots sit on a
+  wall storage shelf, the Home name stays below the furniture, the moon remains
+  inside the window, and Lights Out dims the complete room;
+- distinct manager portraits and colors, with seated ordinary-floor managers
+  and a presentation-only boss-floor patrol that never enters gameplay state;
+- sunset and door-opening entry, Outing fade and return, and sunrise exit
+  presentations; the sun and moon now follow the same complete east-to-west
+  arc without crossing, with the sun leading at sunset and the moon leading at
+  sunrise, plus deterministic reduced-motion and automated bypasses;
+- action-icon schedule trackers for Prototype Test, Schedule Adjustment,
+  Leadership, action guarantees, and the final Schedule Desk;
+- Resume milestone states for unreached, pending, and claimed gates;
+- five distinct bright 8-bit Resume-rail scenes, kept behind a
+  readability scrim and marked decorative for assistive technology;
+- a Morning Build Context strip that names active delayed effects and their
+  selected targets, Delegates, Contacts, and relevant run resources before
+  task selection;
+- compact Pinned Task rows that show Skill, task name, and rarity before
+  opening the ordinary full task card for inspection and selection;
+- Eye for Detail Revision pins now use primary-task source provenance. A task
+  played from Pinned Tasks does not pin itself again, while the same task can
+  pin normally after a later generated-offer play; Masterpiece is unchanged;
+- exact 3, 6, and 10 XP milestone tooltips through hover, focus, and tap,
+  including a clear unchosen-specialization state;
+- named trait mechanics use a shared cyan glossary treatment with short
+  definitions available through hover, keyboard focus, and tap;
+- player-facing progression language calls the five job categories Skills
+  while internal `family` identifiers remain unchanged for save and rules
+  compatibility;
+- final Promotion Review paginates one Skill per page, shows only milestones
+  earned in that promotion as visual cards, presents a newly claimed capstone
+  prominently, and uses direct Confirm Promotion and Revise Choices actions;
+- accepting Finalize Night automatically applies Lights Out when it remains
+  legal and was not selected manually; purchase locks and explicit exceptions
+  remain unchanged;
+- player and headless Night finalization now share the same automatic
+  Lights-Out legality gate, so a Home or Deal purchase prevents that recovery
+  unless an explicit exception applies;
+- Automation Combo controls separated from its cards, with daily, banked, and
+  paid rerolls shown before the task offer. Additional Combo cards grant no
+  Skill XP while retaining their other Complete Play progression;
+- every separate task picker uses full or reduced Morning-style task cards
+  according to whether the decision uses the complete play, printed effect,
+  stats, or identity; and
 - Skip now resolves the active action and remaining locked schedule directly,
   bypassing presentation-only walking and conversation waits while preserving
   action, desk-visit, sabotage, and Clock Out resolution. Meeting and Office
@@ -52,12 +112,20 @@ through rollout Phases 0-6:
 - All eight targeted high-risk interaction groups pass deterministic fixtures.
 - On the preceding broad-verification hash, the final smoke suite passed four
   consecutive runs.
-- The 17-case readability matrix found no sampled clipped text,
-  persistent-HUD overlap, or viewport overflow.
-- The current candidate hash passes smoke, persistence, the focused automated
-  player-surface audit, all eight advanced interaction groups, and the
-  refreshed 17-case visual matrix. Evidence is recorded in
-  `../verification/RELATIONSHIP_NIGHT_CAMPAIGN_UI_2026-08-07.md`.
+- The readability matrix and expanded four-tier Home/schedule matrix found no
+  sampled clipped text, persistent-HUD overlap, or viewport overflow.
+- The current candidate hash passes smoke, all 24 persistence checks, all eight
+  advanced interaction groups plus the focused pin, glossary, and tutorial
+  contract group, the full verifier's automated player-surface
+  audit, and its responsive layout checks. Current focused evidence is
+  recorded in
+  `../verification/HOME_GROUNDING_CELESTIAL_SEQUENCE_2026-08-10.md`.
+- The focused visual matrix passes desktop, compact, landscape-phone,
+  collapsed Workday, Build Context, compact and expanded Pinned Tasks,
+  milestone tooltips, trait-keyword glossary views, and 200 percent text
+  samples with five decorative, pointer-inert Skill scenes, foregrounded
+  progression content, no sampled clipping, no persistent-HUD overlap, and no
+  viewport overflow.
 - The current Skip fix passes game, smoke-wrapper, and evaluated-smoke
   JavaScript syntax; repository-diff checks; and focused Node behavioral checks
   for legacy participant normalization, prepared converted meetings, and Skip
@@ -70,24 +138,44 @@ through rollout Phases 0-6:
 - The current hash passed the advanced interaction suite, full automated
   runtime audit, sampled accessibility checks, and expanded visual inspection
   without page errors, console errors, or external requests. The focused
-  persistence suite passed 23 checks, including deterministic Workday restore,
-  pending Slots settlement exactly once, active Blackjack and Poker restore,
-  and all orientation transitions. Current-hash evidence is in
-  `../verification/PERSISTENCE_TUTORIAL_2026-08-07.md`.
-- `../verification/FULL_VERIFICATION_2026-08-07_30214B7F.md` is the current
-  exhaustive verdict. It passes player-facing implementation, deterministic
-  playback, persistence, responsive UI, and distribution, but fails the
-  headless Night policy's rules parity. Exhaustive every-picker,
-  assistive-technology, save/restore, reset, rapid-input, and memory-profile
-  rows remain explicitly Not Run or Blocked.
+  persistence suite passed 24 checks, including deterministic Workday restore,
+  restored Home panels, exactly-once `nightResolved` continuation, pending
+  Slots settlement exactly once, active Blackjack and Poker restore, and all
+  orientation transitions.
+- The current exhaustive implementation report is
+  `FULL_VERIFICATION_2026-08-10_0A8F74E5.md`. It finds no current
+  implementation blocker. Structural simulation, formal screen-reader
+  execution, exhaustive picker and save-boundary traversal, rapid-input
+  fuzzing, and memory profiling remain explicitly Not Run or Blocked.
+- The preceding exhaustive verdict is
+  `FULL_VERIFICATION_2026-08-10_55D9A6ED.md`. Its headless Night-policy failure
+  is fixed on the current hash. Fresh structural simulation and the exhaustive
+  every-picker, assistive-technology, save/restore, reset, rapid-input, and
+  memory-profile rows remain explicitly Not Run or Blocked.
 
 Older dated reports remain exact-snapshot historical evidence. Use
-`RELATIONSHIP_NIGHT_CAMPAIGN_UI_2026-08-07.md` for the current-hash rerun,
-`WORKDAY_TICKER_SYNC_2026-08-07.md` for the preceding ticker snapshot,
+`HOME_GROUNDING_CELESTIAL_SEQUENCE_2026-08-10.md` for the current focused
+candidate, `HOME_SIDE_VIEW_ARCS_2026-08-10.md` for the preceding opposing-arc
+snapshot,
+`HOME_MANAGER_VISUAL_PASS_2026-08-10.md` for the preceding Home and manager
+candidate,
+`HOME_SCHEDULE_TUTORIAL_2026-08-10.md` for the preceding Home and schedule
+candidate,
+`FULL_VERIFICATION_2026-08-10_0A8F74E5.md` for the current exhaustive
+implementation verdict on its named preceding hash,
+`BUILD_CONTEXT_PINS_2026-08-10.md` for the preceding Build Context candidate,
+`RESUME_SKILL_ART_2026-08-10.md` for the preceding Resume-art candidate,
+`OPTIONS_NIGHT_POLICY_2026-08-10.md` for the preceding Options and Night-policy
+candidate, and
+`FULL_VERIFICATION_2026-08-10_55D9A6ED.md` for the preceding exhaustive
+snapshot,
+`NIGHT_RESUME_AUTOMATION_UI_2026-08-10.md` for the preceding Night and
+Automation snapshot, `WORKDAY_TICKER_SYNC_2026-08-07.md` for the preceding
+ticker snapshot,
 `PROJECT_HUD_CONSOLIDATION_2026-08-07.md` for the preceding HUD snapshot,
 `PERSISTENCE_TUTORIAL_2026-08-07.md` for detailed continuity evidence, and
-`FULL_VERIFICATION_2026-08-07_30214B7F.md` for the current Pass, Fail, Not Run,
-and Blocked matrix. `FULL_VERIFICATION_2026-08-07.md` remains historical
+`FULL_VERIFICATION_2026-08-07_30214B7F.md` for that snapshot's Pass, Fail, Not
+Run, and Blocked matrix. `FULL_VERIFICATION_2026-08-07.md` remains historical
 evidence for its named preceding hash.
 
 ## Historical Balance Evidence
@@ -105,10 +193,9 @@ repair changes no numeric balance constants, but prelocking gameplay changes
 RNG consumption and therefore cross-version run trajectories. `Regression
 Tests` selections increased from 2,567 to 3,160.
 
-These results are not valid current balance evidence. The headless policy
-currently purchases a Home item and then also grants itself manual Lights Out,
-which the player cannot do. The policy must be repaired and the fixed seed
-matrix rerun before drawing current win-rate or Closing conclusions.
+These results are not valid current balance evidence because they predate the
+corrected headless Night policy. The fixed-seed matrix must be rerun before
+drawing current win-rate or Closing conclusions.
 
 The difficulty curve is misshapen rather than uniformly low. Floor 3 is the
 largest competitive wall, while successful builds accelerate sharply after
@@ -132,14 +219,13 @@ Record human results using `docs/PLAYTEST_GUIDE.md`.
 
 ## Next Engineering Gate
 
-1. Make the headless Night policy obey the Locked purchase-versus-Lights-Out
-   rule and add its regression assertion to the full verifier.
-2. Collect human playtest evidence.
-3. Run a structural matrix that holds Floors 1-3 stable while testing Floors
+1. Collect human playtest evidence.
+2. Run a structural matrix with the corrected Night policy that holds Floors
+   1-3 stable while testing Floors
    4-7 project requirements and late Chad pressure.
-4. Test all trait paths with policies capable of selecting and using them.
-5. Apply only explicitly approved tuning.
-6. Close or explicitly accept the current full report's Not Run and Blocked
+3. Test all trait paths with policies capable of selecting and using them.
+4. Apply only explicitly approved tuning.
+5. Close or explicitly accept the current full report's Not Run and Blocked
    rows, then rerun verification after approved tuning.
 
 Home item sets remain deferred until the current verification and balance gate

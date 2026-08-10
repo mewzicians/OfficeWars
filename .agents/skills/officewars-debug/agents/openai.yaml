@@ -1,0 +1,7 @@
+interface:
+  display_name: "OfficeWars Debug"
+  short_description: "Reproduce and fix OfficeWars defects safely"
+  default_prompt: "Use $officewars-debug to reproduce, diagnose, fix, and regression-test an OfficeWars defect without changing unrelated behavior."
+
+policy:
+  allow_implicit_invocation: true

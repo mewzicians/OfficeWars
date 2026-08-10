@@ -1,0 +1,7 @@
+interface:
+  display_name: "OfficeWars UX Audit"
+  short_description: "Audit OfficeWars usability and accessibility"
+  default_prompt: "Use $officewars-ux-audit to inspect OfficeWars onboarding, navigation, readability, responsive layouts, accessibility, and exceptional-mode UX."
+
+policy:
+  allow_implicit_invocation: true

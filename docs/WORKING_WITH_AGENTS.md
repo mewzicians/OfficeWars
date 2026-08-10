@@ -123,7 +123,7 @@ Be concise and specific. Explain the cost, then offer a cleaner alternative.
   route automatic.
 - Cards should be useful alone, recognizable as their family, and stronger in
   the right setup.
-- The five families appear with equal weighting so players adapt rather than
+- The five Skills appear with equal weighting so players adapt rather than
   force the same build.
 - Complexity must be inspectable through UI, not hidden in agent knowledge.
 - The skilled target is approximately 25-35 percent wins, but difficulty should
@@ -161,16 +161,38 @@ Simulated policies are instruments, not players.
 For example, the current skilled policy overrepresents a subset of trait paths.
 It can reveal structural problems but cannot define the complete metagame.
 
-## Useful Shorthand
+## Project Skills
 
-- `qa cleanup`: synchronize and shorten all active documents, remove stale
-  guidance, verify statuses and references, and preserve useful history.
-- `full verification`: rebuild the complete requirement matrix and run every
-  applicable verification layer.
-- `<family> review`: review the complete family against all systems.
-- `<rarity> <family> card next`: continue card design using the established
-  rarity and family philosophy.
-- `$officewars-plan <topic>`: resume through the repository planning skill.
+- `$officewars-plan <topic>`: resume design and balance planning from the
+  current game model and decision ledger.
+- `$officewars-implement`: implement an approved feature or fix across the
+  standalone HTML, player-facing UI and copy, persistence, tests,
+  documentation, mirrors, and release package.
+- `$officewars-debug`: reproduce an exact failing state, identify its root
+  cause, apply a narrow complete fix, and prove neighboring-system,
+  deterministic-playback, and persistence parity.
+- `$officewars-balance-lab`: audit policy legality, run fixed-seed simulations
+  and ablations, analyze floor and build curves, and produce Draft-only tuning
+  recommendations against the skilled-player target.
+- `$officewars-ux-audit`: inspect the full player journey, information
+  hierarchy, exceptional modes, responsive layouts, keyboard use,
+  accessibility, and rendered screenshots.
+- `$officewars-playtest-analysis`: normalize playtest artifacts, separate bugs,
+  confusion, balance, pacing, feedback, accessibility, and taste, then rank
+  evidence and next experiments.
+- `$officewars-qa-cleanup`: rewrite and synchronize active documentation,
+  skills, handoffs, mirrors, manifests, and packages without changing gameplay.
+- `$officewars-full-verification`: reconstruct the complete requirement matrix
+  and run every applicable implementation, behavior, UI, accessibility,
+  persistence, distribution, and simulation verification layer.
+- `$officewars-github-package`: synchronize the public repository mirror,
+  update release truth and hashes, rebuild the GitHub-ready ZIP without losing
+  hidden files, and verify its complete upload inventory byte-for-byte.
+
+These skills may be invoked explicitly or selected automatically when a
+request clearly matches their scope. Planning and analysis skills do not lock
+or implement a decision without approval; implementation and debugging skills
+do not silently redesign or rebalance the game.
 
 ## A Good Prompt Shape
 

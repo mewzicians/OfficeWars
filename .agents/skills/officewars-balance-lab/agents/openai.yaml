@@ -1,0 +1,7 @@
+interface:
+  display_name: "OfficeWars Balance Lab"
+  short_description: "Run rules-faithful OfficeWars balance analysis"
+  default_prompt: "Use $officewars-balance-lab to measure OfficeWars balance with legal fixed-seed simulations, ablations, build analysis, and Draft-only recommendations."
+
+policy:
+  allow_implicit_invocation: true

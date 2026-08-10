@@ -1,0 +1,7 @@
+interface:
+  display_name: "OfficeWars Implement"
+  short_description: "Implement approved OfficeWars features end to end"
+  default_prompt: "Use $officewars-implement to implement an approved OfficeWars change end to end and synchronize its code, UI, tests, documentation, and release mirrors."
+
+policy:
+  allow_implicit_invocation: true

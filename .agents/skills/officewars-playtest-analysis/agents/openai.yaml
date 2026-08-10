@@ -1,0 +1,7 @@
+interface:
+  display_name: "OfficeWars Playtest Analysis"
+  short_description: "Turn OfficeWars playtests into ranked evidence"
+  default_prompt: "Use $officewars-playtest-analysis to synthesize OfficeWars playtest notes, saves, screenshots, and telemetry into prioritized findings and experiments."
+
+policy:
+  allow_implicit_invocation: true
