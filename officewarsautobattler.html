@@ -17425,10 +17425,17 @@ function owMoonPhaseClass(){
   const phases=['phase-new','phase-crescent','phase-half','phase-full'];
   return phases[Math.abs(Number(R&&R.stats&&R.stats.days||0))%phases.length];
 }
+function owTransitionMoonPhaseClass(){
+  // A new moon is drawn as a fully masked disc. That is correct for the static
+  // Home window, but while the moon is arcing across the sky it reads as a hole
+  // rather than a moon, so transitions use a crescent as their minimum phase.
+  const phase=owMoonPhaseClass();
+  return phase==='phase-new'?'phase-crescent':phase;
+}
 function owSetTransitionMoonPhase(){
   const moon=document.querySelector('#phase-transition .transition-moon');
   if(!moon)return;
-  moon.className='transition-moon '+owMoonPhaseClass();
+  moon.className='transition-moon '+owTransitionMoonPhaseClass();
 }
 function owEnterHomeMode(){
   document.body.classList.add('home-mode');
