@@ -104,9 +104,11 @@ space, and cannot change Workday outcomes or Skip behavior.
 
 Clock Out enters Home through a sunset and door-opening presentation. Outings
 fade to their story and back to the room; End Day uses sunrise to return to the
-office. The sun and moon follow the same complete east-to-west five-stage arc
-without crossing. The sun leads at sunset, and the moon leads at sunrise.
-Automated and reduced-motion paths bypass presentation timing without changing
+office. The sun and moon share one east-to-west arc but never occupy the same
+stretch of it. The departing body completes the western half and drops below
+that edge while the arriving body enters from the opposite eastern edge and
+climbs to the vacated resting position, so the two are always on opposite sides
+of the sky. Automated and reduced-motion paths bypass presentation timing without changing
 state. Sleep writes a stable `nightResolved` checkpoint before sunrise so a
 refresh cannot repeat recovery.
 

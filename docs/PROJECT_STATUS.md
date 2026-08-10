@@ -60,9 +60,11 @@ through rollout Phases 0-6:
 - distinct manager portraits and colors, with seated ordinary-floor managers
   and a presentation-only boss-floor patrol that never enters gameplay state;
 - sunset and door-opening entry, Outing fade and return, and sunrise exit
-  presentations; the sun and moon now follow the same complete east-to-west
-  arc without crossing, with the sun leading at sunset and the moon leading at
-  sunrise, plus deterministic reduced-motion and automated bypasses;
+  presentations; the sun and moon share one east-to-west arc but never occupy
+  the same stretch of it, the departing body finishing the western half while
+  the arriving body enters from the opposite eastern edge and climbs to the
+  vacated resting position, plus deterministic reduced-motion and automated
+  bypasses;
 - action-icon schedule trackers for Prototype Test, Schedule Adjustment,
   Leadership, action guarantees, and the final Schedule Desk;
 - Resume milestone states for unreached, pending, and claimed gates;

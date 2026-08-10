@@ -1127,11 +1127,11 @@ h1,h2,h3,.ct,.btn,.menu-btn,.replay-btn,
   background:#e8c46a;
 }
 #phase-transition.sunset .transition-sky { animation:ow-sky-darken 1.25s linear forwards; }
-#phase-transition.sunset .transition-sun {
-  animation:ow-sun-set 1.25s linear forwards;
-  animation-delay:-.22s;
-}
-#phase-transition.sunset .transition-moon { animation:ow-moon-rise 1.25s linear forwards; }
+/* Sunset: the sun completes the western half of the arc and drops below the
+   edge while the moon enters from the opposite eastern edge and climbs to the
+   night resting position. The two bodies never share a stretch of sky. */
+#phase-transition.sunset .transition-sun { animation:ow-arc-descend 1.25s linear forwards; }
+#phase-transition.sunset .transition-moon { animation:ow-arc-ascend 1.25s linear forwards; }
 #phase-transition.sunset .transition-curtain { animation:ow-curtain-in 1.25s linear forwards; }
 #phase-transition.sunset.door-opening .transition-door { animation:ow-door-open .45s steps(5,end) forwards; }
 #phase-transition.sunrise .transition-sky {
@@ -1139,20 +1139,21 @@ h1,h2,h3,.ct,.btn,.menu-btn,.replay-btn,
   background:linear-gradient(#0b1830 0 45%,#654d6d 45% 60%,#111821 60%);
   animation:ow-sky-lighten 1.1s linear forwards;
 }
+/* Sunrise: the moon sets out of the western edge while the sun enters from the
+   opposite eastern edge and climbs to the daytime resting position. */
 #phase-transition.sunrise .transition-sun {
   top:auto;
   right:auto;
   bottom:14%;
   left:-6rem;
-  animation:ow-sun-rise 1.1s linear forwards;
+  animation:ow-arc-ascend 1.1s linear forwards;
 }
 #phase-transition.sunrise .transition-moon {
   top:auto;
   right:auto;
   bottom:14%;
   left:-6rem;
-  animation:ow-moon-set 1.1s linear forwards;
-  animation-delay:-.2s;
+  animation:ow-arc-descend 1.1s linear forwards;
 }
 #phase-transition.sunrise .transition-curtain {
   opacity:1;
@@ -1170,19 +1171,21 @@ h1,h2,h3,.ct,.btn,.menu-btn,.replay-btn,
   15% { opacity:1; }
   100% { opacity:1; filter:brightness(.2) saturate(.55); }
 }
-@keyframes ow-sun-set {
+/* One shared east-to-west arc, split in half.
+   Full path, from the eastern edge to the western edge:
+     t0.00 translate(0,0)  t0.25 (26vw,-30vh)  t0.50 (50vw,-46vh)
+     t0.75 (74vw,-30vh)    t1.00 (100vw + 6rem, 18vh)
+   `ascend` plays the first half and holds at the apex resting position;
+   `descend` starts from that same apex and continues off the western edge. */
+@keyframes ow-arc-ascend {
   0% { transform:translate(0,0); }
-  22% { transform:translate(24vw,-31vh); }
-  50% { transform:translate(50vw,-47vh); }
-  78% { transform:translate(76vw,-31vh); }
-  100% { transform:translate(calc(100vw + 6rem),18vh); opacity:.12; }
+  50% { transform:translate(26vw,-30vh); }
+  100% { transform:translate(50vw,-46vh); }
 }
-@keyframes ow-moon-rise {
-  0% { transform:translate(0,0); }
-  22% { transform:translate(24vw,-31vh); }
-  50% { transform:translate(50vw,-47vh); }
-  78% { transform:translate(76vw,-31vh); }
-  100% { transform:translate(calc(100vw + 6rem),18vh); }
+@keyframes ow-arc-descend {
+  0% { transform:translate(50vw,-46vh); }
+  50% { transform:translate(74vw,-30vh); }
+  100% { transform:translate(calc(100vw + 6rem),18vh); opacity:.1; }
 }
 @keyframes ow-curtain-in {
   0%,78% { opacity:0; }
@@ -1195,20 +1198,6 @@ h1,h2,h3,.ct,.btn,.menu-btn,.replay-btn,
 @keyframes ow-sky-lighten {
   0% { filter:brightness(.25); }
   100% { filter:brightness(1.15); }
-}
-@keyframes ow-sun-rise {
-  0% { transform:translate(0,0); }
-  22% { transform:translate(24vw,-31vh); }
-  50% { transform:translate(50vw,-47vh); }
-  78% { transform:translate(76vw,-31vh); }
-  100% { transform:translate(calc(100vw + 6rem),18vh); }
-}
-@keyframes ow-moon-set {
-  0% { transform:translate(0,0); }
-  22% { transform:translate(24vw,-31vh); }
-  50% { transform:translate(50vw,-47vh); }
-  78% { transform:translate(76vw,-31vh); }
-  100% { transform:translate(calc(100vw + 6rem),18vh); opacity:.1; }
 }
 @keyframes ow-curtain-out {
   0% { opacity:1; }
