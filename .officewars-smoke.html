@@ -18,7 +18,7 @@ document.getElementById('game').addEventListener('load', function () {
           schema: 1,
           tutorial: {
             completed: true,
-            nextStep: 6,
+            nextStep: 12,
             skipped: false,
             replayRequested: false
           }
@@ -734,10 +734,12 @@ document.getElementById('game').addEventListener('load', function () {
           homeLimit: 1,
           dealLimit: 0,
           extraPurchaseCredits: 1,
-          financeMode: false
+          financeMode: false,
+          panelOpen: false
         };
+        owEnterHomeMode();
         var expenseDealTabVisible =
-          owNightTabBar().includes("nightSwitchTab('deals')");
+          !!document.querySelector('.home-hotspot-deals');
         var expenseDealBought = await owPurchaseDeal(
           OW_DEAL_BY_ID.get('wellnessStipend'),
           1
@@ -748,6 +750,8 @@ document.getElementById('game').addEventListener('load', function () {
           nightState.extraPurchaseCredits === 0 &&
           nightState.purchasedDealIds.has('wellnessStipend') &&
           R.cash === 250;
+        hideOverlay();
+        owExitHomeMode();
 
         window.__smokeStage = 'nested-rapid-prototype';
         startRun({seed: 51016});
@@ -1048,12 +1052,12 @@ document.getElementById('game').addEventListener('load', function () {
           Sales: 0,
           Operations: 0
         };
-        var promotionChooseOne = owChooseOne;
-        owChooseOne = async function (title, prompt, options) {
-          return options[0].value;
+        var promotionResolver = owAutomatedChoiceResolver;
+        owAutomatedChoiceResolver = function () {
+          return 0;
         };
         await owRunPromotionReview();
-        owChooseOne = promotionChooseOne;
+        owAutomatedChoiceResolver = promotionResolver;
         var promotionToNextFloor =
           R.floor === 2 &&
           R.phase === 'floorIntro';

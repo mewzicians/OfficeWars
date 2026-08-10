@@ -7,14 +7,16 @@ description: Continue OfficeWars game-design and balance planning from the repos
 
 ## Load Context
 
-1. Read `/AGENTS.md`.
-2. Read `/docs/GAME_DESIGN.md` and `/docs/BALANCE_LEDGER.md` completely.
-3. Treat `/officewarsautobattler.html` as the implemented truth. Inspect only
+1. Locate the active OfficeWars workspace root from the current working
+   directory. Require `AGENTS.md`, `officewarsautobattler.html`,
+   `docs/GAME_DESIGN.md`, and `docs/BALANCE_LEDGER.md`. Do not resolve project
+   files relative to the installed skill directory.
+2. Read `AGENTS.md`.
+3. Read `docs/GAME_DESIGN.md` and `docs/BALANCE_LEDGER.md` completely.
+4. Treat `officewarsautobattler.html` as the implemented truth. Inspect only
    the relevant sections when a question depends on current code.
-4. Treat the ledger as the decision-status truth. Do not infer that a draft is
+5. Treat the ledger as the decision-status truth. Do not infer that a draft is
    approved because it appears in a prior plan.
-
-Resolve paths relative to the repository root containing this skill.
 
 ## Continue Planning
 
@@ -49,6 +51,9 @@ Resolve paths relative to the repository root containing this skill.
 ## Boundaries
 
 - Keep planning separate from implementation.
+- Use `$officewars-qa-cleanup` for active-document and package cleanup. Use
+  `$officewars-full-verification` for exhaustive release verification. Do not
+  absorb either workflow into this planning skill.
 - Do not edit the game HTML during brainstorming or balance discussion.
 - Implement gameplay only when the user explicitly requests implementation and
   the active collaboration mode permits it.
@@ -62,10 +67,12 @@ Resolve paths relative to the repository root containing this skill.
 
 - The active HTML contains the approved rollout, readability candidate,
   cycling playback-speed update, versioned active-run persistence, and
-  contextual first-day orientation. Its relationship copy, two-way manual
+  thirteen-step contextual orientation. Its relationship copy, two-way manual
   Lights Out purchase rule, active Campaign status band, consolidated player
-  project HUD, and synchronized Workday ticker are current at SHA-256
-  `30214B7FFF8FB4ED44690B90B64EE991E8F300ACE1A4E66E9100BBDAFCC81D12`.
+  project HUD, synchronized Workday ticker, reusable task-picker cards, and
+  Automation Skill-XP exception, grounded Home scene, and no-crossing
+  celestial sequence are current at SHA-256
+  `470F4146FBA177FD6B7062A0093DDCF7C2826B797FE9AE74317BD1D146050FF7`.
 - Do not restart or reimplement the overhaul from the rollout plan unless a
   verified finding requires a fix.
 - The first full bidirectional verification ran on 2026-08-06 and failed ship
@@ -80,20 +87,11 @@ Resolve paths relative to the repository root containing this skill.
   validation on 2026-08-07. Read
   `/verification/SKIP_FIX_LOCAL_VALIDATION_2026-08-07.md` for that snapshot's
   evidence and cross-version simulation comparison.
-- The current hash passes focused smoke, persistence, automated, advanced, and
-  17-case visual checks. Read
-  `/verification/RELATIONSHIP_NIGHT_CAMPAIGN_UI_2026-08-07.md` for current-hash
-  presentation and regression evidence,
-  `/verification/WORKDAY_TICKER_SYNC_2026-08-07.md` for the preceding ticker
-  snapshot,
-  `/verification/PROJECT_HUD_CONSOLIDATION_2026-08-07.md` for the preceding
-  HUD snapshot,
-  `/verification/PERSISTENCE_TUTORIAL_2026-08-07.md` for the preceding
-  persistence and orientation snapshot,
-  `/verification/PLAYBACK_SPEED_CONTROL_2026-08-07.md` for the preceding speed
-  snapshot, and
-  `/verification/FULL_VERIFICATION_2026-08-07_30214B7F.md` for the current
-  Pass, Fail, Not Run, and Blocked matrix.
+- The current hash passes smoke, persistence, automated, advanced, and 29-case
+  visual checks. Read
+  `/verification/FULL_VERIFICATION_2026-08-10_55D9A6ED.md` for the current
+  Pass, Fail, Not Run, and Blocked matrix. Earlier dated reports remain
+  evidence only for their named hashes.
 - The player-facing Night rule passes, but the headless Night policy grants
   manual Lights Out after purchasing. Current balance simulation is therefore
   Blocked. The prior 58.4 percent scripted-skilled result is historical
@@ -108,45 +106,3 @@ Resolve paths relative to the repository root containing this skill.
 - `$officewars-plan Continue the Coding traits.`
 - `$officewars-plan Review the task-card balance proposals.`
 - `$officewars-plan Summarize what is locked and what still needs decisions.`
-
-## Planning Shorthand
-
-- Treat `<family> review` as a request for a preliminary review of that
-  family's complete card roster before the final all-card simulation.
-- Test every card against standalone value, family identity, conditional
-  synergy, floor pacing, stress, deadlines, rival pressure, managers, Home
-  upgrades, all locked trait paths, additional-card rules, and card-repeat or
-  multiplier systems.
-- Lead with candid, prioritized findings in a senior autobattler set-designer
-  voice. Separate numeric concerns from rules contradictions and implementation
-  dependencies.
-- Do not reopen or change a locked card merely because it appears on a
-  watchlist. Recommend a change only when the preliminary review finds a
-  concrete failure, and wait for explicit approval before recording it.
-- All five ordinary family rosters and their qualitative cross-family review
-  are complete. Preserve the Locked roster and simulation watchlist. Defer
-  final numeric tuning until implementation is accurate and structural values
-  are settled.
-- Treat `qa cleanup` as a full active-document verification pass:
-  1. Read every active OfficeWars design document, handoff, decision-gate file,
-     implementation plan, verification checklist, repository instruction, and
-     portable copy.
-  2. Compare planning status with `GAME_DESIGN.md`, `BALANCE_LEDGER.md`, and the
-     implemented HTML. Keep old behavior only when clearly labeled as the
-     current Implemented Baseline.
-  3. Rewrite, consolidate, move, or remove completed planning steps,
-     superseded mechanics, duplicated explanations, and contradictory
-     instructions. Do not append audit notes onto stale sections. Active
-     documents should become shorter and clearer wherever possible.
-  4. Add only concise, useful historical context to
-     `ARCHIVE_SUPERSEDED.md`. Keep transient verification output in the final
-     response instead of turning it into design documentation.
-  5. Verify Locked, Draft, and Open labels; the 50-card family and rarity
-     counts; active file references; portable-copy equality; and documented
-     hashes.
-  6. Do not edit gameplay code during this cleanup unless the user separately
-     requests implementation.
-- Treat `full verification` as the exhaustive implementation audit defined in
-  `AGENTS.md`. Rebuild traceability from all active sources instead of trusting
-  a pre-existing checklist, run every applicable verification layer, and
-  report Pass, Fail, Not Run, or Blocked with evidence for every requirement.

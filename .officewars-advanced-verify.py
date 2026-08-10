@@ -895,16 +895,117 @@ async () => {
     owStartDayTraits();
     const commonCoding = card('readmeUpdate');
     const uncommonCoding = card('versionControl');
+    const runAutomationReroll = async (seed, wanted) => {
+      resetToday(seed);
+      R.paths.Coding = 'automation';
+      R.milestones.Coding = 6;
+      R.cash = 1000;
+      R.dailyTaskRerolls = 1;
+      R.rerollsMorning = 2;
+      R.paidTaskRerollsUsed = 0;
+      R.today.automationNextAdditionalCost = 100;
+      const requests = [];
+      owAutomatedChoiceResolver = request => {
+        if (!request.title.startsWith('Automation Combo')) {
+          return firstLegal(request);
+        }
+        requests.push(request.options.map(option => ({
+          label: option.label,
+          value: typeof option.value === 'string' ? option.value : 'card',
+          rarity: option.value && option.value.task
+            ? option.value.rarity
+            : null
+        })));
+        return requests.length === 1
+          ? chooseLabel(request, wanted)
+          : chooseLabel(request, 'End Combo');
+      };
+      await owRunAutomationCombo(commonCoding);
+      owAutomatedChoiceResolver = null;
+      return {
+        requests,
+        daily: R.dailyTaskRerolls,
+        banked: R.rerollsMorning,
+        paid: R.paidTaskRerollsUsed,
+        cash: R.cash,
+        combo: R.today.automationCombo,
+        nextCardCost: R.today.automationNextAdditionalCost
+      };
+    };
+    const dailyReroll = await runAutomationReroll(76002, 'Free Reroll');
+    const bankedReroll = await runAutomationReroll(76012, 'Task Reroll');
+    const paidReroll = await runAutomationReroll(76022, 'Reroll Offer');
+    const paidOffer = paidReroll.requests[1] || [];
+    const paidOfferSamples = Array.from({length: 50}, () =>
+      owAutomationOffer({paid: true})
+    ).flat();
+    resetToday(76032);
+    R.paths.Coding = 'automation';
+    R.milestones.Coding = 3;
+    R.cash = 1000;
+    R.today.automationNextAdditionalCost = 100;
+    const realAutomationOffer = owAutomationOffer;
+    let automationRequests = 0;
+    owAutomationOffer = () => [card('readmeUpdate')];
+    owAutomatedChoiceResolver = request => {
+      if (!request.title.startsWith('Automation Combo')) return firstLegal(request);
+      automationRequests++;
+      return automationRequests === 1
+        ? chooseLabel(request, 'README Update')
+        : chooseLabel(request, 'End Combo');
+    };
+    try {
+      await owRunAutomationCombo(card('readmeUpdate'));
+    } finally {
+      owAutomationOffer = realAutomationOffer;
+      owAutomatedChoiceResolver = null;
+    }
+    const additionalComboPlay = {
+      codingXp: R.familyXP.Coding,
+      codebase: R.codebase,
+      completions: R.cardCompletions.readmeUpdate || 0,
+      taskPlays: R.today.taskPlays.length,
+      cash: R.cash,
+      combo: R.today.automationCombo
+    };
     pathChecks.automation =
-      R.dailyTaskRerolls === 1 &&
       owIsAutomationStarter(commonCoding) &&
       !owIsAutomationStarter(uncommonCoding) &&
-      R.today.automationNextAdditionalCost === 100;
+      dailyReroll.requests.length === 2 &&
+      dailyReroll.daily === 0 &&
+      dailyReroll.banked === 2 &&
+      dailyReroll.paid === 0 &&
+      dailyReroll.cash === 1000 &&
+      dailyReroll.combo === 1 &&
+      bankedReroll.requests.length === 2 &&
+      bankedReroll.daily === 1 &&
+      bankedReroll.banked === 1 &&
+      bankedReroll.paid === 0 &&
+      bankedReroll.cash === 1000 &&
+      bankedReroll.combo === 1 &&
+      paidReroll.requests.length === 2 &&
+      paidReroll.daily === 1 &&
+      paidReroll.banked === 2 &&
+      paidReroll.paid === 1 &&
+      paidReroll.cash === 900 &&
+      paidReroll.combo === 1 &&
+      paidReroll.nextCardCost === 100 &&
+      paidOffer.every(option => option.rarity !== 'legendary') &&
+      paidOfferSamples.every(offered => offered.rarity !== 'legendary') &&
+      additionalComboPlay.codingXp === 0 &&
+      additionalComboPlay.codebase === 1 &&
+      additionalComboPlay.completions === 1 &&
+      additionalComboPlay.taskPlays === 1 &&
+      additionalComboPlay.cash === 900 &&
+      additionalComboPlay.combo === 2;
     evidence.automation = {
-      rerolls: R.dailyTaskRerolls,
       commonStarts: owIsAutomationStarter(commonCoding),
       uncommonStarts: owIsAutomationStarter(uncommonCoding),
-      cost: R.today.automationNextAdditionalCost
+      dailyReroll,
+      bankedReroll,
+      paidReroll,
+      paidOfferRarities: paidOfferSamples.map(offered => offered.rarity),
+      additionalComboPlay
     };
 
     resetToday(76003);
@@ -1184,6 +1285,438 @@ async () => {
           allPaths.every(path => Object.prototype.hasOwnProperty.call(pathChecks, path))
       }, pathChecks),
       evidence
+    };
+  });
+
+  await record('promotion_and_night_control_regressions', async () => {
+    resetToday(76501, {phase: 'promotionReview'});
+    const pathDetail = owPromotionPathOption('Coding', 'automation').detail;
+    R.paths.Coding = 'automation';
+    R.milestones.Coding = 0;
+    R.familyXP.Coding = 6;
+    const milestoneStage = owClonePromotionState();
+    await owStageMilestones(milestoneStage);
+    const milestoneText = OW_TRAITS.Coding.automation.milestones[6];
+    const milestoneRevealed = milestoneStage.changes.some(change =>
+      change.includes('Automation 6 XP:') && change.includes(milestoneText)
+    );
+    const milestoneLevels = owPromotionLevelsGained(milestoneStage, 'Coding');
+    const promotionReviewPromise = owChoosePromotionReview(milestoneStage);
+    const promotionReviewUi = {
+      structured: !!owChoiceState?.promotionStage,
+      cards: [...document.querySelectorAll('.promotion-milestone-card')]
+        .map(card => card.textContent),
+      tabs: document.querySelectorAll('.promotion-skill-tab').length,
+      directActions: [...document.querySelectorAll('.promotion-review-actions button')]
+        .map(button => button.textContent.trim()),
+      genericConfirm: [...document.querySelectorAll('#overlay-panel button')]
+        .some(button => button.textContent.trim() === 'CONFIRM')
+    };
+    owChooseImmediate(1);
+    const promotionReviewAnswer = await promotionReviewPromise;
+
+    resetToday(76502, {phase: 'promotionReview'});
+    R.paths.Coding = 'cleanCode';
+    R.paths.Design = 'moodboard';
+    R.milestones.Coding = 6;
+    R.milestones.Design = 6;
+    R.familyXP.Coding = 10;
+    R.familyXP.Design = 10;
+    R.capstone = {family: 'Coding', path: 'cleanCode', status: 'reserved'};
+    const originalReservation = Object.assign({}, R.capstone);
+    owAutomatedChoiceResolver = request =>
+      request.title === 'Capstone Decision'
+        ? chooseLabel(request, 'Flow State')
+        : firstLegal(request);
+    const capstoneStage = owClonePromotionState();
+    await owStageMilestones(capstoneStage);
+    await owStageCapstone(capstoneStage);
+    const runtimeCapstoneAfterStaging = R.capstone
+      ? Object.assign({}, R.capstone)
+      : null;
+    owAutomatedChoiceResolver = null;
+    let capstonePrompts = 0;
+    let reviewPrompts = 0;
+    let nextFloorCalled = false;
+    const realNextFloor = nextFloor;
+    owAutomatedChoiceResolver = request => {
+      if (request.title === 'Capstone Decision') {
+        capstonePrompts++;
+        return chooseLabel(
+          request,
+          capstonePrompts === 1 ? 'Flow State' : 'Zero Technical Debt'
+        );
+      }
+      if (request.title === 'Promotion Review') {
+        reviewPrompts++;
+        return chooseLabel(
+          request,
+          reviewPrompts === 1 ? 'Revise Choices' : 'Confirm Promotion'
+        );
+      }
+      return firstLegal(request);
+    };
+    nextFloor = () => {
+      nextFloorCalled = true;
+      R.phase = 'floorIntro';
+    };
+    try {
+      await owRunPromotionReview();
+    } finally {
+      nextFloor = realNextFloor;
+      owAutomatedChoiceResolver = null;
+    }
+    const revisedPromotion = {
+      capstonePrompts,
+      reviewPrompts,
+      nextFloorCalled,
+      capstone: R.capstone ? Object.assign({}, R.capstone) : null
+    };
+
+    resetToday(76503, {phase: 'night'});
+    R.today.additionalNightPurchases = 0;
+    R.cash = 5000;
+    nightPhase();
+    owOpenNightPanel('outings');
+    pickOutingPid('karen');
+    const freeOuting = OUTINGS.findIndex(outing => outing.cost === 0);
+    nightState.outingCards = [freeOuting];
+    nightState.pendingOuting = 0;
+    const realReducedMotion = owReducedMotion;
+    owReducedMotion = () => true;
+    confirmOuting();
+    const stateAfterOuting = {
+      used: nightState.outingUsed,
+      pid: nightState.outingPid,
+      pending: nightState.pendingOuting,
+      storyVisible:
+        document.getElementById('overlay').classList.contains('active') &&
+        document.getElementById('overlay-panel').textContent.includes('HEAD HOME')
+    };
+    owReturnFromOuting();
+    await new Promise(resolve => setTimeout(resolve, 10));
+    owToggleLightsOut(true);
+    const nightText = document.getElementById('home-scene').textContent;
+    const staleOutingClosed =
+      nightState.recPicked &&
+      nightState.outingUsed &&
+      nightState.outingPid === null &&
+      nightState.pendingOuting === null &&
+      stateAfterOuting.storyVisible &&
+      document.getElementById('home-scene').classList.contains('active') &&
+      !document.getElementById('overlay').classList.contains('active') &&
+      !nightText.includes('What are you doing with') &&
+      nightText.includes('OUTING DONE');
+    owReducedMotion = realReducedMotion;
+
+    const realStartDay = startDay;
+    const realWeekendEvent = weekendEvent;
+    const realFloorComplete = floorComplete;
+    let automaticLightsOut;
+    let purchasedNight;
+    let returnedNight;
+    try {
+      startDay = () => { R.phase = 'morning'; };
+      weekendEvent = () => { R.phase = 'weekend'; };
+      floorComplete = () => { R.phase = 'promotion'; };
+
+      resetToday(76504, {phase: 'night', stress: 50});
+      R.stats.days = 1;
+      R.today.additionalNightPurchases = 0;
+      nightPhase();
+      nightState.outingUsed = true;
+      nightState.homeLimit = 0;
+      nightState.dealLimit = 0;
+      await owFinalizeNightUnlocked();
+      automaticLightsOut = {
+        picked: nightState.recPicked,
+        stress: R.stress,
+        phase: R.phase
+      };
+
+      resetToday(76505, {phase: 'night', stress: 50});
+      R.stats.days = 1;
+      R.today.additionalNightPurchases = 0;
+      nightPhase();
+      nightState.outingUsed = true;
+      nightState.homeUsed = 1;
+      nightState.homeLimit = 1;
+      nightState.dealLimit = 0;
+      await owFinalizeNightUnlocked();
+      purchasedNight = {
+        picked: nightState.recPicked,
+        stress: R.stress,
+        phase: R.phase
+      };
+
+      resetToday(76506, {phase: 'night', stress: 50});
+      R.stats.days = 1;
+      R.today.additionalNightPurchases = 0;
+      nightPhase();
+      nightState.homeLimit = 1;
+      nightState.dealLimit = 0;
+      owAutomatedChoiceResolver = request =>
+        request.title === 'Finalize Night'
+          ? chooseLabel(request, 'Return to Night Desk')
+          : firstLegal(request);
+      await owFinalizeNightUnlocked();
+      returnedNight = {
+        picked: nightState.recPicked,
+        stress: R.stress,
+        phase: R.phase
+      };
+    } finally {
+      startDay = realStartDay;
+      weekendEvent = realWeekendEvent;
+      floorComplete = realFloorComplete;
+      owAutomatedChoiceResolver = null;
+    }
+
+    const pickerModes = {};
+    for (const mode of ['full', 'effect', 'stats', 'identity']) {
+      const pickerPromise = owChooseOne(
+        'Task Picker '+mode,
+        'Resolution-role preview.',
+        [owCardOption(card('rapidPrototype'), mode)]
+      );
+      const picker = document.querySelector('.task-choice-card');
+      pickerModes[mode] = {
+        cards: document.querySelectorAll('.task-choice-card').length,
+        metrics: picker.querySelectorAll('.task-metric').length,
+        effects: picker.querySelectorAll('.task-effect-block').length,
+        family: picker.querySelector('.task-family-banner')?.textContent.trim(),
+        title: picker.querySelector('.task-card-title')?.textContent.trim()
+      };
+      owChooseImmediate(0);
+      await pickerPromise;
+    }
+
+    return {
+      checks: {
+        path_choice_shows_only_first_breakpoint:
+          pathDetail.includes('3 XP:') &&
+          !pathDetail.includes('6 XP:') &&
+          !pathDetail.includes('10 XP:') &&
+          !pathDetail.includes('Capstone:'),
+        reached_milestone_reveals_exact_description: milestoneRevealed,
+        promotion_review_shows_only_new_milestones:
+          milestoneLevels.join(',') === '3,6' &&
+          promotionReviewUi.cards.length === 2 &&
+          promotionReviewUi.cards.some(card =>
+            card.includes(OW_TRAITS.Coding.automation.milestones[3])
+          ) &&
+          promotionReviewUi.cards.some(card =>
+            card.includes(OW_TRAITS.Coding.automation.milestones[6])
+          ) &&
+          !promotionReviewUi.cards.some(card =>
+            card.includes(OW_TRAITS.Coding.automation.milestones[10])
+          ),
+        promotion_review_uses_structured_direct_actions:
+          promotionReviewUi.structured &&
+          promotionReviewUi.tabs === 5 &&
+          promotionReviewUi.directActions.join(',') ===
+            'CONFIRM PROMOTION,REVISE CHOICES' &&
+          !promotionReviewUi.genericConfirm &&
+          promotionReviewAnswer === 'revise',
+        provisional_capstone_can_be_revised:
+          originalReservation.path === 'cleanCode' &&
+          runtimeCapstoneAfterStaging.path === 'cleanCode' &&
+          runtimeCapstoneAfterStaging.status === 'reserved' &&
+          capstoneStage.capstone.path === 'moodboard' &&
+          capstoneStage.capstone.status === 'active',
+        revise_choices_reopens_capstone_decision:
+          revisedPromotion.capstonePrompts === 2 &&
+          revisedPromotion.reviewPrompts === 2 &&
+          revisedPromotion.nextFloorCalled &&
+          revisedPromotion.capstone.path === 'cleanCode' &&
+          revisedPromotion.capstone.status === 'active',
+        completed_outing_cannot_reopen_picker: staleOutingClosed,
+        finalize_auto_applies_lights_out_when_legal:
+          automaticLightsOut.picked &&
+          nearly(automaticLightsOut.stress, 41) &&
+          automaticLightsOut.phase === 'morning',
+        purchase_blocks_automatic_lights_out:
+          !purchasedNight.picked &&
+          nearly(purchasedNight.stress, 46) &&
+          purchasedNight.phase === 'morning',
+        return_to_night_does_not_apply_lights_out:
+          !returnedNight.picked &&
+          nearly(returnedNight.stress, 50) &&
+          returnedNight.phase === 'night',
+        task_picker_modes_match_resolution_roles:
+          pickerModes.full.metrics === 2 &&
+          pickerModes.full.effects === 1 &&
+          pickerModes.effect.metrics === 0 &&
+          pickerModes.effect.effects === 1 &&
+          pickerModes.stats.metrics === 2 &&
+          pickerModes.stats.effects === 0 &&
+          pickerModes.identity.metrics === 0 &&
+          pickerModes.identity.effects === 0 &&
+          Object.values(pickerModes).every(mode =>
+            mode.cards === 1 &&
+            mode.family.includes('DESIGN') &&
+            mode.title === 'Rapid Prototype'
+          )
+      },
+      evidence: {
+        pathDetail,
+        milestoneChanges: milestoneStage.changes,
+        milestoneLevels,
+        promotionReview: {
+          ui: promotionReviewUi,
+          answer: promotionReviewAnswer
+        },
+        capstone: {
+          original: originalReservation,
+          staged: Object.assign({}, capstoneStage.capstone),
+          runtime: runtimeCapstoneAfterStaging,
+          revisedPromotion
+        },
+        outing: {
+          stateAfterOuting,
+          finalState: {
+            used: nightState.outingUsed,
+            pid: nightState.outingPid,
+            recPicked: nightState.recPicked
+          },
+          text: nightText.slice(0, 300)
+        },
+        automaticLightsOut,
+        purchasedNight,
+        returnedNight,
+        pickerModes
+      }
+    };
+  });
+
+  await record('pin_provenance_glossary_and_tutorial_contract', async () => {
+    const revisionPins = async (seed, source, masterpiece) => {
+      resetToday(seed, {phase: 'morning'});
+      R.paths.Design = 'eyeForDetail';
+      R.milestones.Design = 3;
+      R.yesterdayPrimaryTaskId = 'iterationPass';
+      R.yesterdayPrimarySource = source;
+      R.pins = [];
+      if (masterpiece) {
+        R.capstone = {
+          family: 'Design',
+          path: 'eyeForDetail',
+          status: 'active'
+        };
+        R.masterpieceTaskId = 'iterationPass';
+      }
+      await morningPick();
+      return R.pins.map(pin => ({
+        taskId: pin.taskId,
+        reason: pin.reason,
+        persistent: !!pin.persistent,
+        revision: !!(pin.modifiers && pin.modifiers.revisionPin),
+        masterpiece: !!(pin.modifiers && pin.modifiers.masterpiecePin)
+      }));
+    };
+
+    resetToday(76990);
+    const trackedCard = card('iterationPass');
+    const trackedContext = await owPrepareCardContext(trackedCard, {
+      primarySource: 'pin'
+    });
+    await owCompletePlay(trackedCard, trackedContext);
+    const trackedPinnedSource = R.lastPrimarySource;
+
+    resetToday(76991);
+    const offeredContext = await owPrepareCardContext(trackedCard, {
+      primarySource: 'offer'
+    });
+    await owCompletePlay(trackedCard, offeredContext);
+    const trackedOfferSource = R.lastPrimarySource;
+
+    const offeredPins = await revisionPins(76992, 'offer', false);
+    const pinnedPins = await revisionPins(76993, 'pin', false);
+    const offeredAgainPins = await revisionPins(76994, 'offer', false);
+    const masterpiecePins = await revisionPins(76995, 'pin', true);
+
+    const glossaryHost = document.createElement('div');
+    glossaryHost.innerHTML = owKeywordMarkup(
+      'Codebase, Polish, Scope Renegotiation, and Reserve Levels.'
+    );
+    const glossaryTerms = [...glossaryHost.querySelectorAll('.rules-keyword')]
+      .map(node => ({
+        text: node.textContent,
+        tip: node.dataset.tip,
+        tabIndex: node.tabIndex
+      }));
+    const optionHost = document.createElement('div');
+    optionHost.innerHTML = owOptionCard({
+      label: 'Glossary fixture',
+      detail: 'Codebase and Polish.',
+      value: true
+    }, 0, false);
+    const optionButton = optionHost.querySelector('button');
+    const optionTerms = [...optionHost.querySelectorAll('.rules-keyword')];
+
+    const tutorialSteps = OfficeWarsTest.orientationSteps();
+    const workdayStep = tutorialSteps.find(step => step.id === 'workday');
+    const relationshipStep = tutorialSteps.find(step =>
+      step.id === 'nightRelationships'
+    );
+
+    return {
+      checks: {
+        primary_source_is_recorded:
+          trackedPinnedSource === 'pin' &&
+          trackedOfferSource === 'offer',
+        offered_task_creates_revision_pin:
+          offeredPins.filter(pin => pin.revision).length === 1,
+        pinned_task_does_not_repin_itself:
+          pinnedPins.filter(pin => pin.revision).length === 0,
+        same_task_from_later_offer_can_pin_again:
+          offeredAgainPins.filter(pin => pin.revision).length === 1,
+        masterpiece_pin_is_independent:
+          masterpiecePins.filter(pin => pin.revision).length === 0 &&
+          masterpiecePins.filter(pin =>
+            pin.masterpiece && pin.persistent
+          ).length === 1,
+        glossary_terms_are_focusable_and_defined:
+          glossaryTerms.length === 4 &&
+          glossaryTerms.every(term =>
+            term.tabIndex === 0 &&
+            term.tip &&
+            term.tip.includes(':')
+          ),
+        keyword_choice_cards_avoid_nested_focus_targets:
+          !!optionButton &&
+          !!optionButton.dataset.tip &&
+          optionTerms.length === 2 &&
+          optionTerms.every(term => term.tabIndex === -1),
+        tutorial_replaces_deals_with_capstone:
+          tutorialSteps.length === 13 &&
+          !tutorialSteps.some(step => step.id === 'nightDeals') &&
+          tutorialSteps.some(step => step.id === 'nightSleep') &&
+          tutorialSteps.some(step => step.id === 'capstone'),
+        workday_tutorial_covers_every_ordinary_action:
+          !!workdayStep &&
+          [
+            'Work', 'Lunch', 'Water Cooler',
+            'Office Chat', 'Slump', 'Team Meeting'
+          ].every(label => workdayStep.copy.includes(label)),
+        relationship_tutorial_explains_bonus_trigger:
+          !!relationshipStep &&
+          relationshipStep.copy.includes('meet them during the Workday')
+      },
+      evidence: {
+        trackedPinnedSource,
+        trackedOfferSource,
+        offeredPins,
+        pinnedPins,
+        offeredAgainPins,
+        masterpiecePins,
+        glossaryTerms,
+        option: {
+          tip: optionButton && optionButton.dataset.tip,
+          termTabIndexes: optionTerms.map(term => term.tabIndex)
+        },
+        tutorialSteps
+      }
     };
   });
 

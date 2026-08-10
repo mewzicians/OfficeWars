@@ -1,0 +1,4 @@
+interface:
+  display_name: "OfficeWars QA Cleanup"
+  short_description: "Synchronize and clean OfficeWars project truth"
+  default_prompt: "Use $officewars-qa-cleanup to audit, rewrite, and synchronize every active OfficeWars document, skill, handoff, mirror, manifest, and package without changing gameplay."

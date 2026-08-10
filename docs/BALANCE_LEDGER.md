@@ -1,6 +1,6 @@
 # OfficeWars Balance Ledger
 
-Last updated: 2026-08-07
+Last updated: 2026-08-10
 
 ## Status Rules
 
@@ -23,7 +23,7 @@ The real HTML now contains the approved overhaul candidate:
   Chad cap;
 - the exact 50-card fixed-rarity roster with equal family weighting, Special
   generation, Pinned Tasks, and shared resolution primitives;
-- uncapped family XP, promotion claims, every ordinary trait path, the
+- uncapped Skill XP, promotion claims, every ordinary career path, the
   run-wide capstone owner, and coworker activation ordering;
 - Brand Strategy, Deal Desk, Schmoozing Contacts, Closing and its reward
   tables, Logistics storage, Standard Procedures, and named resources;
@@ -34,8 +34,32 @@ The real HTML now contains the approved overhaul candidate:
   and eight-cubicle office;
 - one versioned active-run save, Continue Run, deterministic prepared-Workday
   restoration, persistent result summaries, and safe casino restoration; and
-- the six-step contextual first-day orientation with persistent completion,
-  Skip Orientation, and replay through How to Play.
+- the thirteen-step contextual orientation across the first day, Home Shop,
+  Outings, Relationships, ending the night, first path choice, first boss
+  floor, and first Capstone, with persistent completion, Skip Orientation,
+  and reset through Options for the next New Run;
+- visual schedule trackers for every schedule preview, comparison, guarantee,
+  replacement, and final Schedule Desk decision;
+- a dedicated interactive flat side-view Home scene with room controls,
+  accessible wall-storage item slots, grounded furniture, a window moon, a top
+  Stress bar, room dimming, sunset, Outing, bedtime, and sunrise transitions;
+- a distinct current-manager portrait at the manager desk on ordinary floors
+  and a presentation-only manager patrol on boss floors;
+- a persistent master-volume preference in Options, ready for future audio;
+- player-facing progression language now calls the five job categories
+  `Skills` and their progression `Skill XP`; internal code identifiers retain
+  `family` for compatibility;
+- final Promotion Review uses one page per Skill, shows only milestones earned
+  in that promotion as visual cards, gives a newly claimed capstone a prominent
+  card, and provides direct Confirm Promotion and Revise Choices actions; and
+- Morning Build Context exposes active delayed effects and their targets,
+  Delegates, Contacts, and relevant run resources before task selection;
+  Pinned Tasks use compact identity rows that open full task cards; Resume
+  milestone squares expose exact path effects through hover, focus, and tap;
+  named trait mechanics use a shared high-contrast tooltip glossary; and
+- accepting Finalize Night automatically selects Lights Out when it remains
+  legal and the player did not select it manually. A Home or Deal purchase
+  still blocks it unless an explicit exception applies.
 
 Current core values are floor stress scaling 20 percent, automatic sleep 4
 percent, Lights Out 5 percent, promotion recovery 25 percent, interest 15
@@ -44,10 +68,63 @@ percent, five base workday actions, and rank pairs
 
 ### Current Candidate Verification
 
-Checked on 2026-08-07:
+Checked on 2026-08-10:
 
 - `officewarsautobattler.html` has SHA-256
-  `30214B7FFF8FB4ED44690B90B64EE991E8F300ACE1A4E66E9100BBDAFCC81D12`.
+  `470F4146FBA177FD6B7062A0093DDCF7C2826B797FE9AE74317BD1D146050FF7`.
+- Options provides a persistent master-volume slider and tutorial reset. The
+  reset schedules the thirteen-step orientation for the next New Run; How to
+  Play no longer duplicates that command.
+- The Resume rail gives all five Skills distinct, bright 8-bit office
+  scenes behind their progression information. The scenes are decorative,
+  pointer-inert, and remain behind a readability scrim in expanded and
+  collapsed layouts.
+- Morning Build Context shows active delayed effects and selected targets,
+  including API Follow-Up's chosen Skill, plus the player's named Delegates
+  and Contacts. It caps visible entries and routes overflow to the Resume.
+- Pinned Tasks show compact Skill, name, and rarity rows. Activating one opens
+  the ordinary full task card before selection, with keyboard, Escape, touch,
+  and focus-restoration support.
+- Eye for Detail tracks whether the previous primary task came from the
+  generated offer, Pinned Tasks, or storage. A task selected through Pinned
+  Tasks does not create another Revision pin; selecting that task later from
+  a generated offer can create Revision normally. Masterpiece pins are
+  unaffected.
+- Resume 3, 6, and 10 XP squares expose the exact selected-path effect through
+  hover, focus, and tap. Unchosen Skills state that specialization has not been
+  selected yet.
+- Named trait mechanics such as Codebase, Polish, Scope Renegotiation, and
+  Reserve Levels use one cyan keyword treatment and one data-driven glossary.
+  Hover, keyboard focus, and tap expose short definitions without changing
+  the underlying trait text.
+- Night now replaces the office with the player's living space. Its room
+  controls open Home Shop, Relationships, Outings, unlocked Deals, Lights Out,
+  and End Day. All four Home tiers use the same readable side-view elevation:
+  bed, phone, PC desk, Deal laptop, plant, and door are grounded on one shallow
+  patterned floor boundary instead of sitting inside a deep floor band. Item
+  slots use a wall shelf, the Home name sits below the furniture, the moon
+  stays inside the window, and Lights Out dims the room. Cash, Expense Credit,
+  a top Stress bar, and projected post-sleep Stress remain prominent.
+- Every manager has a distinct office portrait and color. Ordinary floors keep
+  the manager seated at the desk; boss floors use a cosmetic patrol that is
+  absent from the gameplay cast and consumes no gameplay RNG.
+- Clock Out enters Home through sunset and a door-opening presentation.
+  Outings fade to their story and back to the room; End Day uses sunrise to
+  return to the office. The sun and moon travel east-to-west on the same
+  full-width five-stage arc without crossing. The sun leads at sunset; the
+  moon leads at sunrise. Reduced-motion and automated paths skip animation
+  timing without changing state.
+- Schedule decisions use action-icon trackers with source badges and
+  highlighted differences instead of prose lists. Multiple schedules appear
+  as stacked selectable timelines.
+- Automation Combo presents End Combo and daily, banked, and paid rerolls
+  before its task cards. Its additional cards grant no Skill XP. Rerolls
+  replace all three slots without advancing Combo; paid rerolls remain a
+  6 XP unlock and exclude Legendary cards.
+- Every separate task picker uses the Morning task-card hierarchy. Complete
+  plays show stats and effects, copied-effect sources show effects only,
+  Schmoozing Assist targets show stats only, and category-only choices show
+  identity only.
 - The current playback-control update replaces three speed buttons with one
   cycling button. Its displayed 1x, 2x, and 4x speeds use effective timing
   multipliers 2, 4, and 8 relative to the previous baseline.
@@ -59,17 +136,17 @@ Checked on 2026-08-07:
 - Each Workday action clears the preceding ticker outcome when it begins and
   publishes its own result in the same settlement step that updates the HUD.
   Repeated actions follow the same rule for every resolution.
-- The current hash passes the browser smoke suite, all 23 focused persistence
-  checks, all eight advanced interaction groups, and the 17-case readability
-  matrix. Current relationship, Night, Campaign, and regression evidence is
-  recorded in
-  `verification/RELATIONSHIP_NIGHT_CAMPAIGN_UI_2026-08-07.md`.
-- The focused persistence suite passes 23 checks. It covers valid, corrupt,
+- The current hash passes the focused Home and celestial-sequence runner, the
+  browser smoke suite, all 24 focused persistence checks, all eight advanced
+  interaction groups, the readability visual matrix, and the full verifier's
+  no-simulation player-surface and responsive-layout pass. Focused current-hash
+  evidence is recorded in
+  `verification/HOME_GROUNDING_CELESTIAL_SEQUENCE_2026-08-10.md`.
+- The focused persistence suite passes 24 checks. It covers valid, corrupt,
   and incompatible saves; deterministic Morning and prepared-Workday restore;
-  Night and result restore; new-run replacement; return to menu; pending Slots
-  settlement; active Blackjack and Poker restore; and every orientation
-  transition. Exact evidence is recorded in
-  `verification/PERSISTENCE_TUTORIAL_2026-08-07.md`.
+  Night panel restore; exactly-once `nightResolved` continuation; result
+  restore; new-run replacement; return to menu; pending Slots settlement;
+  active Blackjack and Poker restore; and every orientation transition.
 - Skip resolves through the locked-workday continuation rather than
   presentation timers. Meetings, Office Chats, the daily visitor, sabotage,
   and their gameplay outcomes are prepared before presentation. Participant
@@ -80,24 +157,31 @@ Checked on 2026-08-07:
   random state across 1x, 2x, 4x, and Skip and covers meetings, chats, visits,
   sabotage, repeated input, rollback, ambient contention, invalid participant
   records, converted meetings, and burnout cleanup.
-- The readability overhaul passes a 17-case visual matrix covering desktop,
+- The readability overhaul passes a 36-case visual matrix covering desktop,
   compact desktop, landscape phone, portrait rotation, ordinary and Campaign
   Morning, Resume, resolved Workday, Clock Out, ordinary and Lights-Out Night,
-  and 200-percent text scaling. It reports no sampled clipped text, viewport
-  overflow, or persistent-HUD overlap.
+  Build Context, compact and expanded Pinned Tasks, milestone tooltips, and
+  200-percent text scaling. The focused Home and schedule matrix additionally
+  covers room hotspots, Home Shop, Lights Out lockout, item sales, completed
+  Outings, and stacked schedule choices. It reports no sampled clipped text,
+  viewport overflow, or persistent-HUD overlap.
 - The first full bidirectional verification is recorded in
   `verification/FULL_VERIFICATION_2026-08-06.md`. Its implementation and
   readability findings F1-F4 are resolved and passed the focused retest in
   `verification/BLOCKERS_1_4_RETEST_2026-08-06.md`.
-- The current full verification is recorded in
-  `verification/FULL_VERIFICATION_2026-08-07_30214B7F.md`. Player-facing
-  implementation, deterministic playback, persistence, sampled accessibility,
-  responsive behavior, and distribution pass. The headless Night policy fails
-  the same purchase-versus-Lights-Out rule that the player UI correctly
-  enforces, so current balance simulation is Blocked. The report preserves all
-  Not Run and Blocked rows.
-- `verification/FULL_VERIFICATION_2026-08-07.md` remains exact historical
-  evidence for its named preceding hash.
+- The preceding exhaustive full verification is in
+  `verification/FULL_VERIFICATION_2026-08-10_55D9A6ED.md`. Its headless
+  Night-policy blocker is fixed on the current hash: simulated finalization now
+  uses the same purchase-versus-Lights-Out gate as player finalization. Fresh
+  structural balance simulation remains Not Run, and the preceding report's
+  other Not Run and Blocked rows retain their status.
+- The current exhaustive implementation report is
+  `verification/FULL_VERIFICATION_2026-08-10_0A8F74E5.md`. It finds no current
+  implementation blocker while retaining structural simulation, formal
+  screen-reader execution, exhaustive picker and save-boundary traversal,
+  rapid-input fuzzing, and memory profiling as Not Run or Blocked.
+- Earlier dated reports remain exact historical evidence for their named
+  hashes.
 - All eight targeted high-risk interaction groups passed deterministic runtime
   fixtures in
   `verification/ADVANCED_INTERACTION_VERIFICATION_2026-08-06.md`: maximal
@@ -109,17 +193,16 @@ Checked on 2026-08-07:
   percent, random won 12.2 percent, and scripted-skilled won 58.4 percent.
   `Regression Tests` was that policy's largest selection outlier. Those values
   remain useful historical telemetry for their exact snapshot, but they are
-  not valid current balance evidence after the two-way Night choice became
-  Locked: the headless policy buys a Home item and then grants itself manual
-  Lights Out.
+  not valid current balance evidence because they predate the corrected
+  two-way Night policy.
 - Current Skip validation and the cross-version simulation comparison are
   recorded in
   `verification/SKIP_FIX_LOCAL_VALIDATION_2026-08-07.md`.
-- Repairing and rerunning the headless Night policy, structural tuning, human
-  playtest evidence, and the exhaustive verification rows named in the current
-  full report remain pending. The player-facing readability, playback-control,
-  persistence, and first-day orientation updates have no remaining approved
-  feature work.
+- Rerunning structural balance on the corrected Night policy, structural
+  tuning, human playtest evidence, and the exhaustive verification rows named
+  in the preceding full report remain pending. The player-facing readability,
+  playback-control, persistence, orientation, and Options updates have no
+  remaining approved feature work.
 - `officewars-ui-prototype.html` has SHA-256
   `1E4D168C61B4EEA81FFE97E7518CCB5B3C3BBC34BEF0720C43337707554BDBC4`.
   It implements only the separate mock HUD and office-layout prototype; its
@@ -199,18 +282,31 @@ Checked on 2026-08-07:
 - If the game is restored during a prepared Workday, restore its deterministic
   checkpoint and automatically Skip its remaining playback to Clock Out. Do
   not attempt to serialize live animation timers or resolver closures.
-- Teach only the basic game loop through six contextual first-workday
-  callouts: the project race and stress, morning task anatomy, the Resume,
-  Workday playback, Clock Out, and Night. Keep advanced traits and card
+- Teach the basic journey through thirteen contextual callouts: the project
+  race and stress, morning task anatomy, the Resume, Workday playback, Clock
+  Out, Home Shop, Outings, Relationships, ending the night, the first
+  three-path Promotion choice, the 6 and 10 XP milestone model, the first boss
+  floor, and the first claimed Capstone. Keep advanced traits and card
   interactions for players to discover.
+- During the Night tutorial, spotlight the room's Home Shop computer, Outings
+  door, Relationships phone, and End Day bed. Do not teach Deals in the basic
+  orientation because they require a card or trait unlock.
+- On the first actual or provisional Capstone claim, explain that the first
+  claimed Capstone becomes the run's only Capstone. If the claim occurs during
+  Workday resolution, wait for the next stable player-facing phase.
 - For each callout, darken the rest of the screen and leave the relevant
   existing interface spotlighted. Keep the copy to at most two short sentences
   and provide `Next` and `Skip Orientation`.
 - Pause once before the first Workday begins to explain its autonomous
-  playback and `1x`, `2x`, `4x`, and Skip controls. Do not interrupt playback
-  after it starts.
+  playback and `1x`, `2x`, `4x`, and Skip controls. Open the live Action Guide
+  and explain Work on Task, Lunch, Water Cooler, Office Chat, Slumped at Desk,
+  and Team Meeting. Do not interrupt playback after it starts.
+- Present Night as the player's living space rather than the office. Use room
+  objects for Home Shop, Relationships, Outings, unlocked Deals, Lights Out,
+  and End Day. Transition into Home through sunset and a door opening, fade
+  Outings to black and back, and return to the office through sunrise.
 - Do not rig first-run cards or outcomes. Store completed tutorial steps across
-  refreshes and allow the orientation to be replayed through How to Play.
+  refreshes and allow Options to reset the orientation for the next New Run.
 - Require confirmation before `New Run` replaces an existing active save.
 - Preserve a victory or defeat result across refreshes. From the run summary,
   let the player return cleanly to the main menu; clear the active-run save only
@@ -479,9 +575,10 @@ Use one flexible `Night Desk`:
    purchases, Outings, or Expense Credit but allow the player to continue.
    Do not warn about unused Home or Deal purchases after the player has
    manually selected Lights Out.
-7. On confirmation, expire night-only effects and unspent Expense Credit,
-   apply automatic sleep, then apply Lights Out when selected or granted, and
-   advance to the appropriate Weekend, promotion, or morning.
+7. On confirmation, if Lights Out remains legal and was not selected manually,
+   select it automatically. Then expire night-only effects and unspent Expense
+   Credit, apply automatic sleep and Lights Out recovery, and advance to the
+   appropriate Weekend, promotion, or morning.
 
 - A newly purchased Home upgrade or move applies immediately, including to
   automatic sleep and, when an explicit exception allows both, Lights Out
@@ -1295,19 +1392,19 @@ These are risks to measure after full verification, not approved nerfs:
 - Do not repeat implied state such as `Choose a path at 3 XP` or `No path
   selected` in the persistent rail. Use its segments, milestone markers,
   selected path name, and available-choice emphasis to communicate that state.
-- Show family XP as ten discrete one-point segments without visible XP
+- Show Skill XP as ten discrete one-point segments without visible XP
   counters. Mark the 3/6/10 milestone gates and emphasize the next required
   gate. At 10, use an overflow marker rather than a number.
 - Use a dark-mode Resume Book for complete trait details.
-- Make each full family summary in the Resume rail one accessible control.
-  Activating it opens the Resume Book directly to that family's tab.
-- Style the Resume Book as a dark interactive resume with all five family tabs
-  across the top. Each tab shows the family's identity, exact uncapped XP,
+- Make each full Skill summary in the Resume rail one accessible control.
+  Activating it opens the Resume Book directly to that Skill's tab.
+- Style the Resume Book as a dark interactive resume with all five Skill tabs
+  across the top. Each tab shows the Skill's identity, exact uncapped XP,
   milestone progress, selected path, and complete mechanical effects.
-- Give each family one concise flavor sentence about the player's current skill
+- Give each Skill one concise flavor sentence about the player's current skill
   in that discipline. Change it at meaningful XP bands so the resume develops
   with the run, but never substitute flavor for exact mechanical information.
-- Show exact uncapped family XP in the Resume Book and Promotion Review because
+- Show exact uncapped Skill XP in the Resume Book and Promotion Review because
   Debugging and other effects can use XP above 10.
 - Keep the capstone owner or pending reservation visible in the Resume rail and
   Resume Book.
@@ -1322,7 +1419,7 @@ These are risks to measure after full verification, not approved nerfs:
   showing the current residence, slot usage, owned upgrades, and exact effects.
   Home purchases remain exclusive to the Night phase.
 - Place Today's task directly under the Manager control in the top-left HUD.
-  Show only `TODAY // FAMILY: TASK`, outline it with the task family's color,
+  Show only `TODAY // SKILL: TASK`, outline it with the task Skill's color,
   and reveal the complete daily effect on hover or keyboard focus.
 - Give the Today control a neutral preselection state, distinct ordinary,
   Campaign, Sales Cycle, and Close states, and state-appropriate tooltip
@@ -1457,16 +1554,18 @@ Capstone eligibility and reservation follow these rules:
 - Brand Strategy becomes a candidate when its final Campaign completes.
   Closing becomes a candidate on its first successful actual Chain 9 Close.
 - If one atomic effect creates exactly one eligible candidate while the slot
-  is open, reserve the capstone for it immediately. Ordinary capstones activate
-  at the next promotion; Brand Strategy and Closing retain their immediate
-  activation timing.
+  is open, reserve the capstone for it immediately. An ordinary reservation is
+  provisional until the next Promotion Claim Batch is confirmed; Brand
+  Strategy and Closing retain their immediate activation timing.
 - If one atomic effect creates multiple candidates, finish that effect and
   pause at the next interactive boundary before workday playback or another
   qualifying event. The pending comparison reserves the slot for only those
   tied candidates.
-- A previous reservation defeats every candidate created later, including a
-  later promotion batch. A player cannot decline, bank, or release an owned or
-  reserved capstone.
+- Before final Promotion confirmation, compare a provisional ordinary
+  reservation with every other ordinary path newly reaching 10 XP in that
+  Promotion Claim Batch. `Revise Choices` reopens this comparison. A confirmed
+  ordinary capstone, or an immediately activated Brand Strategy or Closing
+  capstone, defeats every candidate created later and cannot be released.
 - If an atomic promotion batch creates multiple candidates while the slot is
   open, compare them after all path and non-capstone milestone choices are
   staged. Family order and interface click order never break the tie.
@@ -1494,33 +1593,37 @@ Resolve each Promotion Claim Batch as one transaction:
 - The player may revise staged choices until final confirmation. Changing a
   path clears every dependent milestone and capstone choice for that path.
   After confirmation, path and permanent-team choices are irreversible.
-- If a family is already at 10 XP when its path is selected, stage its 3, 6,
+- If a Skill is already at 10 XP when its path is selected, stage its 3, 6,
   and 10 XP milestones during that same promotion.
-- A previous capstone reservation activates automatically after its ordinary
-  path's 10 XP milestone is confirmed. If the slot is already owned, later
-  ordinary paths still receive their 10 XP milestones without capstones.
+- A provisional capstone reservation activates after its ordinary path's 10 XP
+  milestone and the complete Promotion Claim Batch are confirmed. If the slot
+  is already owned, later ordinary paths still receive their 10 XP milestones
+  without capstones.
 
 Use one `Promotion Review` interface:
 
-- Show a five-family rail with segmented XP bars, highlighted decisions, and
-  checkmarks for completed claims.
-- Use one central detail pane for the selected path's immediate effect, later
-  milestones, and capstone rather than displaying every full path at once.
-- Keep a visible count of unresolved decisions and disable Continue until all
-  required choices and final confirmation are complete.
+- Complete path, milestone-specific, and capstone choices as one staged
+  transaction before the final review.
+- Path-choice cards show only each path's immediate 3 XP effect. When a later
+  milestone is reached, Promotion Review shows that milestone's full
+  description before confirmation. The Resume Book remains the place to
+  inspect the complete path.
 - Use a dedicated comparison view for simultaneous capstone candidates and
   show the consequence of each losing candidate.
-- Keep the dark-mode Resume Book available for full wording.
+- Present the final staged result as five paginated Skill pages. Show exact
+  uncapped Skill XP, the selected career path, and visual cards only for
+  milestones newly earned in that promotion.
+- Give a newly claimed capstone a larger, visually distinct card on its owning
+  Skill page.
+- Show Stress as a bar and Cash as prominent green text.
+- End with direct `Confirm Promotion` and `Revise Choices` actions. Do not add
+  a second generic confirmation step.
 - Display Brand Strategy as a separate questline beneath Design. After Closing
   is selected, replace Sales milestone presentation with its Deal Ladder.
-- Show exact family XP, including values above 10, in Promotion Review while
+- Show exact Skill XP, including values above 10, in Promotion Review while
   preserving the counter-free ten-segment persistent Resume rail.
 - Keep the capstone owner or reservation permanently visible and mark every
   unavailable capstone accordingly.
-- If a promotion creates no decisions, use a compact summary rather than the
-  full choice interface.
-- End with a summary of activated traits, the capstone owner, stress, cash, and
-  carried effects before creating the next floor.
 
 ### Printed Common Coding Rule
 
@@ -1564,25 +1667,24 @@ escalation reset at the start of each workday.
 
 | Milestone | Locked effect |
 |---|---|
-| 3 XP | Gain one free global task-list reroll every morning. Selecting a Common Coding card as the primary task starts Combo 1. The player may pay $100 for the first additional Common Coding card, with each subsequent card costing $100 more. Additional cards gain an escalating +2, +4, +6, and so on project progress. |
-| 6 XP | Additional-card cost escalation drops to +$50. Combo 5 grants +20 project progress. Global paid task-list rerolls begin at $100 each morning and cost $100 more per additional paid reroll. From Combo 2, Common Coding offer weight gains 20 percentage points. |
-| 10 XP | Additional-card cost escalation drops to +$25. Paid rerolls begin at $50 and cost $50 more per additional paid reroll. Combo 10 grants +100 project progress. After Combo 5, subsequent Combo offers contain only Common Coding cards. |
+| 3 XP | Gain one free global task-list reroll every morning. Selecting a Common Coding card as the primary task starts Combo 1. The player may pay $100 for the first additional Common Coding card, with each subsequent card costing $100 more. Additional cards gain an escalating +2, +4, +6, and so on project progress and grant no Skill XP. |
+| 6 XP | Additional-card cost escalation drops to +$50. Combo 5 grants +20 project progress. Paid rerolls become available in both the ordinary Morning task window and each Automation Combo offer. They begin at $100 each morning and cost $100 more per additional paid reroll. From Combo 2, Common Coding offer weight gains 20 percentage points. |
+| 10 XP | Additional-card cost escalation drops to +$25. Paid rerolls in either task window begin at $50 and cost $50 more per additional paid reroll. Combo 10 grants +100 project progress. After Combo 5, subsequent Combo offers contain only Common Coding cards. |
 | Capstone: Infinite Loop | After Combo 10, Combo 15, 20, 25, and every fifth Combo thereafter grants +100 project progress and resets the next additional-card and paid-reroll prices to $100 and $50. |
 
 - The free reroll is global rather than Combo-dependent, remains available at
   later milestones, and can offer Legendary cards.
-- Paid rerolls are also global morning actions rather than Combo-dependent, but
-  cannot offer Legendary cards.
+- Paid-reroll cost escalation is shared between the ordinary Morning window and
+  Automation Combo windows. A Combo reroll replaces all three slots without
+  advancing Combo. Paid rerolls cannot offer Legendary cards.
 - Automation may use only printed-Common Coding cards as additional cards. Each
-  is a Complete Additional Play, adds no stress, grants exactly 1 Coding XP,
-  and receives Automation's escalating project-progress bonus.
+  is a Complete Additional Play, adds no stress, grants no Skill XP, and
+  receives Automation's escalating project-progress bonus. It still advances
+  card completions, Codebase, printed-Common counters, and card-play triggers.
 - Automation may offer and play the same exact printed-Common Coding card more
   than once during one Combo. This is an explicit exception to the generated
   play-chain repeat restriction. A single simultaneous Combo offer still
   cannot contain duplicate copies of one task.
-- Additional-card XP is granted immediately after each additional card
-  resolves. Because milestone traits unlock only at promotions, XP earned
-  during a Combo cannot change that Combo's active milestone effects.
 - The 6 XP Common Coding offer bonus is additive, not a relative multiplier.
 
 ### Debugging Trait Path
@@ -1675,7 +1777,7 @@ morning use the new value.
 
 | Milestone | Locked effect |
 |---|---|
-| 3 XP: Revision | Each morning, pin yesterday's selected task for that morning. When selected, a task gains 1 base project progress per existing Polish. |
+| 3 XP: Revision | Each morning, pin yesterday's primary task for that morning unless it was selected through Pinned Tasks. When selected, a task gains 1 base project progress per existing Polish. |
 | 6 XP: Refinement | The base-progress bonus becomes 1.5 per Polish. The task's positive numeric printed effects also increase by 5 percent per Polish. |
 | 10 XP: Precision | The base-progress bonus becomes 2 per Polish. Positive numeric printed effects instead increase by 10 percent per Polish. |
 | Capstone: Masterpiece | Permanently pin one previously completed task. Both of its Polish bonuses are applied twice when it is played. |
@@ -1685,6 +1787,10 @@ morning use the new value.
   guaranteed outcomes, or other nonnumeric clauses.
 - Revision's pin expires when that morning's task choice closes. Masterpiece's
   pin is permanent.
+- Revision uses the previous primary task's selection source. Playing a
+  Revision, Masterpiece, Case Study, or other pin does not create another
+  Revision pin from that play. If the same task later appears in the generated
+  offer and is selected there, it may create Revision again.
 
 ### Moodboard Trait Path
 
@@ -2370,9 +2476,9 @@ Superseded designs and the complete pre-cleanup ledger are preserved through
 
 ## Open Questions
 
-1. Make the headless Night policy obey the Locked purchase-versus-Lights-Out
-   choice, rerun the structural simulation matrix, and then tune F5 against the
-   25-35 percent skilled-player win-rate target. Preserve the advanced suite's
-   action-inflation result as a primary balance and readability watchpoint.
+1. Rerun the structural simulation matrix with the corrected headless Night
+   policy, then tune F5 against the 25-35 percent skilled-player win-rate
+   target. Preserve the advanced suite's action-inflation result as a primary
+   balance and readability watchpoint.
 2. After the overhaul candidate passes full verification, design the Home set
    roster, thresholds, bonuses, prices, and resale tuning.

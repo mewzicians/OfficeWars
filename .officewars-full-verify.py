@@ -15,10 +15,10 @@ GAME_URL = (ROOT / "officewarsautobattler.html").as_uri()
 RUNS_PER_POLICY = int(sys.argv[1]) if len(sys.argv) > 1 else 250
 META_COMPLETE = json.dumps(
     {
-        "schema": 1,
+        "schema": 3,
         "tutorial": {
             "completed": True,
-            "nextStep": 6,
+            "nextStep": 13,
             "skipped": False,
             "replayRequested": False,
         },
@@ -560,11 +560,51 @@ async () => {
     }
   );
 
+  localStorage.setItem(OW_META_KEY, JSON.stringify({
+    schema: OW_META_SCHEMA,
+    tutorial: {completed: true, nextStep: 13, skipped: false, replayRequested: false}
+  }));
+  const legacyVolumeDefault = owReadMeta().settings.volume;
+  showOptions();
+  const optionsVisible =
+    document.getElementById('options-volume')?.value === '70' &&
+    document.getElementById('options-tutorial-reset') &&
+    document.getElementById('options-tutorial-status')?.textContent === 'Completed';
+  const testAudio = document.createElement('audio');
+  document.body.appendChild(testAudio);
+  owSetMasterVolume(35);
+  const storedVolume = owReadMeta().settings.volume;
+  const appliedAudioVolume = testAudio.volume;
+  testAudio.remove();
+  owResetTutorialFromOptions();
+  const resetMeta = owReadMeta();
+  showHowToPlay();
+  const replayRemovedFromHowToPlay =
+    !document.getElementById('orientation-replay-button');
+  owCloseMenuOverlay();
+  expect('options-volume-and-tutorial-reset',
+    legacyVolumeDefault === 70 &&
+    optionsVisible &&
+    storedVolume === 35 &&
+    Math.abs(appliedAudioVolume - .35) < .0001 &&
+    !resetMeta.tutorial.completed &&
+    resetMeta.tutorial.nextStep === 0 &&
+    resetMeta.tutorial.replayRequested &&
+    replayRemovedFromHowToPlay,
+    {
+      legacyVolumeDefault,
+      optionsVisible,
+      storedVolume,
+      appliedAudioVolume,
+      tutorial: resetMeta.tutorial,
+      replayRemovedFromHowToPlay
+    }
+  );
+
   startRun({seed: 90001});
   R.today = {additionalNightPurchases: 0, log: []};
   nightPhase();
-  nightState.tab = 'outings';
-  renderOutingsUI();
+  owOpenNightPanel('outings');
   const relationshipBonus = visitBonusText('karen');
   const relationshipTooltip = document.querySelector(
     '.people-choice[data-tip]'
@@ -673,20 +713,27 @@ async () => {
   R.cash = 10000;
   R.today = {additionalNightPurchases: 0};
   nightPhase();
+  const homeModeBeforeLightsOut =
+    document.body.classList.contains('home-mode') &&
+    document.getElementById('home-scene').classList.contains('active') &&
+    !document.getElementById('office-scene').offsetParent;
+  const firstLightsButton = document.querySelector('.home-hotspot-lights');
   const purchaseOpenBeforeLightsOut =
     owCanPurchaseCategory('home') &&
-    !document.querySelector('.night-lights-toggle input').disabled;
+    firstLightsButton?.getAttribute('aria-disabled') === 'false';
   owToggleLightsOut(true);
   const manualLightsOutBlocksPurchases =
     nightState.recPicked &&
     !owCanPurchaseCategory('home') &&
     !owCanPurchaseCategory('deal') &&
-    [...document.querySelectorAll('.card')].every(card => card.disabled);
+    document.querySelector('.home-hotspot-shop')
+      ?.textContent.includes('SHOP LOCKED');
   owToggleLightsOut(false);
   nightState.homeUsed = 1;
-  renderNightUI();
+  renderNightTabs();
   const purchaseBlocksLightsOutControl =
-    document.querySelector('.night-lights-toggle input').disabled;
+    document.querySelector('.home-hotspot-lights')
+      ?.getAttribute('aria-disabled') === 'true';
   owToggleLightsOut(true);
   const purchaseRejectsLightsOut = !nightState.recPicked;
 
@@ -700,14 +747,17 @@ async () => {
   const moodboardAllowsPurchases =
     owHasCapstone('moodboard') &&
     owCanPurchaseCategory('home') &&
-    document.querySelector('.night-lights-toggle input').checked;
+    document.querySelector('.home-hotspot-lights')
+      ?.getAttribute('aria-pressed') === 'true';
   expect('night-lights-out-purchase-exclusivity',
+    homeModeBeforeLightsOut &&
     purchaseOpenBeforeLightsOut &&
     manualLightsOutBlocksPurchases &&
     purchaseBlocksLightsOutControl &&
     purchaseRejectsLightsOut &&
     moodboardAllowsPurchases,
     {
+      homeModeBeforeLightsOut,
       purchaseOpenBeforeLightsOut,
       manualLightsOutBlocksPurchases,
       purchaseBlocksLightsOutControl,
@@ -839,6 +889,24 @@ async () => {
     {
       required: glossaryTerms,
       present: glossaryTerms.filter(term => helpSource.includes(term))
+    }
+  );
+  expect('home-scene-help-and-transition-contract',
+    helpSource.includes('use the room objects') &&
+    helpSource.includes('Relationships from your phone at Home') &&
+    !helpSource.includes('footer previews recovery') &&
+    !helpSource.includes('night tabs to see it') &&
+    owBeginHomeTransition.toString().includes('sunset') &&
+    owBeginSunriseTransition.toString().includes('sunrise') &&
+    owBeginOutingStory.toString().includes('outing-fade'),
+    {
+      roomObjects: helpSource.includes('use the room objects'),
+      relationshipsPhone: helpSource.includes('Relationships from your phone at Home'),
+      staleFooter: helpSource.includes('footer previews recovery'),
+      staleNightTabs: helpSource.includes('night tabs to see it'),
+      sunset: owBeginHomeTransition.toString().includes('sunset'),
+      sunrise: owBeginSunriseTransition.toString().includes('sunrise'),
+      outingFade: owBeginOutingStory.toString().includes('outing-fade')
     }
   );
 
@@ -987,6 +1055,11 @@ async ({runsPerPolicy}) => {
 
 LAYOUT_SETUP = r"""
 async ({state}) => {
+  if (state === 'options') {
+    showOptions();
+    await new Promise(resolve => setTimeout(resolve, 50));
+    return 'options';
+  }
   startRun({seed: 93001});
   owClockIn();
   const waitFor = async predicate => {
@@ -1014,6 +1087,8 @@ async ({state}) => {
       'Results appear as actions resolve.'
     );
   } else if (state === 'night') {
+    hideOverlay();
+    hideOverlayToggle();
     nightPhase();
     await waitFor(() => R.phase === 'night');
     await new Promise(resolve => setTimeout(resolve, 50));
@@ -1046,7 +1121,8 @@ LAYOUT_INSPECT = r"""
   };
   const viewportOverflow = [...document.querySelectorAll(
     '#run-hud,#project-hud,#rival-hud,#player-hud,#side-panel,' +
-    '#day-playback-controls,#day-ticker,#day-action-legend,#overlay-panel'
+    '#day-playback-controls,#day-ticker,#day-action-legend,#overlay-panel,' +
+    '#home-scene,.home-night-status,.home-room-shell'
   )].filter(visible).filter(element => {
     const rect = element.getBoundingClientRect();
     return rect.left < -1 || rect.top < -1 ||
@@ -1055,7 +1131,8 @@ LAYOUT_INSPECT = r"""
 
   const clippedText = [...document.querySelectorAll(
     '#project-hud *,#day-action-legend *,#overlay-panel .card *,' +
-    '#resume-book *,#home-inventory *'
+    '#resume-book *,#home-inventory *,#home-scene button *,' +
+    '#home-scene .home-night-status-item'
   )].filter(element => {
     if (!visible(element) || !element.textContent.trim()) return false;
     const style = getComputedStyle(element);
@@ -1112,7 +1189,7 @@ LAYOUT_INSPECT = r"""
 
   return {
     viewport: [innerWidth, innerHeight],
-    phase: R.phase,
+    phase: typeof R !== 'undefined' && R ? R.phase : 'menu',
     viewportOverflow,
     clippedText,
     legend: legendReport,
@@ -1190,6 +1267,8 @@ with sync_playwright() as playwright:
             ("desktop-night", 1440, 900, "night"),
             ("compact-night", 1024, 768, "night"),
             ("landscape-night", 844, 390, "night"),
+            ("desktop-options", 1440, 900, "options"),
+            ("landscape-options", 844, 390, "options"),
         ]
         layout = {}
         for name, width, height, state in layout_cases:

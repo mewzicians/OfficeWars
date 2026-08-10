@@ -7,7 +7,7 @@
 A single-file office autobattler about climbing seven corporate floors before
 stress, deadlines, or your rival end the run.
 
-[**▶ Play OfficeWars**](https://mewzicians.github.io/OfficeWars/officewarsautobattler.html) ·
+[**▶ Play OfficeWars**](https://mewzicians.github.io/OfficeWars/) ·
 [Project status](docs/PROJECT_STATUS.md) ·
 [Contributing](CONTRIBUTING.md) ·
 [Playtest guide](docs/PLAYTEST_GUIDE.md)
@@ -22,16 +22,16 @@ stress, deadlines, or your rival end the run.
 
 > **Current status:** OfficeWars is a playable development candidate, not a
 > finished balance release. Readability, run persistence, first-day
-> orientation, and the highest-risk interactions pass the current verification
-> suites. The current headless Night policy fails one player-rules parity
-> check, so fresh balance simulation and human playtesting remain the next
-> release gates.
+> orientation, the Options screen, and the highest-risk interactions pass the
+> current verification suites. The headless Night policy now obeys the same
+> purchase-versus-Lights-Out rule as players; fresh balance simulation and
+> human playtesting remain the next release gates.
 
 ## Play
 
 No installation, server, account, or build step is required.
 
-1. [Play in your browser](https://mewzicians.github.io/OfficeWars/officewarsautobattler.html), or download
+1. [Play in your browser](https://mewzicians.github.io/OfficeWars/), or download
    this repository and open `officewarsautobattler.html`.
 2. Pick a task, shape your build, and let the workday play out.
 3. Continue an active run after refreshing or leaving the page.
@@ -45,9 +45,9 @@ No installation, server, account, or build step is required.
 | **Workday** | Watch, accelerate, or skip a deterministic office simulation without changing its outcome. |
 | **Night** | Spend, recover, build relationships, and improve your Home. |
 | **Weekend** | Navigate mystery events, casino detours, and the consequences of your week. |
-| **Promotion** | Claim family traits and carry your build toward the CEO's Office. |
+| **Promotion** | Claim Skill career paths and carry your build toward the CEO's Office. |
 
-Build around 50 ordinary task cards, fixed rarities, 14 visible trait paths,
+Build around 50 ordinary task cards, fixed rarities, 14 visible career paths,
 a hidden Campaign path, eight managers, an eight-cubicle office, and unusual
 win conditions such as Brand Strategy Campaigns and Closing's multi-day Sales
 Cycle.
@@ -56,7 +56,7 @@ Cycle.
   <tr>
     <td width="50%">
       <img src="docs/assets/officewars-morning.png" alt="Choosing a morning task in OfficeWars">
-      <br><sub><b>Choose your work.</b> Every card advances a family and nudges the run in a different direction.</sub>
+      <br><sub><b>Choose your work.</b> Every card advances a Skill and nudges the run in a different direction.</sub>
     </td>
     <td width="50%">
       <img src="docs/assets/officewars-landscape.png" alt="OfficeWars running in phone landscape mode">
@@ -68,9 +68,8 @@ Cycle.
 ## Project Status
 
 Structural balance remains open. Prior simulation telemetry is historical
-until the headless Night policy obeys the same purchase-versus-Lights-Out rule
-as players. Read [Project Status](docs/PROJECT_STATUS.md) before changing
-balance.
+because it predates the corrected purchase-versus-Lights-Out policy. Read
+[Project Status](docs/PROJECT_STATUS.md) before changing balance.
 
 ## Project Map
 
@@ -105,6 +104,7 @@ HTML, and clearly distinguishes proposals from approved decisions.
 python -m pip install -r requirements-dev.txt
 python -m playwright install chromium
 python .officewars-smoke-run.py
+python .officewars-home-schedule-verify.py
 python .officewars-persistence-verify.py
 python .officewars-advanced-verify.py
 python .officewars-full-verify.py 0

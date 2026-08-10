@@ -15,10 +15,10 @@ GAME_URL = (ROOT / "officewarsautobattler.html").as_uri()
 READY = "document.documentElement.dataset.officewarsReady === 'true'"
 META_COMPLETE = json.dumps(
     {
-        "schema": 1,
+        "schema": 3,
         "tutorial": {
             "completed": True,
-            "nextStep": 6,
+            "nextStep": 13,
             "skipped": False,
             "replayRequested": False,
         },
@@ -330,7 +330,7 @@ def main():
             page.evaluate(
                 """() => {
                   owToggleLightsOut(true);
-                  nightSwitchTab('relationships');
+                  owOpenNightPanel('relationships');
                 }"""
             )
             page.reload(wait_until="load", timeout=30_000)
@@ -341,15 +341,74 @@ def main():
                 """() => ({
                   lightsOut: nightState.recPicked,
                   tab: nightState.tab,
-                  overlay: document.getElementById('overlay').classList.contains('active')
+                  panelOpen: nightState.panelOpen,
+                  overlay: document.getElementById('overlay').classList.contains('active'),
+                  homeMode: document.body.classList.contains('home-mode'),
+                  homeScene: document.getElementById('home-scene').classList.contains('active')
                 })"""
             )
             expect(
                 "night-state-restore",
                 night_restore["lightsOut"]
                 and night_restore["tab"] == "relationships"
-                and night_restore["overlay"],
+                and night_restore["panelOpen"]
+                and night_restore["overlay"]
+                and night_restore["homeMode"]
+                and night_restore["homeScene"],
                 night_restore,
+            )
+
+            resolved_before_reload = page.evaluate(
+                """() => {
+                  hideOverlay();
+                  nightState.panelOpen = false;
+                  nightState.outingUsed = true;
+                  nightState.homeUsed = nightState.homeLimit;
+                  nightState.dealUsed = nightState.dealLimit;
+                  R.expenseCredit = 0;
+                  owPrepareNightRecoveryForFinalization();
+                  const before = R.stress;
+                  const recovery = owApplyNightResolution();
+                  owPersistCheckpoint('nightResolved');
+                  return {
+                    before,
+                    after: R.stress,
+                    recovery,
+                    checkpoint: JSON.parse(
+                      localStorage.getItem(OW_SAVE_KEY)
+                    ).checkpoint
+                  };
+                }"""
+            )
+            page.reload(wait_until="load", timeout=30_000)
+            page.wait_for_function(READY, timeout=15_000)
+            page.evaluate("owContinueRun()")
+            page.wait_for_function(
+                """() => R && !['night', 'nightResolution'].includes(R.phase)""",
+                timeout=30_000,
+            )
+            resolved_after_reload = page.evaluate(
+                """() => ({
+                  phase: R.phase,
+                  stress: R.stress,
+                  homeMode: document.body.classList.contains('home-mode'),
+                  homeScene: document.getElementById('home-scene')
+                    .classList.contains('active')
+                })"""
+            )
+            expect(
+                "night-resolved-restores-once",
+                resolved_before_reload["checkpoint"] == "nightResolved"
+                and resolved_before_reload["recovery"] > 0
+                and resolved_after_reload["stress"]
+                == resolved_before_reload["after"]
+                and resolved_after_reload["phase"] != "night"
+                and not resolved_after_reload["homeMode"]
+                and not resolved_after_reload["homeScene"],
+                {
+                    "before": resolved_before_reload,
+                    "after": resolved_after_reload,
+                },
             )
 
             page.evaluate(
@@ -684,10 +743,31 @@ def main():
                   void confirmMorning();
                 }"""
             )
-            tutorial_page.wait_for_function(
-                "document.getElementById('tutorial-title').textContent === 'LET THE OFFICE WORK'",
-                timeout=30_000,
-            )
+            try:
+                tutorial_page.wait_for_function(
+                    "document.getElementById('tutorial-title').textContent === 'KNOW THE WORKDAY'",
+                    timeout=30_000,
+                )
+            except Exception:
+                print(
+                    "WORKDAY_TUTORIAL_TIMEOUT="
+                    + json.dumps(
+                        tutorial_page.evaluate(
+                            """() => ({
+                              phase: R && R.phase,
+                              title: document.getElementById('tutorial-title')
+                                .textContent,
+                              active: document.getElementById('tutorial-callout')
+                                .classList.contains('active'),
+                              choice: owChoiceState && owChoiceState.title,
+                              overlay: document.getElementById('overlay-panel')
+                                .innerText.slice(0, 300),
+                              meta: OfficeWarsTest.meta()
+                            })"""
+                        )
+                    )
+                )
+                raise
             titles.append(tutorial_page.text_content("#tutorial-title"))
             tutorial_page.click("#tutorial-next")
             wait_phase(tutorial_page, "workday")
@@ -701,7 +781,90 @@ def main():
             tutorial_page.evaluate("afterDayResults()")
             wait_phase(tutorial_page, "night")
             tutorial_page.wait_for_function(
-                "document.getElementById('tutorial-title').textContent === 'PLAN THE NIGHT'",
+                "document.getElementById('tutorial-title').textContent === 'HOME SHOP'",
+                timeout=30_000,
+            )
+            titles.append(tutorial_page.text_content("#tutorial-title"))
+            night_targets = [
+                tutorial_page.evaluate(
+                    "owOrientationTarget?.matches('.home-hotspot-shop')"
+                )
+            ]
+            tutorial_page.click("#tutorial-next")
+            for expected_title, expected_target in [
+                ("OUTINGS", ".home-hotspot-outings"),
+                ("RELATIONSHIPS", ".home-hotspot-phone"),
+                ("END THE NIGHT", ".home-hotspot-sleep"),
+            ]:
+                tutorial_page.wait_for_function(
+                    "(title) => document.getElementById('tutorial-title').textContent === title",
+                    arg=expected_title,
+                    timeout=30_000,
+                )
+                titles.append(tutorial_page.text_content("#tutorial-title"))
+                night_targets.append(
+                    tutorial_page.evaluate(
+                        "(selector) => owOrientationTarget?.matches(selector)",
+                        expected_target,
+                    )
+                )
+                tutorial_page.click("#tutorial-next")
+
+            tutorial_page.evaluate(
+                """() => {
+                  R.phase = 'promotionReview';
+                  R.familyXP.Coding = 3;
+                  void owRunPromotionReview();
+                }"""
+            )
+            for expected_title in ["CHOOSE A CAREER PATH", "GROW THE PATH"]:
+                tutorial_page.wait_for_function(
+                    "(title) => document.getElementById('tutorial-title').textContent === title",
+                    arg=expected_title,
+                    timeout=30_000,
+                )
+                titles.append(tutorial_page.text_content("#tutorial-title"))
+                tutorial_page.click("#tutorial-next")
+            tutorial_page.evaluate(
+                """() => {
+                  owToggleChoice(0);
+                  owConfirmChoice();
+                }"""
+            )
+            tutorial_page.wait_for_function(
+                "owChoiceState && owChoiceState.title === 'Promotion Review'",
+                timeout=30_000,
+            )
+            tutorial_page.evaluate("owChooseImmediate(0)")
+            tutorial_page.wait_for_function(
+                "R.phase === 'floorIntro' && R.floor === 2",
+                timeout=30_000,
+            )
+            tutorial_page.evaluate(
+                """() => {
+                  R.floor = 2;
+                  nextFloor();
+                }"""
+            )
+            tutorial_page.wait_for_function(
+                "document.getElementById('tutorial-title').textContent === 'BOSS FLOOR'",
+                timeout=30_000,
+            )
+            titles.append(tutorial_page.text_content("#tutorial-title"))
+            tutorial_page.click("#tutorial-next")
+            tutorial_page.evaluate(
+                """() => {
+                  R.capstone = {
+                    family: 'Coding',
+                    path: 'cleanCode',
+                    status: 'active'
+                  };
+                  updateHUD();
+                  void owMaybeShowOrientationForPhase(R.phase);
+                }"""
+            )
+            tutorial_page.wait_for_function(
+                "document.getElementById('tutorial-title').textContent === 'ONE CAPSTONE'",
                 timeout=30_000,
             )
             titles.append(tutorial_page.text_content("#tutorial-title"))
@@ -711,16 +874,28 @@ def main():
                 "THE PROJECT RACE",
                 "CHOOSE TODAY'S TASK",
                 "BUILD YOUR RESUME",
-                "LET THE OFFICE WORK",
+                "KNOW THE WORKDAY",
                 "REVIEW CLOCK OUT",
-                "PLAN THE NIGHT",
+                "HOME SHOP",
+                "OUTINGS",
+                "RELATIONSHIPS",
+                "END THE NIGHT",
+                "CHOOSE A CAREER PATH",
+                "GROW THE PATH",
+                "BOSS FLOOR",
+                "ONE CAPSTONE",
             ]
             expect(
-                "six-step-orientation",
+                "full-journey-orientation",
                 titles == expected_titles
+                and all(night_targets)
                 and tutorial_meta["tutorial"]["completed"]
-                and tutorial_meta["tutorial"]["nextStep"] == 6,
-                {"titles": titles, "meta": tutorial_meta},
+                and tutorial_meta["tutorial"]["nextStep"] == 13,
+                {
+                    "titles": titles,
+                    "nightTargets": night_targets,
+                    "meta": tutorial_meta,
+                },
             )
 
             tutorial_page.evaluate(

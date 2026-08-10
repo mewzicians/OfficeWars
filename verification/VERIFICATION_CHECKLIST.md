@@ -2,15 +2,18 @@
 
 ## Current Status
 
-The rollout and readability candidate exists. The current `full verification`
-ran on 2026-08-07; its Pass, Fail, Not Run, and Blocked evidence is in
-`verification/FULL_VERIFICATION_2026-08-07_30214B7F.md`. Player-facing
-implementation, readability, deterministic playback, persistence, and
-distribution pass. The headless Night policy fails the same purchase-versus-
-Lights-Out rule that the player UI enforces, so current balance simulation is
-Blocked. The current focused persistence and orientation suite is recorded in
-`verification/PERSISTENCE_TUTORIAL_2026-08-07.md`. The broad report still names
-every group that remains unverified.
+The rollout and readability candidate exists. The current candidate has
+SHA-256
+`470F4146FBA177FD6B7062A0093DDCF7C2826B797FE9AE74317BD1D146050FF7`.
+The current focused evidence is in
+`verification/HOME_GROUNDING_CELESTIAL_SEQUENCE_2026-08-10.md`: all four Home
+tiers ground their furniture on the shallow floor boundary, item slots remain
+readable on the wall shelf, room dimming passes, and the sun and moon follow
+the same east-to-west arc with the correct lead order. Current runtime and
+responsive suites pass. Fresh structural balance simulation is Not Run. The
+preceding exhaustive report remains
+`verification/FULL_VERIFICATION_2026-08-10_55D9A6ED.md`; older dated reports
+remain evidence only for the exact hashes they name.
 
 The boxes below remain a reusable requirement inventory rather than a claim of
 completion. An unchecked box does not mean the feature is absent, and a result
@@ -88,8 +91,11 @@ during a verification-only request unless the user separately asks for fixes.
 - [ ] Refreshing Morning preserves the exact offer and random state.
 - [ ] A prepared Workday restores its deterministic checkpoint, resolves
   headlessly to Clock Out, and never duplicates task rewards.
-- [ ] Night restores its active tab, Lights Out choice, catalogs, limits, and
-  committed purchases without refunding or rerolling them.
+- [ ] Night restores Home mode, the active room panel, Lights Out choice,
+  catalogs, limits, and committed purchases without refunding or rerolling
+  them.
+- [ ] Refreshing after sleep has settled but before sunrise finishes resumes
+  from `nightResolved`, advances once, and never repeats recovery.
 - [ ] Restoring an older Night state that contains both a committed Home or
   Deal purchase and manual Lights Out preserves the purchase and clears manual
   Lights Out; automatic Moodboard Lights Out remains exempt.
@@ -98,9 +104,15 @@ during a verification-only request unless the user separately asks for fixes.
 - [ ] Victory and defeat summaries survive refresh and Return to Main Menu
   clears only the active run.
 - [ ] Tutorial completion is stored separately from the run save.
-- [ ] The six orientation steps spotlight the correct existing UI at Floor
-  Intro, Morning, pre-Workday, Clock Out, and Night.
-- [ ] Skip Orientation persists, and How to Play can schedule a replay for the
+- [ ] The thirteen orientation steps spotlight the correct existing UI across
+  Floor Intro, Morning, pre-Workday, Clock Out, Home Shop, Outings,
+  Relationships, End Day, the first three-path Promotion choice, milestone
+  growth, the first boss floor, and the first claimed Capstone. Deals remain
+  conditional discovery.
+- [ ] The first Workday callout opens the current Action Guide and explains
+  Work on Task, Lunch, Water Cooler, Office Chat, Slumped at Desk, and Team
+  Meeting without consuming RNG or starting playback.
+- [ ] Skip Orientation persists, and Options can reset the tutorial for the
   next New Run.
 - [ ] The orientation never rigs offers or outcomes and never interrupts
   Workday playback after it starts.
@@ -150,6 +162,9 @@ during a verification-only request unless the user separately asks for fixes.
   preservation, and no-generic-pinning rules match the ledger.
 - [ ] Card-created task windows, family guarantees, additional-card choices,
   and Campaign replacements never newly generate Special cards.
+- [ ] Every separate task picker uses the Morning card hierarchy and shows
+  only resolution-relevant information: full, effect-only, stats-only, or
+  identity-only.
 - [ ] No offer contains duplicate copies of one exact task.
 - [ ] Cards can return on later workdays.
 - [ ] Generated offers reroll exact duplicates of Pinned Tasks without
@@ -358,7 +373,7 @@ its details, or the appropriate phase summary.
 | Delegation | Promotion Review chooses permanent Delegates with exact bonuses; Resume and playback show doubled relationship gains, start contributions, Work alternation, meeting activations, and All Hands. |
 | Agile | Resume and workday show uncapped Velocity, exact favorable chance, current meeting and Work progress, Daily Stand-Up, and Continuous Delivery child actions. |
 | Leadership | Schedule Desk shows each optional Team Briefing, replacement or capstone bonus mode, bound target, repeat count, and invalid target reason. |
-| Eye for Detail | Cards and Resume Book expose per-card Polish; Pinned Tasks show Revision or Masterpiece source, exact scaling, and permanence. |
+| Eye for Detail | Cards and Resume Book expose per-card Polish; Pinned Tasks show Revision or Masterpiece source, exact scaling, and permanence. A primary selected from Pinned Tasks must not create another Revision pin, while a later generated-offer play of the same task may. |
 | Moodboard | HUD and Resume show current Focus, cap, expiration or carryover, absorption, progress conversion, refresh, and automatic Lights Out; its automatic Lights Out does not block Home or Deal purchases. |
 | Brand Strategy | Resume shows the separate questline, current Campaign and ordered step, multiplier and unlocked rewards; Morning shows the Campaign name, requested task and family, completed-step count, Campaigns completed, protected Campaign card, and final-capstone two-card selection. |
 | Negotiation | Night Desk shows Deal weights through actual distinct offers, free reroll, purchase count, exact Client Call values, pay and interest modifiers, Scope eligibility, and capstone strength. |
@@ -499,6 +514,22 @@ its details, or the appropriate phase summary.
 - [ ] Long Automation, replay, Logistics, action-trigger, and Closing chains
   finish without recursion failure, frozen controls, runaway animation time,
   or materially growing memory.
+- [ ] Path selection reveals only the 3 XP breakpoint; each newly reached 6 or
+  10 XP milestone shows its exact description in Promotion Review.
+- [ ] A provisional ordinary capstone can be changed through `Revise Choices`
+  before Promotion confirmation, then becomes permanent after confirmation.
+- [ ] Automation Combo paid rerolls replace all three Combo slots, share the
+  morning paid-reroll cost counter, do not advance Combo, and exclude
+  Legendary cards.
+- [ ] After confirming an Outing, returning to the room or toggling Lights Out
+  cannot reopen the stale activity picker or permit another Outing.
+- [ ] Every schedule preview and choice uses action-icon trackers with visible
+  differences, source badges where relevant, keyboard-operable selection, and
+  no horizontal overflow at desktop or landscape-phone sizes.
+- [ ] Home mode hides office-only HUD, keeps Cash, Credit, current Stress, and
+  projected post-sleep Stress visible, and exposes Home Shop, Relationships,
+  Outings, unlocked Deals, Lights Out, End Day, and occupied item slots as
+  keyboard-operable controls.
 
 ## Accessibility Evidence
 

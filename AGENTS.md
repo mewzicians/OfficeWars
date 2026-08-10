@@ -54,11 +54,27 @@
   user can improve. Do not treat casual capitalization or intentional shorthand
   as spelling errors unless it makes the meaning unclear.
 
-## Planning Shorthand
+## Project Skills
 
-- Treat `qa cleanup` as a request to audit every active OfficeWars planning
-  document, handoff, skill, and portable copy for stale status, contradictions,
-  superseded mechanics, broken references, and synchronization drift.
+- Project skills may be invoked explicitly with `$skill-name` or implicitly
+  when the request clearly matches their scope.
+- Use `$officewars-plan` for design ideation, critique, rules development, and
+  balance planning from the current model and ledger.
+- Use `$officewars-implement` to build an approved change end to end across
+  code, UI, persistence, tests, documentation, mirrors, and packages.
+- Use `$officewars-debug` to reproduce, diagnose, narrowly fix, and
+  regression-test an implementation defect.
+- Use `$officewars-balance-lab` for rules-faithful simulation, telemetry,
+  ablations, build analysis, and Draft-only tuning recommendations.
+- Use `$officewars-ux-audit` for onboarding, navigation, readability,
+  responsive, interaction-feedback, and accessibility analysis.
+- Use `$officewars-playtest-analysis` to turn notes, saves, screenshots,
+  recordings, surveys, and telemetry into ranked findings and experiments.
+- Use `$officewars-qa-cleanup` when the user invokes it, says `qa cleanup`, or
+  asks to reconcile and package project truth. Audit every active OfficeWars
+  planning document, handoff, skill, and portable copy for stale status,
+  contradictions, superseded mechanics, broken references, and
+  synchronization drift.
 - During `qa cleanup`, keep factual old behavior under clearly labeled
   Implemented Baseline sections. Remove obsolete planning instructions from
   active guidance and preserve only useful history in
@@ -69,10 +85,11 @@
   results in the response rather than preserving them as design content.
 - Finish `qa cleanup` by validating decision statuses, roster counts, active
   file references, portable-copy equality, and documented hashes.
-- Treat `full verification` as an exhaustive implementation and documentation
-  audit. Reconstruct a bidirectional requirement matrix from the HTML and
-  every active source of truth instead of assuming an existing checklist is
-  complete.
+- Use `$officewars-full-verification` when the user invokes it, says
+  `full verification`, or requests exhaustive ship-readiness evidence. Perform
+  an exhaustive implementation and documentation audit. Reconstruct a
+  bidirectional requirement matrix from the HTML and every active source of
+  truth instead of assuming an existing checklist is complete.
 - During `full verification`, run `qa cleanup` plus static integrity,
   behavioral and edge-case, deterministic playback, UI-state, accessibility,
   responsive-browser, distribution, and simulation checks. Trace every Locked
@@ -81,6 +98,9 @@
 - Report every requirement as Pass, Fail, Not Run, or Blocked with evidence.
   List all unverified items explicitly. Do not edit gameplay during a
   verification-only request unless the user separately asks for fixes.
+- Use `$officewars-github-package` to synchronize the public repository mirror,
+  rebuild the GitHub-ready ZIP with hidden files intact, and verify its
+  inventory, bytes, links, and hashes before upload.
 
 ## Product Constraints
 

@@ -1,6 +1,6 @@
 # OfficeWars Current Handoff
 
-Last updated: 2026-08-07
+Last updated: 2026-08-10
 
 ## Read First
 
@@ -16,6 +16,25 @@ Last updated: 2026-08-07
 10. `docs/PATCH_NOTES_RELATIONSHIP_NIGHT_CAMPAIGN_UI_2026-08-07.md`
 11. `verification/RELATIONSHIP_NIGHT_CAMPAIGN_UI_2026-08-07.md`
 12. `verification/FULL_VERIFICATION_2026-08-07_30214B7F.md`
+13. `docs/PATCH_NOTES_NIGHT_RESUME_AUTOMATION_UI_2026-08-10.md`
+14. `verification/NIGHT_RESUME_AUTOMATION_UI_2026-08-10.md`
+15. `docs/PATCH_NOTES_TASK_PICKERS_TUTORIAL_2026-08-10.md`
+16. `verification/FULL_VERIFICATION_2026-08-10_55D9A6ED.md`
+17. `docs/PATCH_NOTES_OPTIONS_NIGHT_POLICY_2026-08-10.md`
+18. `verification/OPTIONS_NIGHT_POLICY_2026-08-10.md`
+19. `docs/PATCH_NOTES_RESUME_SKILL_ART_2026-08-10.md`
+20. `verification/RESUME_SKILL_ART_2026-08-10.md`
+21. `docs/PATCH_NOTES_BUILD_CONTEXT_PINS_2026-08-10.md`
+22. `verification/BUILD_CONTEXT_PINS_2026-08-10.md`
+23. `docs/PATCH_NOTES_HOME_SCHEDULE_TUTORIAL_2026-08-10.md`
+24. `verification/HOME_SCHEDULE_TUTORIAL_2026-08-10.md`
+25. `verification/FULL_VERIFICATION_2026-08-10_0A8F74E5.md`
+26. `docs/PATCH_NOTES_HOME_MANAGER_VISUAL_PASS_2026-08-10.md`
+27. `verification/HOME_MANAGER_VISUAL_PASS_2026-08-10.md`
+28. `docs/PATCH_NOTES_HOME_SIDE_VIEW_ARCS_2026-08-10.md`
+29. `verification/HOME_SIDE_VIEW_ARCS_2026-08-10.md`
+30. `docs/PATCH_NOTES_HOME_GROUNDING_CELESTIAL_SEQUENCE_2026-08-10.md`
+31. `verification/HOME_GROUNDING_CELESTIAL_SEQUENCE_2026-08-10.md`
 
 Read `docs/ARCHIVE_SUPERSEDED.md` only when historical reasoning is needed.
 
@@ -32,8 +51,8 @@ Read `docs/ARCHIVE_SUPERSEDED.md` only when historical reasoning is needed.
 
 `officewarsautobattler.html` now contains the complete approved overhaul
 candidate through rollout Phase 6: core balance, the fixed-rarity 50-card
-roster, shared card and schedule resolution, family-XP traits and capstones,
-advanced family systems, centralized Home effects, legacy replacements, the
+roster, shared card and schedule resolution, Skill-XP career paths and
+capstones, advanced Skill systems, centralized Home effects, legacy replacements, the
 real HUD, deterministic cycling playback controls, the office port, versioned
 active-run persistence, and the contextual first-day orientation.
 
@@ -44,12 +63,12 @@ gameplay IDs; resolves sabotage immediately after the midpoint desk visit; and
 rolls back gameplay state and both random streams if Skip resolution throws.
 
 The current HTML has SHA-256
-`30214B7FFF8FB4ED44690B90B64EE991E8F300ACE1A4E66E9100BBDAFCC81D12`.
+`470F4146FBA177FD6B7062A0093DDCF7C2826B797FE9AE74317BD1D146050FF7`.
 It replaces the three speed buttons with one cycling 1x/2x/4x button and makes
 the new 1x equal to the previous 2x presentation pace. It also replaces
 Endless with Continue Run, autosaves committed state, restores prepared
 Workdays deterministically to Clock Out, preserves casino games and run
-results, and teaches the basic loop through six contextual callouts. The
+results, and teaches the basic journey through thirteen contextual callouts. The
 player's project progress now fills behind the top-center project title under
 a fixed readability scrim, shows the exact fraction, and pulses on change. The
 bottom-left player HUD now contains only the portrait and Stress bar. Workday
@@ -64,22 +83,111 @@ Out remains the explicit exception. Active Brand Strategy mornings use a
 four-part Campaign status band showing the Campaign name, requested task and
 family, completed steps, and Campaigns completed. `Rebrand Initiative` now
 explains Campaign replacement, ordered completion, and its reward promise.
+Night now removes the office HUD and presents the player's current living
+space. Room controls open Home Shop, Relationships, Outings, unlocked Deals,
+Lights Out, and End Day. Cash, Expense Credit, Stress, and projected
+post-sleep Stress remain prominent; occupied item slots expose tooltips and an
+accessible sale confirmation. Apartment, Townhouse, House, and Penthouse use
+distinct wall treatments while sharing one flat side-view layout. The bed,
+Relationships phone, full Home Shop PC, Deal laptop, plant, and Outings door
+follow a stable left-to-right order and meet one shallow patterned floor
+boundary. Furniture bodies remain above the baseboard instead of sitting
+inside a deep floor band. Item capacity appears on a wall storage shelf instead
+of a perspective rug. The moon appears inside the window, the Home name sits
+below the furniture, the top status includes a Stress bar, and Lights Out
+visibly dims the room.
 
-The current hash passes the smoke, persistence, advanced, and 17-case visual
-suites. Persistence and orientation evidence is recorded in
-`verification/PERSISTENCE_TUTORIAL_2026-08-07.md`; the speed-control snapshot
-remains recorded in `verification/PLAYBACK_SPEED_CONTROL_2026-08-07.md`; and
-the current relationship, Night, and Campaign evidence is recorded in
-`verification/RELATIONSHIP_NIGHT_CAMPAIGN_UI_2026-08-07.md`.
+The manager office now shows the current manager with a distinct portrait and
+color. Managers remain seated on ordinary floors and use a cosmetic patrol on
+boss floors. The patrol is not part of `CAST`, consumes no RNG, reserves no
+space, and cannot change Workday outcomes or Skip behavior.
 
-The current full verification is recorded in
-`verification/FULL_VERIFICATION_2026-08-07_30214B7F.md`. It finds one
-implementation-verification failure: the headless Night policy buys a Home
-item and then unconditionally grants itself manual Lights Out, despite the
-player UI correctly enforcing mutual exclusion. This makes current balance
-simulation Blocked until that policy is repaired and rerun. The earlier 58.4
-percent scripted-skilled result is historical snapshot telemetry, not valid
-current balance evidence.
+Clock Out enters Home through a sunset and door-opening presentation. Outings
+fade to their story and back to the room; End Day uses sunrise to return to the
+office. The sun and moon follow the same complete east-to-west five-stage arc
+without crossing. The sun leads at sunset, and the moon leads at sunrise.
+Automated and reduced-motion paths bypass presentation timing without changing
+state. Sleep writes a stable `nightResolved` checkpoint before sunrise so a
+refresh cannot repeat recovery.
+
+Schedule previews and choices now use action-icon timelines with source badges
+and highlighted differences. Prototype Test stacks its schedule options;
+Schedule Adjustment and Leadership select directly on the timeline; action
+guarantees use matching icon tiles; the final Schedule Desk shows the locked
+day in the same visual language.
+
+Resume milestones show distinct unreached, pending, and claimed states.
+Automation Combo places End Combo and every legal reroll before its task
+cards.
+
+The Resume rail now places a distinct bright 8-bit scene behind each
+Skill: a code workstation, meeting space, design desk, storefront, and
+operations rack. A fixed scrim keeps names, XP segments, paths, and milestone
+markers in the foreground. The scenes remain decorative and pointer-inert,
+and the collapsed Workday rail uses a dimmer treatment behind its initials.
+
+Morning Build Context now lists active delayed effects and selected targets,
+named Delegates, named Contacts, and relevant run resources before task
+selection. The strip caps its visible entries and routes overflow into the
+Resume. Pinned Tasks now use compact Skill, name, and rarity rows; activating
+one opens a full task card before selection. Resume milestone boxes expose
+their exact selected-path effects through hover, keyboard focus, and tap, or
+state that specialization is not chosen yet.
+
+Eye for Detail now records the previous primary task's selection source.
+Revision does not create another Revision pin when the task came from Pinned
+Tasks, while the same task can pin again after a later generated-offer play.
+Masterpiece and other independent pin sources are unchanged. Named trait
+mechanics use a shared high-contrast glossary in path-choice, Promotion, and
+Resume text, with short definitions on hover, keyboard focus, and tap.
+
+Every separate task picker uses the Morning task-card visual language.
+Complete-play and future-primary decisions show the full card, printed-effect
+copy choices hide stats, Schmoozing Assist choices show stats only, and
+category-only choices show identity only. Automation additional Combo cards
+explicitly grant no Skill XP while retaining completion counters, Codebase,
+and other Complete Play triggers.
+
+The orientation moves through Home Shop, Outings, Relationships, and End Day
+on the first Night, explains the first three-path Promotion choice and later
+6/10 XP milestones, covers the first boss-floor introduction, and finishes
+when the first Capstone is claimed. Its Workday callout opens the live Action
+Guide and explains all six ordinary actions with current values. Deals are
+omitted because they require a card or trait unlock. The Relationships step
+explains that coworker bonuses trigger when the player meets them during the
+Workday. Options contains the persistent master-volume setting and the
+tutorial reset command; How to Play no longer duplicates that command.
+
+Player-facing progression language now calls Coding, Management, Design,
+Sales, and Operations `Skills`; internal data still uses `family` identifiers.
+Final Promotion Review is a visual five-page Skill summary. It shows only
+milestones earned in that promotion, presents a newly claimed capstone as a
+prominent card, shows Stress as a bar and Cash as green text, and uses direct
+Confirm Promotion and Revise Choices actions without a second generic confirm.
+If the player accepts Finalize Night without manually choosing Lights Out,
+Lights Out is applied automatically when it remains legal. Home and Deal
+purchases still block it unless an explicit exception applies.
+
+Player and headless Night finalization now share the same automatic
+Lights-Out legality gate. A simulated Home or Deal purchase therefore receives
+only automatic sleep unless Moodboard or another explicit exception permits
+both.
+
+The current hash passes smoke, all 24 persistence checks, all eight advanced
+interaction groups, and the full verifier's no-simulation player-surface and
+responsive layout checks. Current focused evidence is recorded in
+`verification/HOME_GROUNDING_CELESTIAL_SEQUENCE_2026-08-10.md`; preceding
+dated reports remain exact evidence for their named hashes.
+
+The preceding exhaustive implementation report is
+`verification/FULL_VERIFICATION_2026-08-10_0A8F74E5.md`. It finds no current
+implementation blocker on its named hash while preserving structural simulation, formal
+screen-reader execution, exhaustive picker and save-boundary traversal,
+rapid-input fuzzing, and memory profiling as Not Run or Blocked.
+
+The earlier 58.4 percent scripted-skilled result remains historical snapshot
+telemetry because it predates the corrected Night policy. Fresh structural
+simulation has not run.
 
 Exhaustive screen-reader, every-picker, every-boundary save/restore, reset,
 rapid-input, and memory-profile rows remain explicitly Not Run or Blocked; do
@@ -116,7 +224,7 @@ not imply that the focused suites close those broader rows.
 ## Family Card Identities
 
 - **Coding - Build, Automate, Integrate:** turn prior work into future value,
-  sequence additional cards, and bridge progression between families.
+  sequence additional cards, and bridge progression between Skills.
 - **Management - Coordinate, Schedule, Amplify:** observe people and actions,
   rearrange or guarantee the schedule, and multiply successful coordination.
 - **Design - Observe, Iterate, Transform:** reveal information, refine repeated
@@ -129,10 +237,9 @@ not imply that the focused suites close those broader rows.
 
 ## Simulation Status And Priorities
 
-The current headless Night policy is not rules-faithful. After making automated
-Home or Deal purchases, it sets `nightState.recPicked=true` and receives manual
-Lights Out recovery without the Moodboard exception. Do not use a simulation
-run from this policy as current balance evidence.
+The current headless Night policy is rules-faithful at finalization. It uses the
+same helper as the player path to reject manual or automatic Lights Out after a
+Home or Deal purchase unless an explicit exception applies.
 
 The prior exact-snapshot audit completed 3,000 seeded runs without runtime
 errors: baseline won 0.7 percent, random won 12.2 percent, and
@@ -174,10 +281,10 @@ every-picker and every-transition restoration remains part of the broader
 unverified matrix rather than an implementation blocker discovered in this
 pass.
 
-Repair the headless Night policy before running or interpreting another balance
-matrix. Then test the structural curve and all trait paths against the 25-35
-percent skilled target. Numeric changes require explicit approval. Unverified
-rows retain their exact status in the current full report.
+Rerun the balance matrix on the corrected policy, then test the structural
+curve and all trait paths against the 25-35 percent skilled target. Numeric
+changes require explicit approval. Unverified rows retain their exact status
+in the preceding full report.
 
 Home effects are centralized and optional inert set metadata is supported.
 Actual Home sets, thresholds, bonuses, prices, and resale tuning remain
@@ -191,20 +298,33 @@ deliberately deferred until after implementation verification.
 - Prefer concise card text, forecasts, icons, bars, and tooltips.
 - Never describe Draft or Open material as approved or implemented.
 
-## Planning Shorthand
+## Project Skills
 
-- `<family> review` means a candid preliminary review of that family's complete
-  roster against all locked systems and multiplier interactions.
-- `qa cleanup` means audit every active OfficeWars planning document and
-  portable copy for stale status, contradictions, legacy mechanics, broken
-  references, and synchronization drift. Rewrite, consolidate, move, or remove
-  existing sections instead of appending verification notes; preserve useful
-  history only in `ARCHIVE_SUPERSEDED.md`.
-- `full verification` means reconstruct every requirement from the sources of
-  truth, trace it to implementation, UI, and test evidence, and run the full
-  static, behavioral, deterministic, browser, accessibility, distribution,
-  and simulation checklist. Report Pass, Fail, Not Run, or Blocked for every
-  item and never hide unverified scope.
+- `$officewars-plan` owns design and balance planning.
+- `$officewars-implement` owns approved end-to-end feature implementation,
+  including UI, persistence, tests, documentation, mirrors, and packages.
+- `$officewars-debug` owns exact-state reproduction, root-cause repair, and
+  focused regression coverage without unrelated redesign or tuning.
+- `$officewars-balance-lab` owns policy-legality audits, fixed-seed
+  simulations, telemetry, ablations, and Draft-only tuning recommendations.
+- `$officewars-ux-audit` owns onboarding, navigation, information hierarchy,
+  responsive rendering, interaction feedback, and accessibility analysis.
+- `$officewars-playtest-analysis` owns evidence synthesis from human notes,
+  saves, screenshots, recordings, surveys, and telemetry.
+- `$officewars-qa-cleanup` owns active-document cleanup, decision-status
+  reconciliation, mirror synchronization, manifests, and release packages. It
+  does not modify gameplay.
+- `$officewars-full-verification` owns the bidirectional requirement matrix and
+  exhaustive static, behavioral, deterministic, persistence, browser,
+  accessibility, distribution, edge-case, and legal-simulation evidence. It
+  reports every item as Pass, Fail, Not Run, or Blocked and does not repair
+  gameplay unless fixes are separately requested.
+- `$officewars-github-package` owns public-mirror synchronization, release
+  truth and hash updates, deterministic GitHub-ready ZIP creation, and
+  byte-for-byte package verification.
+
+All nine project skills support explicit `$` invocation and may also be
+invoked automatically when a request clearly matches their scope.
 
 ## Portable Handoff
 
@@ -212,4 +332,4 @@ deliberately deferred until after implementation verification.
 `officewars-public-repo-2026-08-07/` is the source workspace's public
 repository package; its contents become the repository root when exported.
 Both packages' mapped game, guidance, active documents, verifiers, reports, and
-hashes were synchronized with the root candidate on 2026-08-07.
+hashes were synchronized with the root candidate on 2026-08-10.
