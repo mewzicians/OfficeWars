@@ -9,12 +9,13 @@ stress, deadlines, or your rival end the run.
 
 [**▶ Play OfficeWars**](https://mewzicians.github.io/OfficeWars/officewarsautobattler.html) ·
 [Project status](docs/PROJECT_STATUS.md) ·
-[Contributing](CONTRIBUTING.md) ·
+[Feedback policy](CONTRIBUTING.md) ·
 [Playtest guide](docs/PLAYTEST_GUIDE.md)
 
 ![No build step](https://img.shields.io/badge/build-none-42d392?style=flat-square)
 ![Single-file game](https://img.shields.io/badge/game-single--file_HTML-53c7e8?style=flat-square)
 ![Status: playtest](https://img.shields.io/badge/status-playtest-f0a020?style=flat-square)
+![License: play only](https://img.shields.io/badge/license-play_only-e74c3c?style=flat-square)
 
 </div>
 
@@ -36,6 +37,20 @@ No installation, server, account, or build step is required.
 2. Pick a task, shape your build, and let the workday play out.
 3. Continue an active run after refreshing or leaving the page.
 4. On a phone, rotate to landscape.
+
+## Play-Only Permission
+
+OfficeWars is **not open-source software**. Copyright © 2026 mewzicians. All
+rights are reserved.
+
+You may access, download, and run an unmodified copy solely as necessary to
+play OfficeWars for personal, non-commercial use. No permission is granted to
+modify, adapt, redistribute, republish, host, sell, sublicense, create
+derivative works from, or reuse the game's code, writing, art, design, or other
+assets.
+
+Public source visibility does not grant additional permission. See
+[LICENSE](LICENSE) for the complete terms.
 
 ## The Workday, Weaponized
 
@@ -88,15 +103,16 @@ Historical ideas are not active requirements. Use
 [`docs/ARCHIVE_SUPERSEDED.md`](docs/ARCHIVE_SUPERSEDED.md) only when the reason
 behind an old direction matters.
 
-## Contributing
+## Feedback
 
-Start with [CONTRIBUTING.md](CONTRIBUTING.md). Balance proposals should include
-the affected floor, build, failure mode, and evidence. A measured outlier is a
-reason to investigate, not an automatic nerf.
+Bug reports, balance observations, and playtest feedback are welcome through
+GitHub Issues. Start with the [feedback policy](CONTRIBUTING.md). Balance
+reports should include the affected floor, build, failure mode, and evidence.
+A measured outlier is a reason to investigate, not an automatic nerf.
 
-AI-assisted work is welcome when the agent follows
-[Working With Agents](docs/WORKING_WITH_AGENTS.md), verifies claims against the
-HTML, and clearly distinguishes proposals from approved decisions.
+The repository does not accept unsolicited code or asset contributions.
+Submitting feedback does not grant permission to modify or redistribute
+OfficeWars.
 
 ## Optional Verification
 

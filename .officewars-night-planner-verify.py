@@ -15,10 +15,10 @@ GAME_URL = (ROOT / "officewarsautobattler.html").as_uri()
 READY = "document.documentElement.dataset.officewarsReady === 'true'"
 META_COMPLETE = json.dumps(
     {
-        "schema": 4,
+        "schema": 5,
         "tutorial": {
             "completed": True,
-            "nextStep": 10,
+            "nextStep": 13,
             "skipped": False,
             "replayRequested": False,
         },
@@ -61,6 +61,41 @@ def planner_state(page):
           const shell = document.querySelector('.night-planner-shell');
           const screen = document.querySelector('.night-planner-screen');
           const rect = shell?.getBoundingClientRect();
+          const tabsRect = document.querySelector(
+            '.night-planner-tabs'
+          )?.getBoundingClientRect();
+          const footerRect = document.querySelector(
+            '.night-footer'
+          )?.getBoundingClientRect();
+          const pickerRect = document.querySelector(
+            '.night-home-desk .card-row,.night-deals-desk .card-row'
+          )?.getBoundingClientRect();
+          const homeGrid = document.querySelector('.night-home-card-grid');
+          const homeCards = [...document.querySelectorAll(
+            '.night-home-card-grid .card'
+          )];
+          const homeCardRects = homeCards.map(card => card.getBoundingClientRect());
+          const homeCardSpan = homeCardRects.length
+            ? Math.max(...homeCardRects.map(rect => rect.right)) -
+              Math.min(...homeCardRects.map(rect => rect.left))
+            : 0;
+          const homeGridRect = homeGrid?.getBoundingClientRect();
+          const homeActionsRect = document.querySelector(
+            '.night-home-desk .night-purchase-actions'
+          )?.getBoundingClientRect();
+          const homeColumns = homeGrid
+            ? getComputedStyle(homeGrid).gridTemplateColumns
+                .split(' ').filter(Boolean).length
+            : 0;
+          const usableCenter = tabsRect && footerRect
+            ? (tabsRect.bottom + footerRect.top) / 2
+            : null;
+          const usableHeight = tabsRect && footerRect
+            ? Math.max(1, footerRect.top - tabsRect.bottom)
+            : null;
+          const pickerCenterDelta = pickerRect && usableCenter !== null
+            ? Math.abs((pickerRect.top + pickerRect.bottom) / 2 - usableCenter)
+            : null;
           return {
             phase:R.phase,
             panelOpen:nightState.panelOpen,
@@ -70,9 +105,39 @@ def planner_state(page):
             panelClass:panel.classList.contains('night-planner-panel'),
             shell:!!shell,
             tabs:document.querySelectorAll('.night-planner-tab').length,
-            disabledDeals:!!document.querySelector(
-              '.night-planner-tab:disabled'
+            dealTab:!!document.querySelector(
+              '.night-planner-tab[data-night-tab="deals"]'
             ),
+            pickerCentered:pickerCenterDelta !== null &&
+              pickerCenterDelta <= Math.max(32, usableHeight * .3),
+            pickerCenterDelta,
+            usableHeight,
+            homeLayout:homeGridRect ? {
+              cards:homeCards.length,
+              columns:homeColumns,
+              fillRatio:homeGridRect.width
+                ? homeCardSpan / homeGridRect.width
+                : 0,
+              overflow:Math.max(0,homeGrid.scrollWidth-homeGrid.clientWidth),
+              minimumCardWidth:homeCardRects.length
+                ? Math.min(...homeCardRects.map(rect => rect.width))
+                : 0,
+              visibleAboveFooter:footerRect
+                ? homeCardRects.every(rect => rect.bottom <= footerRect.top + 1)
+                : false,
+              actionsVisible:footerRect && homeActionsRect
+                ? homeActionsRect.bottom <= footerRect.top + 1
+                : false
+            } : null,
+            pickerRect:pickerRect ? {
+              top:pickerRect.top,
+              bottom:pickerRect.bottom,
+              height:pickerRect.height
+            } : null,
+            usableRect:tabsRect && footerRect ? {
+              top:tabsRect.bottom,
+              bottom:footerRect.top
+            } : null,
             footer:!!document.querySelector('.night-footer'),
             hide:!!document.querySelector('.night-planner-hide'),
             finalize:!!document.querySelector('.night-finalize'),
@@ -145,8 +210,15 @@ def main():
                     and planner["overlay"]
                     and planner["panelClass"]
                     and planner["shell"]
-                    and planner["tabs"] == 4
-                    and planner["disabledDeals"]
+                    and planner["tabs"] == 3
+                    and not planner["dealTab"]
+                    and planner["pickerCentered"]
+                    and planner["homeLayout"]["cards"] == 3
+                    and planner["homeLayout"]["columns"] == 3
+                    and planner["homeLayout"]["fillRatio"] >= 0.95
+                    and planner["homeLayout"]["overflow"] == 0
+                    and planner["homeLayout"]["visibleAboveFooter"]
+                    and planner["homeLayout"]["actionsVisible"]
                     and planner["footer"]
                     and planner["hide"]
                     and planner["finalize"]
@@ -160,6 +232,40 @@ def main():
                 page.screenshot(
                     path=ROOT / f".visual-night-planner-{name}.png",
                     animations="disabled",
+                )
+
+                page.evaluate(
+                    """() => {
+                      const shown = new Set(R.nightCards
+                        .filter(card => card.upgrade)
+                        .map(card => card.upgrade.id));
+                      const extra = UPGRADES.find(item => !shown.has(item.id));
+                      if(extra)R.nightCards.push({upgrade:extra});
+                      renderNightUI();
+                    }"""
+                )
+                four_offer = planner_state(page)
+                if not (
+                    four_offer["homeLayout"]["cards"] == 4
+                    and four_offer["homeLayout"]["columns"] == 4
+                    and four_offer["homeLayout"]["fillRatio"] >= 0.95
+                    and four_offer["homeLayout"]["overflow"] == 0
+                    and four_offer["homeLayout"]["minimumCardWidth"] >= 150
+                    and four_offer["homeLayout"]["visibleAboveFooter"]
+                    and four_offer["homeLayout"]["actionsVisible"]
+                    and four_offer["bodyOverflow"] == [0, 0]
+                ):
+                    failures.append(f"{name}:four-home-offers:{four_offer}")
+                page.screenshot(
+                    path=ROOT / f".visual-night-home-four-{name}.png",
+                    animations="disabled",
+                )
+
+                page.evaluate(
+                    """() => {
+                      R.nightCards = R.nightCards.slice(0, 3);
+                      renderNightUI();
+                    }"""
                 )
 
                 page.click(".night-planner-hide")
@@ -268,9 +374,36 @@ def main():
                 if not (
                     reopened["panelMode"] == "planner"
                     and reopened["tab"] == "home"
-                    and reopened["tabs"] == 4
+                    and reopened["tabs"] == 3
+                    and not reopened["dealTab"]
+                    and reopened["pickerCentered"]
                 ):
                     failures.append(f"{name}:reopened:{reopened}")
+
+                page.evaluate(
+                    """() => {
+                      R.paths.Sales = 'negotiation';
+                      R.milestones.Sales = 3;
+                      R.today = {additionalNightPurchases:0,log:[]};
+                      nightPhase({animate:false});
+                    }"""
+                )
+                unlocked = planner_state(page)
+                if not (
+                    unlocked["tabs"] == 4
+                    and unlocked["dealTab"]
+                    and unlocked["pickerCentered"]
+                ):
+                    failures.append(f"{name}:unlocked:{unlocked}")
+                page.click('.night-planner-tab[data-night-tab="deals"]')
+                deal_picker = planner_state(page)
+                if not (
+                    deal_picker["tab"] == "deals"
+                    and deal_picker["tabs"] == 4
+                    and deal_picker["dealTab"]
+                    and deal_picker["pickerCentered"]
+                ):
+                    failures.append(f"{name}:deal-picker:{deal_picker}")
 
                 if page_errors or console_errors:
                     failures.append(
@@ -278,11 +411,14 @@ def main():
                     )
                 evidence[name] = {
                     "planner": planner,
+                    "fourOffer": four_offer,
                     "room": room,
                     "section": section,
                     "social": social,
                     "socialRelationships": social_relationships,
                     "reopened": reopened,
+                    "unlocked": unlocked,
+                    "dealPicker": deal_picker,
                 }
                 context.close()
 
@@ -333,8 +469,8 @@ def main():
             load(page)
             migrations = page.evaluate(
                 """() => {
-                  const migrate = nextStep => owMigrateMeta({
-                    schema:3,
+                  const migrate = (schema, nextStep) => owMigrateMeta({
+                    schema,
                     tutorial:{
                       completed:false,
                       nextStep,
@@ -344,14 +480,27 @@ def main():
                     settings:{volume:70}
                   }).tutorial.nextStep;
                   return {
-                    beforeNight:migrate(4),
-                    nightHome:migrate(5),
-                    nightMiddle:migrate(7),
-                    promotion:migrate(9),
-                    capstone:migrate(12),
-                    complete:owMigrateMeta({
+                    schema3:{
+                      beforeNight:migrate(3,4),
+                      nightHome:migrate(3,5),
+                      nightMiddle:migrate(3,7),
+                      promotion:migrate(3,9),
+                      capstone:migrate(3,12)
+                    },
+                    schema4:{
+                      beforeNight:migrate(4,4),
+                      night:migrate(4,5),
+                      promotion:migrate(4,6),
+                      capstone:migrate(4,9)
+                    },
+                    complete3:owMigrateMeta({
                       schema:3,
                       tutorial:{completed:true,nextStep:13},
+                      settings:{volume:70}
+                    }).tutorial.nextStep,
+                    complete4:owMigrateMeta({
+                      schema:4,
+                      tutorial:{completed:true,nextStep:10},
                       settings:{volume:70}
                     }).tutorial.nextStep,
                     total:OW_ORIENTATION_STEPS.length
@@ -359,13 +508,22 @@ def main():
                 }"""
             )
             if migrations != {
-                "beforeNight": 4,
-                "nightHome": 5,
-                "nightMiddle": 5,
-                "promotion": 6,
-                "capstone": 9,
-                "complete": 10,
-                "total": 10,
+                "schema3": {
+                    "beforeNight": 4,
+                    "nightHome": 5,
+                    "nightMiddle": 5,
+                    "promotion": 9,
+                    "capstone": 12,
+                },
+                "schema4": {
+                    "beforeNight": 4,
+                    "night": 5,
+                    "promotion": 9,
+                    "capstone": 12,
+                },
+                "complete3": 13,
+                "complete4": 13,
+                "total": 13,
             }:
                 failures.append(f"migration:{migrations}")
 
@@ -388,25 +546,64 @@ def main():
             page.wait_for_function(
                 "document.getElementById('tutorial-callout').classList.contains('active')"
             )
-            tutorial = page.evaluate(
-                """() => ({
-                  title:document.getElementById('tutorial-title').textContent,
-                  copy:document.getElementById('tutorial-copy').textContent,
-                  planner:!!document.querySelector('.night-planner-shell'),
-                  focus:document.getElementById(
-                    'tutorial-focus-ring'
-                  ).classList.contains('active'),
-                  step:owOrientationStepIndex
-                })"""
-            )
-            if not (
-                tutorial["title"] == "PLAN YOUR NIGHT"
-                and "Hide Planner" in tutorial["copy"]
-                and tutorial["planner"]
-                and tutorial["focus"]
-                and tutorial["step"] == 5
-            ):
-                failures.append(f"tutorial:{tutorial}")
+            tutorial = []
+            for title, tab, target, copy_fragment in [
+                (
+                    "SHOP FOR YOUR HOME",
+                    "home",
+                    ".night-home-desk",
+                    "permanent upgrades",
+                ),
+                (
+                    "MAKE AN OUTING",
+                    "outings",
+                    ".night-outings-desk",
+                    "does not use your Home purchase",
+                ),
+                (
+                    "CHECK RELATIONSHIPS",
+                    "relationships",
+                    ".night-relationships-desk",
+                    "meet them during the Workday",
+                ),
+                (
+                    "RECOVER AND FINISH",
+                    "home",
+                    ".night-footer",
+                    "Hide Planner",
+                ),
+            ]:
+                page.wait_for_function(
+                    "(title) => document.getElementById('tutorial-title').textContent === title",
+                    arg=title,
+                )
+                state = page.evaluate(
+                    """({tab,target}) => ({
+                      title:document.getElementById('tutorial-title').textContent,
+                      copy:document.getElementById('tutorial-copy').textContent,
+                      tab:nightState.tab,
+                      planner:!!document.querySelector('.night-planner-shell'),
+                      focus:document.getElementById(
+                        'tutorial-focus-ring'
+                      ).classList.contains('active'),
+                      target:owOrientationTarget?.matches(target),
+                      step:owOrientationStepIndex
+                    })""",
+                    {"tab": tab, "target": target},
+                )
+                tutorial.append(state)
+                expected_step = 5 + len(tutorial) - 1
+                if not (
+                    state["title"] == title
+                    and copy_fragment in state["copy"]
+                    and state["tab"] == tab
+                    and state["planner"]
+                    and state["focus"]
+                    and state["target"]
+                    and state["step"] == expected_step
+                ):
+                    failures.append(f"tutorial:{state}")
+                page.click("#tutorial-next")
             evidence["migration"] = migrations
             evidence["tutorial"] = tutorial
             context.close()

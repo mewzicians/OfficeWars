@@ -28,20 +28,20 @@ menu offers Continue Run when that save is valid and requires confirmation
 before a new run replaces it. Committed choices and stable phase transitions
 autosave without allowing a refresh to reroll an offer or undo a cost.
 
-A first-play contextual orientation teaches the basic journey through ten
+A first-play contextual orientation teaches the basic journey through thirteen
 short callouts. It covers the project race and stress, morning task anatomy,
-the Resume, autonomous Workday controls, Clock Out, the consolidated Night
-Planner, the first three-path Promotion choice, the 6 and 10 XP milestones,
-the first boss floor, and the first claimed Capstone. The Night lesson covers
-shopping, Outings, Relationships, coworker bonus timing, Lights Out, explicit
-finalization, and the optional room interface without separately teaching
-conditional Deals. Each callout spotlights its relevant existing interface
-while darkening the rest of the screen. The first Workday pauses once before
-playback and opens the live Action Guide, which explains Work on Task, Lunch,
-Water Cooler, Office Chat, Slumped at Desk, and Team Meeting using current
-values. Playback is not interrupted after it begins. Players can skip the
-orientation at any step or reset it through Options for the next New Run. The
-tutorial does not rig cards or outcomes, and advanced traits and card
+the Resume, autonomous Workday controls, Clock Out, four focused Night Planner
+lessons, the first three-path Promotion choice, the 6 and 10 XP milestones,
+the first boss floor, and the first claimed Capstone. The Night sequence
+separately teaches Home Shop, Outings, Relationships and coworker bonus timing,
+then recovery, finalization, and the optional room interface. Conditional
+Deals remain a discovery. Each callout spotlights its relevant existing
+interface while darkening the rest of the screen. The first Workday pauses
+once before playback and opens the live Action Guide, which explains Work on
+Task, Lunch, Water Cooler, Office Chat, Slumped at Desk, and Team Meeting using
+current values. Playback is not interrupted after it begins. Players can skip
+the orientation at any step or reset it through Options for the next New Run.
+The tutorial does not rig cards or outcomes, and advanced traits and card
 interactions remain discoveries.
 
 Options stores meta preferences separately from the active run. The current
@@ -328,13 +328,17 @@ runs bypass presentation timing without changing outcomes.
 
 Generate Home and Deal catalogs at Night start, then open the consolidated
 iPad-style Night Planner unless the player most recently ended Night from the
-room. Its Home Shop, Outings, Relationships, and conditional Deal Desk tabs
-share persistent Stress, Lights Out, Finalize Night, and Hide Planner controls.
-The room remains a complete optional interface: the iPad opens the full
-Planner, the computer opens Home Shop, the door opens Social tabs for Outings
-and Relationships, the laptop opens Deal Desk, the switch selects Lights Out,
-and the bed finalizes Night. Ending Night through the Planner makes the next
-Night open there; using the bed preserves the room preference.
+room. Its Home Shop, Outings, and Relationships tabs share persistent Stress,
+Lights Out, Finalize Night, and Hide Planner controls. Deal Desk appears as a
+fourth tab only while Sales or another active effect provides a legal Deal
+purchase. Home Shop offers expand across the usable Planner width; three
+offers use three equal columns and an additional visible offer uses a fourth
+column without hiding the purchase controls. The room remains a complete
+optional interface: the iPad opens the full Planner, the computer opens Home
+Shop, the door opens Social tabs for Outings and Relationships, the laptop
+opens Deal Desk when available, the switch selects Lights Out, and the bed
+finalizes Night. Ending Night through the Planner makes the next Night open
+there; using the bed preserves the room preference.
 
 Outings remain independent of the recovery choice. Manual Lights Out and Home
 or Deal purchases are mutually exclusive unless an effect explicitly permits

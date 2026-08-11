@@ -15,10 +15,10 @@ GAME_URL = (Path(ROOT) / "officewarsautobattler.html").as_uri()
 QUIET = "--quiet" in sys.argv
 META_COMPLETE = json.dumps(
     {
-        "schema": 4,
+        "schema": 5,
         "tutorial": {
             "completed": True,
-            "nextStep": 10,
+            "nextStep": 13,
             "skipped": False,
             "replayRequested": False,
         },

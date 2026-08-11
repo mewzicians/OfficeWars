@@ -34,10 +34,10 @@ The real HTML now contains the approved overhaul candidate:
   and eight-cubicle office;
 - one versioned active-run save, Continue Run, deterministic prepared-Workday
   restoration, persistent result summaries, and safe casino restoration; and
-- the ten-step contextual orientation across the first day, consolidated Night
-  Planner, first path choice, first boss floor, and first Capstone, with
-  persistent completion, Skip Orientation, and reset through Options for the
-  next New Run;
+- the thirteen-step contextual orientation across the first day, four focused
+  Night Planner lessons, first path choice, first boss floor, and first
+  Capstone, with persistent completion, Skip Orientation, and reset through
+  Options for the next New Run;
 - visual schedule trackers for every schedule preview, comparison, guarantee,
   replacement, and final Schedule Desk decision;
 - a dedicated interactive flat side-view Home scene with room controls,
@@ -72,16 +72,20 @@ percent, five base workday actions, and rank pairs
 Checked on 2026-08-11:
 
 - `officewarsautobattler.html` has SHA-256
-  `387FB7F1062CFEA15E3D14A44D40E85FA4455EA53AE3B37BCC0E182DD9B6C969`.
+  `D2E44F34D21CF9A9303311ED5377A9910BB7D2D5C9FEE36BC0F98FCA5647498A`.
   Hashes are taken over LF content, matching the repository and public package.
 - Current implementation evidence is
-  `verification/TASK_KEYWORDS_CELESTIAL_NIGHT_PLANNER_2026-08-11.md`.
+  `verification/HOME_SHOP_RESPONSIVE_GRID_2026-08-11.md`.
   Home/schedule, smoke, persistence/tutorial, advanced interaction, visual,
   focused keyword/celestial, focused Night Planner, and full no-simulation
   verification pass on this hash.
 - Options provides a persistent master-volume slider and tutorial reset. The
-  reset schedules the ten-step orientation for the next New Run; How to
+  reset schedules the thirteen-step orientation for the next New Run; How to
   Play no longer duplicates that command.
+- The Night orientation uses four focused Planner lessons for Home Shop,
+  Outings, Relationships, and recovery/finalization. Each lesson opens its
+  matching tab, and schema-4 tutorial state migrates without replaying
+  completed material.
 - The Resume rail gives all five Skills distinct, bright 8-bit office
   scenes behind their progression information. The scenes are decorative,
   pointer-inert, and remain behind a readability scrim in expanded and
@@ -116,9 +120,14 @@ Checked on 2026-08-11:
   a top Stress bar, and projected post-sleep Stress remain prominent.
 - The iPad-style Night Planner consolidates Home Shop, Outings, Relationships,
   and conditional Deal Desk tabs above persistent Stress, Lights Out, Finalize
-  Night, and Hide Planner controls. The PC, Social door, Deal laptop, switch,
-  and bed remain focused room shortcuts. Finalizing through the Planner or bed
-  preserves that interface as the next Night's opening preference.
+  Night, and Hide Planner controls. Deal Desk is omitted until Sales or another
+  active effect provides a legal Deal purchase. Home offers use a fluid
+  count-driven grid: three cards fill three equal columns and a fourth visible
+  offer fills four columns while keeping rerolls and the footer visible. Deal
+  item groups remain centered in the usable iPad content area. The PC, Social
+  door, Deal laptop, switch, and bed remain focused room shortcuts. Finalizing
+  through the Planner or bed preserves that interface as the next Night's
+  opening preference.
 - Every manager has a distinct office portrait and color. Ordinary floors keep
   the manager seated at the desk; boss floors use a cosmetic patrol that is
   absent from the gameplay cast and consumes no gameplay RNG.
@@ -299,16 +308,18 @@ Checked on 2026-08-11:
 - If the game is restored during a prepared Workday, restore its deterministic
   checkpoint and automatically Skip its remaining playback to Clock Out. Do
   not attempt to serialize live animation timers or resolver closures.
-- Teach the basic journey through ten contextual callouts: the project race
-  and stress, morning task anatomy, the Resume, Workday playback, Clock Out,
-  the consolidated Night Planner, the first three-path Promotion choice, the 6
-  and 10 XP milestone model, the first boss floor, and the first claimed
-  Capstone. Keep advanced traits and card interactions for players to discover.
+- Teach the basic journey through thirteen contextual callouts: the project
+  race and stress, morning task anatomy, the Resume, Workday playback, Clock
+  Out, four focused Night Planner lessons, the first three-path Promotion
+  choice, the 6 and 10 XP milestone model, the first boss floor, and the first
+  claimed Capstone. Keep advanced traits and card interactions for players to
+  discover.
 - During the Night tutorial, automatically open and spotlight the consolidated
-  Planner. Explain its shopping, Outing, Relationship, Lights Out, and
-  finalization controls; state that coworker bonuses trigger when coworkers are
-  met during the Workday; and tell the player that Hide Planner exposes the
-  equivalent room controls. Do not separately teach conditional Deals.
+  Planner. Use separate Home Shop, Outings, Relationships, and
+  recovery/finalization lessons, switching to the matching tab before each
+  callout. State that coworker bonuses trigger when coworkers are met during
+  the Workday and that Hide Planner exposes the equivalent room controls. Do
+  not separately teach conditional Deals.
 - On the first actual or provisional Capstone claim, explain that the first
   claimed Capstone becomes the run's only Capstone. If the claim occurs during
   Workday resolution, wait for the next stable player-facing phase.
@@ -322,6 +333,8 @@ Checked on 2026-08-11:
 - Present Night as the player's living space rather than the office. Open the
   consolidated iPad-style Night Planner by default while keeping complete room
   controls for Home Shop, Social, unlocked Deals, Lights Out, and End Day.
+  Omit Deal Desk from the Planner until a Sales trait, Sales card, or another
+  active effect provides a legal Deal purchase.
   Transition into Home through sunset and a door opening, fade Outings to black
   and back, and return to the office through sunrise.
 - Do not rig first-run cards or outcomes. Store completed tutorial steps across

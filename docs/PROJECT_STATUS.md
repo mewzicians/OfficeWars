@@ -3,7 +3,7 @@
 Snapshot date: 2026-08-11
 
 Implemented game SHA-256:
-`387FB7F1062CFEA15E3D14A44D40E85FA4455EA53AE3B37BCC0E182DD9B6C969`
+`D2E44F34D21CF9A9303311ED5377A9910BB7D2D5C9FEE36BC0F98FCA5647498A`
 
 Hashes in this project are taken over LF content, which is what the repository
 and the public package store. A CRLF working copy produces a different value.
@@ -32,10 +32,10 @@ through rollout Phases 0-6:
 - one versioned active-run save with Continue Run, replacement confirmation,
   deterministic prepared-Workday restore, casino continuation, persistent
   results, and return to menu;
-- a ten-step contextual orientation covering the first day, consolidated Night
-  Planner, first path choice, milestone growth, first boss floor, and first
-  claimed Capstone, with spotlighted existing UI, persisted progress, Skip
-  Orientation, and reset through Options for the next New Run;
+- a thirteen-step contextual orientation covering the first day, four focused
+  Night Planner lessons, first path choice, milestone growth, first boss floor,
+  and first claimed Capstone, with spotlighted existing UI, persisted progress,
+  Skip Orientation, and reset through Options for the next New Run;
 - a first-Workday tutorial pause that opens the live Action Guide and explains
   Work on Task, Lunch, Water Cooler, Office Chat, Slumped at Desk, and Team
   Meeting using current values;
@@ -54,6 +54,14 @@ through rollout Phases 0-6:
 - an iPad-style Night Planner with Home Shop, Outings, Relationships, and
   conditional Deal Desk tabs; persistent Stress, Lights Out, Finalize Night,
   and Hide Planner controls; and remembered Planner-versus-room preference;
+- a focused Night onboarding sequence that switches through Home Shop,
+  Outings, Relationships, and recovery/finalization instead of placing every
+  Night rule in one callout;
+- Deal Desk remains absent from the Planner until Sales or another active
+  effect provides a legal Deal purchase;
+- Home Shop offers fill the usable iPad width in three equal columns and
+  automatically switch to four equal columns when a fourth offer is present,
+  while keeping rerolls and the persistent footer visible;
 - prominent Home Cash and Credit, accessible visual item slots with sale
   confirmation, a top Stress bar, current and projected Stress, moon phases,
   pixel-room decor, and Apartment through Penthouse scene variants;
@@ -124,11 +132,12 @@ through rollout Phases 0-6:
 ## Verification
 
 The current implementation report is
-`TASK_KEYWORDS_CELESTIAL_NIGHT_PLANNER_2026-08-11.md`. The preceding exhaustive
-report is `FULL_VERIFICATION_2026-08-11_F51F2F7C.md`; it remains exact evidence
-for its named earlier hash.
+`HOME_SHOP_RESPONSIVE_GRID_2026-08-11.md`. The preceding Night report is
+`NIGHT_TUTORIAL_DEAL_VISIBILITY_2026-08-11.md`, and the preceding exhaustive
+report is `FULL_VERIFICATION_2026-08-11_F51F2F7C.md`; both remain exact
+evidence for their named earlier hashes.
 
-Verified on the current hash `387FB7F1`:
+Verified on the current hash `D2E44F34`:
 
 - Focused task-keyword/celestial, Night Planner, Home/schedule, smoke,
   persistence/tutorial, advanced interaction, visual, and full no-simulation

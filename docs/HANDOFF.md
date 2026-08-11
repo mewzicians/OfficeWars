@@ -41,6 +41,10 @@ Last updated: 2026-08-11
 35. `verification/FULL_VERIFICATION_2026-08-11_F51F2F7C.md`
 36. `docs/PATCH_NOTES_TASK_KEYWORDS_CELESTIAL_NIGHT_PLANNER_2026-08-11.md`
 37. `verification/TASK_KEYWORDS_CELESTIAL_NIGHT_PLANNER_2026-08-11.md`
+38. `docs/PATCH_NOTES_NIGHT_TUTORIAL_DEAL_VISIBILITY_2026-08-11.md`
+39. `verification/NIGHT_TUTORIAL_DEAL_VISIBILITY_2026-08-11.md`
+40. `docs/PATCH_NOTES_HOME_SHOP_RESPONSIVE_GRID_2026-08-11.md`
+41. `verification/HOME_SHOP_RESPONSIVE_GRID_2026-08-11.md`
 
 Read `docs/ARCHIVE_SUPERSEDED.md` only when historical reasoning is needed.
 
@@ -69,14 +73,14 @@ gameplay IDs; resolves sabotage immediately after the midpoint desk visit; and
 rolls back gameplay state and both random streams if Skip resolution throws.
 
 The current HTML has SHA-256
-`387FB7F1062CFEA15E3D14A44D40E85FA4455EA53AE3B37BCC0E182DD9B6C969`.
+`D2E44F34D21CF9A9303311ED5377A9910BB7D2D5C9FEE36BC0F98FCA5647498A`.
 Hashes are taken over LF content, matching the repository and public package; a
 CRLF working copy produces a different value.
 It replaces the three speed buttons with one cycling 1x/2x/4x button and makes
 the new 1x equal to the previous 2x presentation pace. It also replaces
 Endless with Continue Run, autosaves committed state, restores prepared
 Workdays deterministically to Clock Out, preserves casino games and run
-results, and teaches the basic journey through ten contextual callouts. The
+results, and teaches the basic journey through thirteen contextual callouts. The
 player's project progress now fills behind the top-center project title under
 a fixed readability scrim, shows the exact fraction, and pulses on change. The
 bottom-left player HUD now contains only the portrait and Stress bar. Workday
@@ -94,12 +98,16 @@ explains Campaign replacement, ordered completion, and its reward promise.
 Night now removes the office HUD and presents the player's current living
 space. The iPad-style Night Planner consolidates Home Shop, Outings,
 Relationships, and conditional Deal Desk tabs with persistent Stress, Lights
-Out, Finalize Night, and Hide Planner controls. Room shortcuts open the full
-Planner, Home Shop, Social tabs, Deal Desk, Lights Out, and End Day. Finalizing
-from the Planner or bed preserves that interface as the next Night's opening
-preference. Cash, Expense Credit, Stress, and projected post-sleep Stress
-remain prominent; occupied item slots expose tooltips and an accessible sale
-confirmation. Apartment, Townhouse, House, and Penthouse use distinct wall
+Out, Finalize Night, and Hide Planner controls. Deal Desk is absent until Sales
+or another active effect provides a legal Deal purchase. Home offers fill the
+usable Planner width in three equal columns and switch to four columns when an
+additional offer is present; the compact layout keeps the purchase actions and
+footer visible. Deal item groups remain centered. Room shortcuts open the full
+Planner, Home Shop, Social tabs, available Deal Desk, Lights Out, and End Day.
+Finalizing from the Planner or bed preserves that interface as the next Night's
+opening preference. Cash, Expense Credit, Stress, and projected post-sleep
+Stress remain prominent; occupied item slots expose tooltips and an accessible
+sale confirmation. Apartment, Townhouse, House, and Penthouse use distinct wall
 treatments while sharing one flat side-view layout. The bed, Night Planner
 iPad, full Home Shop PC, Deal laptop, plant, and Social door follow a stable
 left-to-right order and meet one shallow patterned floor boundary. Furniture
@@ -163,15 +171,16 @@ category-only choices show identity only. Automation additional Combo cards
 explicitly grant no Skill XP while retaining completion counters, Codebase,
 and other Complete Play triggers.
 
-The first Night tutorial automatically opens and spotlights the consolidated
-Planner. It explains shopping, Outings, Relationships, coworker bonus timing,
-Lights Out, finalization, and the optional room interface in one callout. The
-orientation then explains the first three-path Promotion choice and later 6/10
-XP milestones, covers the first boss-floor introduction, and finishes when the
-first Capstone is claimed. Its Workday callout opens the live Action Guide and
-explains all six ordinary actions with current values. Conditional Deals are
-not separately taught. Options contains the persistent master-volume setting
-and the tutorial reset command; How to Play no longer duplicates that command.
+The Night tutorial automatically opens and spotlights the consolidated Planner.
+Four focused callouts switch through Home Shop, Outings, Relationships, and
+recovery/finalization, including coworker bonus timing and the optional room
+interface. The orientation then explains the first three-path Promotion choice
+and later 6/10 XP milestones, covers the first boss-floor introduction, and
+finishes when the first Capstone is claimed. Its Workday callout opens the live
+Action Guide and explains all six ordinary actions with current values.
+Conditional Deals are not separately taught. Options contains the persistent
+master-volume setting and the tutorial reset command; How to Play no longer
+duplicates that command.
 
 Player-facing progression language now calls Coding, Management, Design,
 Sales, and Operations `Skills`; internal data still uses `family` identifiers.
@@ -189,8 +198,8 @@ only automatic sleep unless Moodboard or another explicit exception permits
 both.
 
 The current implementation report is
-`verification/TASK_KEYWORDS_CELESTIAL_NIGHT_PLANNER_2026-08-11.md`. The current
-hash passes the focused keyword/celestial, Night Planner, Home/schedule, smoke,
+`verification/HOME_SHOP_RESPONSIVE_GRID_2026-08-11.md`. The current hash
+passes the focused keyword/celestial, Night Planner, Home/schedule, smoke,
 24-check persistence/tutorial, eight-group advanced interaction, and
 readability visual suites plus the full no-simulation verifier. All 50 ordinary
 cards pass preview, markup, and primary Complete Play traversal. No sampled
@@ -360,3 +369,9 @@ invoked automatically when a request clearly matches their scope.
 repository package; its contents become the repository root when exported.
 Both packages' mapped game, guidance, active documents, verifiers, reports, and
 hashes were synchronized with the root candidate on 2026-08-11.
+
+The public repository is source-visible for play and GitHub Pages hosting, but
+it is not open source. Its README and `LICENSE` grant only personal,
+non-commercial permission to access and run an unmodified copy. The public
+feedback policy accepts Issues but not unsolicited pull requests, modified
+builds, redistribution, or asset reuse.

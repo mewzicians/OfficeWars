@@ -4,7 +4,7 @@
 
 The rollout and readability candidate exists. The current candidate has
 SHA-256
-`387FB7F1062CFEA15E3D14A44D40E85FA4455EA53AE3B37BCC0E182DD9B6C969`.
+`BEE4D38FBDE4309664FDBD5EC49DC254816D0BE393D639A8549D58254EE4E15F`.
 The current evidence is in
 `verification/TASK_KEYWORDS_CELESTIAL_NIGHT_PLANNER_2026-08-11.md`: focused
 keyword/celestial, Night Planner, Home/schedule, smoke,
@@ -104,11 +104,17 @@ during a verification-only request unless the user separately asks for fixes.
 - [ ] Victory and defeat summaries survive refresh and Return to Main Menu
   clears only the active run.
 - [ ] Tutorial completion is stored separately from the run save.
-- [ ] The ten orientation steps spotlight the correct existing UI across Floor
-  Intro, Morning, pre-Workday, Clock Out, the consolidated Night Planner, the
-  first three-path Promotion choice, milestone growth, the first boss floor,
-  and the first claimed Capstone. The Night lesson explains coworker bonus
-  timing and the optional room interface; Deals remain conditional discovery.
+- [ ] The thirteen orientation steps spotlight the correct existing UI across
+  Floor Intro, Morning, pre-Workday, Clock Out, four focused Night Planner
+  lessons, the first three-path Promotion choice, milestone growth, the first
+  boss floor, and the first claimed Capstone. The Night lessons switch through
+  Home Shop, Outings, Relationships, and recovery/finalization; Deals remain
+  conditional discovery.
+- [ ] Deal Desk is absent from the Planner without a legal Deal purchase and
+  returns as a fourth tab when Sales or another active effect grants access.
+- [ ] Home Shop offers fill the usable Planner width in three equal columns,
+  switch to four columns when a fourth offer is visible, and keep every card,
+  purchase action, and footer control visible at desktop and landscape sizes.
 - [ ] The first Workday callout opens the current Action Guide and explains
   Work on Task, Lunch, Water Cooler, Office Chat, Slumped at Desk, and Team
   Meeting without consuming RNG or starting playback.

@@ -14,10 +14,10 @@ from playwright.sync_api import sync_playwright
 ROOT = Path(__file__).resolve().parent
 URL = (ROOT / "officewarsautobattler.html").as_uri()
 META = {
-    "schema": 4,
+    "schema": 5,
     "tutorial": {
         "completed": True,
-        "nextStep": 10,
+        "nextStep": 13,
         "skipped": False,
         "replayRequested": False,
     },

@@ -1657,7 +1657,7 @@ async () => {
     const tutorialSteps = OfficeWarsTest.orientationSteps();
     const workdayStep = tutorialSteps.find(step => step.id === 'workday');
     const relationshipStep = tutorialSteps.find(step =>
-      step.id === 'nightPlanner'
+      step.id === 'nightRelationships'
     );
 
     return {
@@ -1688,10 +1688,13 @@ async () => {
           !!optionButton.dataset.tip &&
           optionTerms.length === 2 &&
           optionTerms.every(term => term.tabIndex === -1),
-        tutorial_replaces_deals_with_capstone:
-          tutorialSteps.length === 10 &&
+        tutorial_splits_night_without_deals_lesson:
+          tutorialSteps.length === 13 &&
           !tutorialSteps.some(step => step.id === 'nightDeals') &&
-          tutorialSteps.some(step => step.id === 'nightPlanner') &&
+          [
+            'nightHome', 'nightOutings',
+            'nightRelationships', 'nightFinish'
+          ].every(id => tutorialSteps.some(step => step.id === id)) &&
           tutorialSteps.some(step => step.id === 'capstone'),
         workday_tutorial_covers_every_ordinary_action:
           !!workdayStep &&

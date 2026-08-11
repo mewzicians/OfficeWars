@@ -15,10 +15,10 @@ GAME_URL = (ROOT / "officewarsautobattler.html").as_uri()
 READY = "document.documentElement.dataset.officewarsReady === 'true'"
 META_COMPLETE = json.dumps(
     {
-        "schema": 4,
+        "schema": 5,
         "tutorial": {
             "completed": True,
-            "nextStep": 10,
+            "nextStep": 13,
             "skipped": False,
             "replayRequested": False,
         },
@@ -784,17 +784,33 @@ def main():
             tutorial_page.click("#tutorial-next")
             tutorial_page.evaluate("afterDayResults()")
             wait_phase(tutorial_page, "night")
-            tutorial_page.wait_for_function(
-                "document.getElementById('tutorial-title').textContent === 'PLAN YOUR NIGHT'",
-                timeout=30_000,
-            )
-            titles.append(tutorial_page.text_content("#tutorial-title"))
-            night_targets = [
-                tutorial_page.evaluate(
-                    "owOrientationTarget?.matches('.night-planner-shell')"
+            night_targets = []
+            for expected_title, expected_tab, expected_target in [
+                ("SHOP FOR YOUR HOME", "home", ".night-home-desk"),
+                ("MAKE AN OUTING", "outings", ".night-outings-desk"),
+                (
+                    "CHECK RELATIONSHIPS",
+                    "relationships",
+                    ".night-relationships-desk",
+                ),
+                ("RECOVER AND FINISH", "home", ".night-footer"),
+            ]:
+                tutorial_page.wait_for_function(
+                    "(title) => document.getElementById('tutorial-title').textContent === title",
+                    arg=expected_title,
+                    timeout=30_000,
                 )
-            ]
-            tutorial_page.click("#tutorial-next")
+                titles.append(tutorial_page.text_content("#tutorial-title"))
+                night_targets.append(
+                    tutorial_page.evaluate(
+                        """({tab, target}) => (
+                          nightState.tab === tab &&
+                          owOrientationTarget?.matches(target)
+                        )""",
+                        {"tab": expected_tab, "target": expected_target},
+                    )
+                )
+                tutorial_page.click("#tutorial-next")
 
             tutorial_page.evaluate(
                 """() => {
@@ -862,7 +878,10 @@ def main():
                 "BUILD YOUR RESUME",
                 "KNOW THE WORKDAY",
                 "REVIEW CLOCK OUT",
-                "PLAN YOUR NIGHT",
+                "SHOP FOR YOUR HOME",
+                "MAKE AN OUTING",
+                "CHECK RELATIONSHIPS",
+                "RECOVER AND FINISH",
                 "CHOOSE A CAREER PATH",
                 "GROW THE PATH",
                 "BOSS FLOOR",
@@ -873,7 +892,7 @@ def main():
                 titles == expected_titles
                 and all(night_targets)
                 and tutorial_meta["tutorial"]["completed"]
-                and tutorial_meta["tutorial"]["nextStep"] == 10,
+                and tutorial_meta["tutorial"]["nextStep"] == 13,
                 {
                     "titles": titles,
                     "nightTargets": night_targets,

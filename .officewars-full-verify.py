@@ -15,10 +15,10 @@ GAME_URL = (ROOT / "officewarsautobattler.html").as_uri()
 RUNS_PER_POLICY = int(sys.argv[1]) if len(sys.argv) > 1 else 250
 META_COMPLETE = json.dumps(
     {
-        "schema": 4,
+        "schema": 5,
         "tutorial": {
             "completed": True,
-            "nextStep": 10,
+            "nextStep": 13,
             "skipped": False,
             "replayRequested": False,
         },
@@ -564,7 +564,7 @@ async () => {
 
   localStorage.setItem(OW_META_KEY, JSON.stringify({
     schema: OW_META_SCHEMA,
-    tutorial: {completed: true, nextStep: 10, skipped: false, replayRequested: false}
+    tutorial: {completed: true, nextStep: 13, skipped: false, replayRequested: false}
   }));
   const legacyVolumeDefault = owReadMeta().settings.volume;
   showOptions();

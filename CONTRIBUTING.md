@@ -1,13 +1,24 @@
-# Contributing To OfficeWars
+# OfficeWars Feedback Policy
 
-Thanks for helping improve OfficeWars.
+Thanks for playing OfficeWars and helping identify where it can improve.
 
-## Before Starting
+## Permission
 
-Read `AGENTS.md`, `docs/GAME_DESIGN.md`, `docs/BALANCE_LEDGER.md`, and
-`docs/PROJECT_STATUS.md`. Search existing issues before opening a new one.
+OfficeWars is not open source. The copyright holder grants permission only to
+access and run an unmodified copy for personal, non-commercial play under the
+terms in `LICENSE`.
 
-## Good Reports
+This repository does not accept unsolicited code, documentation, art, audio,
+or other asset contributions. Do not submit pull requests or publish modified
+versions. Opening an Issue or sharing feedback does not grant permission to
+modify, redistribute, host, or create derivative works from OfficeWars.
+
+## Before Reporting
+
+Read `docs/PROJECT_STATUS.md` and search existing Issues before opening a new
+one.
+
+## Useful Reports
 
 For gameplay or balance feedback, include:
 
@@ -20,28 +31,8 @@ For gameplay or balance feedback, include:
 
 Use the balance issue template rather than presenting one run as proof.
 
-## Pull Requests
-
-- Keep gameplay in `officewarsautobattler.html`.
-- Do not add required packages, servers, external assets, or build tools.
-- Keep workday playback AFK-friendly and deterministic across 1x, 2x, 4x, and
-  Skip.
-- Update player-facing text and active documentation with behavior changes.
-- Run the smoke suite for narrow changes and broader verification for shared
-  resolution, economy, traits, schedules, or UI changes.
-- State what was tested and what remains unverified.
-
-Balance changes need explicit design approval before implementation. A pull
-request should not quietly turn a Draft recommendation into a Locked rule.
-
-## AI-Assisted Contributions
-
-AI assistance is welcome. Contributors remain responsible for checking generated
-claims against the current HTML, preserving decision status, and disclosing
-which tests actually ran.
-
 ## Scope
 
-Focused fixes and well-supported design changes are preferred. Avoid unrelated
-refactors, document churn, or new abstractions that do not remove real
-complexity.
+Issues may report defects, readability problems, accessibility concerns,
+balance observations, or playtest results. Feature requests may be discussed,
+but only the copyright holder decides what becomes part of the game.
