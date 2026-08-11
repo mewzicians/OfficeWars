@@ -3,7 +3,10 @@
 Snapshot date: 2026-08-10
 
 Implemented game SHA-256:
-`470F4146FBA177FD6B7062A0093DDCF7C2826B797FE9AE74317BD1D146050FF7`
+`F51F2F7C7A11098FA7DABF5692767D14D14B75F45AFA9CADC6EB3DA96A141A46`
+
+Hashes in this project are taken over LF content, which is what the repository
+and the public package store. A CRLF working copy produces a different value.
 
 Skip repair details and validation scope are recorded in
 `docs/PATCH_NOTES_SKIP_FIX_2026-08-06.md`.
@@ -57,6 +60,11 @@ through rollout Phases 0-6:
   grounded on one shallow patterned floor boundary; Home item slots sit on a
   wall storage shelf, the Home name stays below the furniture, the moon remains
   inside the window, and Lights Out dims the complete room;
+- a Home room art pass that draws every piece from the shared feet line rather
+  than from per-piece offsets, so all six measured pieces ground within 0.01px
+  of that line, and that adopts the office scene's outline, wood, metal, glass,
+  gold, grid, and flat offset-shadow treatment; item slots rest on the shelf,
+  a wall clock fills the open wall, and the tiers differ by material quality;
 - distinct manager portraits and colors, with seated ordinary-floor managers
   and a presentation-only boss-floor patrol that never enters gameplay state;
 - sunset and door-opening entry, Outing fade and return, and sunrise exit
@@ -110,50 +118,56 @@ through rollout Phases 0-6:
 
 ## Verification
 
-- Findings F1-F4 from the first full audit are fixed.
-- All eight targeted high-risk interaction groups pass deterministic fixtures.
-- On the preceding broad-verification hash, the final smoke suite passed four
-  consecutive runs.
-- The readability matrix and expanded four-tier Home/schedule matrix found no
-  sampled clipped text, persistent-HUD overlap, or viewport overflow.
-- The current candidate hash passes smoke, all 24 persistence checks, all eight
-  advanced interaction groups plus the focused pin, glossary, and tutorial
-  contract group, the full verifier's automated player-surface
-  audit, and its responsive layout checks. Current focused evidence is
-  recorded in
-  `../verification/HOME_GROUNDING_CELESTIAL_SEQUENCE_2026-08-10.md`.
-- The focused visual matrix passes desktop, compact, landscape-phone,
-  collapsed Workday, Build Context, compact and expanded Pinned Tasks,
-  milestone tooltips, trait-keyword glossary views, and 200 percent text
-  samples with five decorative, pointer-inert Skill scenes, foregrounded
-  progression content, no sampled clipping, no persistent-HUD overlap, and no
-  viewport overflow.
-- The current Skip fix passes game, smoke-wrapper, and evaluated-smoke
-  JavaScript syntax; repository-diff checks; and focused Node behavioral checks
-  for legacy participant normalization, prepared converted meetings, and Skip
-  transactional error recovery.
-- The smoke source compares full gameplay state and gameplay RNG across
-  1x/2x/4x/Skip, real ambient contention, meeting/chat setup and dialogue,
-  desk visits, sabotage, stalled wrap-up, double invocation, exceptions before
-  and after gameplay mutation, opening-event burnout, and a final converted
-  meeting. It passed again on the current speed-control hash.
-- The current hash passed the advanced interaction suite, full automated
-  runtime audit, sampled accessibility checks, and expanded visual inspection
-  without page errors, console errors, or external requests. The focused
-  persistence suite passed 24 checks, including deterministic Workday restore,
-  restored Home panels, exactly-once `nightResolved` continuation, pending
-  Slots settlement exactly once, active Blackjack and Poker restore, and all
-  orientation transitions.
-- The current exhaustive implementation report is
-  `FULL_VERIFICATION_2026-08-10_0A8F74E5.md`. It finds no current
-  implementation blocker. Structural simulation, formal screen-reader
-  execution, exhaustive picker and save-boundary traversal, rapid-input
-  fuzzing, and memory profiling remain explicitly Not Run or Blocked.
-- The preceding exhaustive verdict is
-  `FULL_VERIFICATION_2026-08-10_55D9A6ED.md`. Its headless Night-policy failure
-  is fixed on the current hash. Fresh structural simulation and the exhaustive
-  every-picker, assistive-technology, save/restore, reset, rapid-input, and
-  memory-profile rows remain explicitly Not Run or Blocked.
+The current exhaustive report is
+`FULL_VERIFICATION_2026-08-10_F51F2F7C.md`. Read it before trusting any row
+below; it records exact Pass, Fail, Not Run, and Blocked status.
+
+Verified on the current hash `F51F2F7C`:
+
+- JavaScript syntax, balanced stylesheet, standalone load with the ready flag
+  set, and required element IDs present.
+- Zero external network requests, and zero page or console errors across the
+  menu, Morning, Resume Book, and Night surfaces.
+- Roster and structural invariants read from the loaded tables: 50 ordinary
+  cards, ten per Skill, a 4/3/2/1 rarity split in every Skill, no duplicate
+  task IDs, `rebrandInitiative` as the only Special, four Homes at 3/6/9/12
+  slots, eight managers, an eight-member cast, seven floors, and the
+  `110/10, 130/8, 165/7, 210/6, 250/6, 285/6, 300/5` floor curve.
+- Player-surface sweep at desktop, compact desktop, and landscape phone: no
+  horizontal overflow, no interactive element outside the viewport, and no
+  interactive element without an accessible name.
+- Home room geometry across all four tiers at desktop and landscape: feet line,
+  slot placement above the wall boundary, left-to-right furniture order, moon
+  inside the window, and title below the furniture, with every measured piece
+  within 0.01px of the floor line.
+- Both phase transitions: the sun and moon hold a minimum horizontal separation
+  of about 48 percent of viewport width throughout, and reduced motion bypasses
+  the transition without leaving the layer active.
+
+Not verified on the current hash. These require Python and Playwright, which
+were unavailable on the machine used for this pass, so they are Blocked rather
+than passing or failing:
+
+- the smoke suite and its 1x/2x/4x/Skip determinism and RNG-equality
+  comparisons;
+- the 24-check persistence suite;
+- the eight advanced interaction groups and the focused pin, glossary, and
+  tutorial contract group;
+- the full verifier's automated runtime audit and sampled accessibility checks;
+- every simulation and balance measurement.
+
+Historical evidence, valid only for its named hash:
+
+- `FULL_VERIFICATION_2026-08-10_0A8F74E5.md` found no implementation blocker on
+  hash `0A8F74E5`, with structural simulation, formal screen-reader execution,
+  exhaustive picker and save-boundary traversal, rapid-input fuzzing, and
+  memory profiling explicitly Not Run or Blocked.
+- `FULL_VERIFICATION_2026-08-10_55D9A6ED.md` is the preceding exhaustive
+  verdict; its headless Night-policy failure was fixed on hash `470F4146`.
+- On hash `470F4146` the smoke, persistence, advanced interaction, and full
+  verifier suites passed, and the focused visual and Home/schedule matrices
+  found no clipped text, persistent-HUD overlap, or viewport overflow. Those
+  results do not transfer to the current hash.
 
 Older dated reports remain exact-snapshot historical evidence. Use
 `HOME_GROUNDING_CELESTIAL_SEQUENCE_2026-08-10.md` for the current focused
