@@ -1051,6 +1051,11 @@ h1,h2,h3,.ct,.btn,.menu-btn,.replay-btn,
   inset:0;
   opacity:0;
   background:linear-gradient(#57a6c4 0 46%,#eaa35f 46% 62%,#1a1d2c 62%);
+  /* This layer is full-viewport and animates opacity and filter. Chrome can
+     run both on the compositor, but only once the layer is promoted; without
+     this hint it may repaint and re-filter every pixel on the main thread on
+     every frame. */
+  will-change:opacity,filter;
 }
 .transition-city {
   position:absolute;
@@ -1067,6 +1072,9 @@ h1,h2,h3,.ct,.btn,.menu-btn,.replay-btn,
   width:5rem;
   height:5rem;
   border-radius:50%;
+  /* Both carry a large blur glow and animate transform. Promote them so the
+     glow is rasterized once instead of on every frame. */
+  will-change:transform;
 }
 .transition-sun {
   top:auto;
