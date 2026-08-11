@@ -67,9 +67,10 @@ description: Continue OfficeWars game-design and balance planning from the repos
 
 - The active HTML contains the approved rollout, readability candidate,
   cycling playback speed, versioned active-run persistence, thirteen-step
-  contextual orientation, grounded Home redesign, and opposing celestial
-  transition arcs. Its SHA-256 is
-  `F51F2F7C7A11098FA7DABF5692767D14D14B75F45AFA9CADC6EB3DA96A141A46`.
+  contextual orientation, grounded Home redesign, opposing celestial
+  transition arcs, conditional Night Planner tabs, and responsive three- or
+  four-column Home Shop offers. Its SHA-256 is
+  `D2E44F34D21CF9A9303311ED5377A9910BB7D2D5C9FEE36BC0F98FCA5647498A`.
 - Do not restart or reimplement the overhaul from the rollout plan unless a
   verified finding requires a fix.
 - The first full bidirectional verification ran on 2026-08-06 and failed ship
@@ -84,15 +85,19 @@ description: Continue OfficeWars game-design and balance planning from the repos
   validation on 2026-08-07. Read
   `verification/SKIP_FIX_LOCAL_VALIDATION_2026-08-07.md` for that snapshot's
   evidence and cross-version simulation comparison.
-- The current hash passes Home/schedule, smoke, persistence, advanced
-  interaction, visual, and full no-simulation verification. Read
-  `verification/FULL_VERIFICATION_2026-08-11_F51F2F7C.md` for the current
-  matrix. Earlier dated reports remain evidence only for their named hashes.
+- The current hash passes focused task-keyword/celestial, Night Planner,
+  Home/schedule, smoke, persistence/tutorial, advanced interaction, visual,
+  and full no-simulation verification. Read
+  `verification/HOME_SHOP_RESPONSIVE_GRID_2026-08-11.md` for current-hash
+  evidence. `verification/FULL_VERIFICATION_2026-08-11_F51F2F7C.md` is the
+  preceding exhaustive snapshot and remains evidence only for its named hash.
 - Fresh structural simulation under the corrected Night policy remains Not
   Run. The prior 58.4 percent scripted-skilled result is historical snapshot
   telemetry, not current balance evidence.
 - Balance finding F5, structural tuning, explicitly unverified rows, human
-  evidence, and the deferred Home set design remain unfinished.
+  evidence, and the incomplete Home set design remain unfinished.
+- Options already persists a master-volume preference, but the game has no
+  implemented music or sound system yet.
 - Read `docs/HANDOFF.md` for current implementation status and
   `docs/BALANCE_LEDGER.md` for exact mechanics and decision status.
 
