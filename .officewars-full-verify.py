@@ -15,10 +15,10 @@ GAME_URL = (ROOT / "officewarsautobattler.html").as_uri()
 RUNS_PER_POLICY = int(sys.argv[1]) if len(sys.argv) > 1 else 250
 META_COMPLETE = json.dumps(
     {
-        "schema": 3,
+        "schema": 4,
         "tutorial": {
             "completed": True,
-            "nextStep": 13,
+            "nextStep": 10,
             "skipped": False,
             "replayRequested": False,
         },
@@ -318,8 +318,10 @@ async () => {
         previewFailures.push({id: task.id, preview});
       }
       const markup = owMorningCardMarkup(card, 0, 'offer');
-      if (!markup.includes(task.name) ||
-          !markup.includes(esc(task.effect)) ||
+      const markupHost = document.createElement('div');
+      markupHost.innerHTML = markup;
+      if (!markupHost.textContent.includes(task.name) ||
+          !markupHost.textContent.includes(task.effect) ||
           !markup.includes('<button')) {
         markupFailures.push(task.id);
       }
@@ -562,7 +564,7 @@ async () => {
 
   localStorage.setItem(OW_META_KEY, JSON.stringify({
     schema: OW_META_SCHEMA,
-    tutorial: {completed: true, nextStep: 13, skipped: false, replayRequested: false}
+    tutorial: {completed: true, nextStep: 10, skipped: false, replayRequested: false}
   }));
   const legacyVolumeDefault = owReadMeta().settings.volume;
   showOptions();
@@ -892,16 +894,16 @@ async () => {
     }
   );
   expect('home-scene-help-and-transition-contract',
-    helpSource.includes('use the room objects') &&
-    helpSource.includes('Relationships from your phone at Home') &&
+    helpSource.includes('use the Night Planner') &&
+    helpSource.includes('Night Planner or the room door') &&
     !helpSource.includes('footer previews recovery') &&
     !helpSource.includes('night tabs to see it') &&
     owBeginHomeTransition.toString().includes('sunset') &&
     owBeginSunriseTransition.toString().includes('sunrise') &&
     owBeginOutingStory.toString().includes('outing-fade'),
     {
-      roomObjects: helpSource.includes('use the room objects'),
-      relationshipsPhone: helpSource.includes('Relationships from your phone at Home'),
+      nightPlanner: helpSource.includes('use the Night Planner'),
+      socialDoor: helpSource.includes('Night Planner or the room door'),
       staleFooter: helpSource.includes('footer previews recovery'),
       staleNightTabs: helpSource.includes('night tabs to see it'),
       sunset: owBeginHomeTransition.toString().includes('sunset'),

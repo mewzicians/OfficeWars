@@ -1,9 +1,9 @@
 # OfficeWars Project Status
 
-Snapshot date: 2026-08-10
+Snapshot date: 2026-08-11
 
 Implemented game SHA-256:
-`F51F2F7C7A11098FA7DABF5692767D14D14B75F45AFA9CADC6EB3DA96A141A46`
+`387FB7F1062CFEA15E3D14A44D40E85FA4455EA53AE3B37BCC0E182DD9B6C969`
 
 Hashes in this project are taken over LF content, which is what the repository
 and the public package store. A CRLF working copy produces a different value.
@@ -32,11 +32,10 @@ through rollout Phases 0-6:
 - one versioned active-run save with Continue Run, replacement confirmation,
   deterministic prepared-Workday restore, casino continuation, persistent
   results, and return to menu;
-- a thirteen-step contextual orientation covering the first day, Home Shop,
-  Outings, Relationships, ending the night, the first path choice, milestone
-  growth, the first boss floor, and the first claimed Capstone, with
-  spotlighted existing UI, persisted progress, Skip Orientation, and reset
-  through Options for the next New Run;
+- a ten-step contextual orientation covering the first day, consolidated Night
+  Planner, first path choice, milestone growth, first boss floor, and first
+  claimed Capstone, with spotlighted existing UI, persisted progress, Skip
+  Orientation, and reset through Options for the next New Run;
 - a first-Workday tutorial pause that opens the live Action Guide and explains
   Work on Task, Lunch, Water Cooler, Office Chat, Slumped at Desk, and Team
   Meeting using current values;
@@ -50,13 +49,16 @@ through rollout Phases 0-6:
 - a dedicated active-Campaign status band and clearer `Rebrand Initiative`
   description; and
 - a dedicated Home scene that removes the office HUD at Night and uses room
-  objects for Home Shop, Relationships, Outings, unlocked Deals, Lights Out,
+  objects for the Night Planner, Home Shop, Social, unlocked Deals, Lights Out,
   and End Day;
+- an iPad-style Night Planner with Home Shop, Outings, Relationships, and
+  conditional Deal Desk tabs; persistent Stress, Lights Out, Finalize Night,
+  and Hide Planner controls; and remembered Planner-versus-room preference;
 - prominent Home Cash and Credit, accessible visual item slots with sale
   confirmation, a top Stress bar, current and projected Stress, moon phases,
   pixel-room decor, and Apartment through Penthouse scene variants;
 - flat side-view room geometry across every Home tier, with the larger bed,
-  Relationships phone, complete PC desk, Deal laptop, plant, and Outings door
+  Night Planner iPad, complete PC desk, Deal laptop, plant, and Social door
   grounded on one shallow patterned floor boundary; Home item slots sit on a
   wall storage shelf, the Home name stays below the furniture, the moon remains
   inside the window, and Lights Out dims the complete room;
@@ -68,11 +70,11 @@ through rollout Phases 0-6:
 - distinct manager portraits and colors, with seated ordinary-floor managers
   and a presentation-only boss-floor patrol that never enters gameplay state;
 - sunset and door-opening entry, Outing fade and return, and sunrise exit
-  presentations; the sun and moon share one east-to-west arc but never occupy
-  the same stretch of it, the departing body finishing the western half while
-  the arriving body enters from the opposite eastern edge and climbs to the
-  vacated resting position, plus deterministic reduced-motion and automated
-  bypasses;
+  presentations; screen-right is east and screen-left is west, and the sun and
+  moon share one right-to-left arc without crossing, the departing body
+  finishing the western half while the arriving body enters from the
+  right/eastern edge and climbs to the vacated resting position, plus
+  deterministic reduced-motion and automated bypasses;
 - action-icon schedule trackers for Prototype Test, Schedule Adjustment,
   Leadership, action guarantees, and the final Schedule Desk;
 - Resume milestone states for unreached, pending, and claimed gates;
@@ -88,8 +90,11 @@ through rollout Phases 0-6:
   pin normally after a later generated-offer play; Masterpiece is unchanged;
 - exact 3, 6, and 10 XP milestone tooltips through hover, focus, and tap,
   including a clear unchosen-specialization state;
-- named trait mechanics use a shared cyan glossary treatment with short
-  definitions available through hover, keyboard focus, and tap;
+- named trait mechanics and rules-loaded task-card terms use a shared cyan
+  glossary treatment with short definitions available through hover, keyboard
+  focus, and tap; task cards expose the treatment in full Morning cards,
+  compact details, Pinned Task details, and separate task pickers without
+  letting a keyword tap play the card;
 - player-facing progression language calls the five job categories Skills
   while internal `family` identifiers remain unchanged for save and rules
   compatibility;
@@ -118,43 +123,44 @@ through rollout Phases 0-6:
 
 ## Verification
 
-The current exhaustive report is
-`FULL_VERIFICATION_2026-08-10_F51F2F7C.md`. Read it before trusting any row
-below; it records exact Pass, Fail, Not Run, and Blocked status.
+The current implementation report is
+`TASK_KEYWORDS_CELESTIAL_NIGHT_PLANNER_2026-08-11.md`. The preceding exhaustive
+report is `FULL_VERIFICATION_2026-08-11_F51F2F7C.md`; it remains exact evidence
+for its named earlier hash.
 
-Verified on the current hash `F51F2F7C`:
+Verified on the current hash `387FB7F1`:
 
-- JavaScript syntax, balanced stylesheet, standalone load with the ready flag
-  set, and required element IDs present.
-- Zero external network requests, and zero page or console errors across the
-  menu, Morning, Resume Book, and Night surfaces.
-- Roster and structural invariants read from the loaded tables: 50 ordinary
-  cards, ten per Skill, a 4/3/2/1 rarity split in every Skill, no duplicate
-  task IDs, `rebrandInitiative` as the only Special, four Homes at 3/6/9/12
-  slots, eight managers, an eight-member cast, seven floors, and the
-  `110/10, 130/8, 165/7, 210/6, 250/6, 285/6, 300/5` floor curve.
-- Player-surface sweep at desktop, compact desktop, and landscape phone: no
-  horizontal overflow, no interactive element outside the viewport, and no
-  interactive element without an accessible name.
-- Home room geometry across all four tiers at desktop and landscape: feet line,
-  slot placement above the wall boundary, left-to-right furniture order, moon
-  inside the window, and title below the furniture, with every measured piece
-  within 0.01px of the floor line.
-- Both phase transitions: the sun and moon hold a minimum horizontal separation
-  of about 48 percent of viewport width throughout, and reduced motion bypasses
-  the transition without leaving the layer active.
+- Focused task-keyword/celestial, Night Planner, Home/schedule, smoke,
+  persistence/tutorial, advanced interaction, visual, and full no-simulation
+  verification pass.
+- The smoke suite passes its 1x/2x/4x/Skip determinism and RNG-equality checks.
+- All 24 persistence and tutorial checks pass, including corrupt saves,
+  prepared-Workday restoration, exactly-once Night resolution, casino
+  continuation, results, and tutorial lifecycle.
+- All eight advanced interaction groups pass, including every ordinary path,
+  exceptional-system lifecycles, promotion and capstone priority, coworker
+  ordering, Clock Out economy, and worst-case resolution chains.
+- All 50 ordinary cards pass preview, markup, and primary Complete Play
+  traversal. Roster, rarity, registry, floor-curve, and core-value invariants
+  pass.
+- The visual and layout matrices pass at desktop, compact desktop, landscape
+  phone, portrait rotation, reduced motion, and 200-percent text scaling.
+- Home geometry passes across all four tiers at desktop and landscape, with
+  every measured furniture piece grounded within 0.01px of the floor line.
+- The opposing celestial half-arcs pass current keyframe, apex, phasing, and
+  zero-delay checks. Five sampled points per transition confirm right/east to
+  left/west movement and no sun/moon crossing.
+- Forty-one of the 50 ordinary cards contain at least one glossary term. Full,
+  compact, Pinned Task, and separate-picker card modes pass hover, focus, tap,
+  and click-safety checks.
 
-Not verified on the current hash. These require Python and Playwright, which
-were unavailable on the machine used for this pass, so they are Blocked rather
-than passing or failing:
+Not Run on the current hash:
 
-- the smoke suite and its 1x/2x/4x/Skip determinism and RNG-equality
-  comparisons;
-- the 24-check persistence suite;
-- the eight advanced interaction groups and the focused pin, glossary, and
-  tutorial contract group;
-- the full verifier's automated runtime audit and sampled accessibility checks;
-- every simulation and balance measurement.
+- fresh structural balance simulation under the corrected Night policy;
+- formal screen-reader execution;
+- exhaustive every-picker and every-transition save/restore traversal;
+- rapid-input fuzzing; and
+- long-session memory profiling.
 
 Historical evidence, valid only for its named hash:
 
@@ -164,20 +170,21 @@ Historical evidence, valid only for its named hash:
   memory profiling explicitly Not Run or Blocked.
 - `FULL_VERIFICATION_2026-08-10_55D9A6ED.md` is the preceding exhaustive
   verdict; its headless Night-policy failure was fixed on hash `470F4146`.
-- On hash `470F4146` the smoke, persistence, advanced interaction, and full
-  verifier suites passed, and the focused visual and Home/schedule matrices
-  found no clipped text, persistent-HUD overlap, or viewport overflow. Those
-  results do not transfer to the current hash.
+- `FULL_VERIFICATION_2026-08-10_F51F2F7C.md` records the GitHub environment
+  where Python was unavailable. Its Blocked runtime rows are superseded as
+  current status by the August 11 local report, but remain valid history.
+- `FULL_VERIFICATION_2026-08-11_F51F2F7C.md` is the preceding exhaustive local
+  report. Its conclusions remain historical evidence for hash `F51F2F7C`.
 
 Older dated reports remain exact-snapshot historical evidence. Use
-`HOME_GROUNDING_CELESTIAL_SEQUENCE_2026-08-10.md` for the current focused
+`HOME_GROUNDING_CELESTIAL_SEQUENCE_2026-08-10.md` for the preceding focused
 candidate, `HOME_SIDE_VIEW_ARCS_2026-08-10.md` for the preceding opposing-arc
 snapshot,
 `HOME_MANAGER_VISUAL_PASS_2026-08-10.md` for the preceding Home and manager
 candidate,
 `HOME_SCHEDULE_TUTORIAL_2026-08-10.md` for the preceding Home and schedule
 candidate,
-`FULL_VERIFICATION_2026-08-10_0A8F74E5.md` for the current exhaustive
+`FULL_VERIFICATION_2026-08-10_0A8F74E5.md` for the preceding exhaustive
 implementation verdict on its named preceding hash,
 `BUILD_CONTEXT_PINS_2026-08-10.md` for the preceding Build Context candidate,
 `RESUME_SKILL_ART_2026-08-10.md` for the preceding Resume-art candidate,
@@ -241,8 +248,8 @@ Record human results using `docs/PLAYTEST_GUIDE.md`.
    4-7 project requirements and late Chad pressure.
 3. Test all trait paths with policies capable of selecting and using them.
 4. Apply only explicitly approved tuning.
-5. Close or explicitly accept the current full report's Not Run and Blocked
-   rows, then rerun verification after approved tuning.
+5. Close or explicitly accept the current report's remaining Not Run rows,
+   then rerun verification after approved tuning.
 
 Home item sets remain deferred until the current verification and balance gate
 is closed.

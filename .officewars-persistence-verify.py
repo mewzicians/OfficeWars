@@ -15,10 +15,10 @@ GAME_URL = (ROOT / "officewarsautobattler.html").as_uri()
 READY = "document.documentElement.dataset.officewarsReady === 'true'"
 META_COMPLETE = json.dumps(
     {
-        "schema": 3,
+        "schema": 4,
         "tutorial": {
             "completed": True,
-            "nextStep": 13,
+            "nextStep": 10,
             "skipped": False,
             "replayRequested": False,
         },
@@ -330,7 +330,7 @@ def main():
             page.evaluate(
                 """() => {
                   owToggleLightsOut(true);
-                  owOpenNightPanel('relationships');
+                  owOpenNightPlanner('relationships');
                 }"""
             )
             page.reload(wait_until="load", timeout=30_000)
@@ -342,6 +342,8 @@ def main():
                   lightsOut: nightState.recPicked,
                   tab: nightState.tab,
                   panelOpen: nightState.panelOpen,
+                  panelMode: nightState.panelMode,
+                  planner: !!document.querySelector('.night-planner-shell'),
                   overlay: document.getElementById('overlay').classList.contains('active'),
                   homeMode: document.body.classList.contains('home-mode'),
                   homeScene: document.getElementById('home-scene').classList.contains('active')
@@ -352,6 +354,8 @@ def main():
                 night_restore["lightsOut"]
                 and night_restore["tab"] == "relationships"
                 and night_restore["panelOpen"]
+                and night_restore["panelMode"] == "planner"
+                and night_restore["planner"]
                 and night_restore["overlay"]
                 and night_restore["homeMode"]
                 and night_restore["homeScene"],
@@ -781,34 +785,16 @@ def main():
             tutorial_page.evaluate("afterDayResults()")
             wait_phase(tutorial_page, "night")
             tutorial_page.wait_for_function(
-                "document.getElementById('tutorial-title').textContent === 'HOME SHOP'",
+                "document.getElementById('tutorial-title').textContent === 'PLAN YOUR NIGHT'",
                 timeout=30_000,
             )
             titles.append(tutorial_page.text_content("#tutorial-title"))
             night_targets = [
                 tutorial_page.evaluate(
-                    "owOrientationTarget?.matches('.home-hotspot-shop')"
+                    "owOrientationTarget?.matches('.night-planner-shell')"
                 )
             ]
             tutorial_page.click("#tutorial-next")
-            for expected_title, expected_target in [
-                ("OUTINGS", ".home-hotspot-outings"),
-                ("RELATIONSHIPS", ".home-hotspot-phone"),
-                ("END THE NIGHT", ".home-hotspot-sleep"),
-            ]:
-                tutorial_page.wait_for_function(
-                    "(title) => document.getElementById('tutorial-title').textContent === title",
-                    arg=expected_title,
-                    timeout=30_000,
-                )
-                titles.append(tutorial_page.text_content("#tutorial-title"))
-                night_targets.append(
-                    tutorial_page.evaluate(
-                        "(selector) => owOrientationTarget?.matches(selector)",
-                        expected_target,
-                    )
-                )
-                tutorial_page.click("#tutorial-next")
 
             tutorial_page.evaluate(
                 """() => {
@@ -876,10 +862,7 @@ def main():
                 "BUILD YOUR RESUME",
                 "KNOW THE WORKDAY",
                 "REVIEW CLOCK OUT",
-                "HOME SHOP",
-                "OUTINGS",
-                "RELATIONSHIPS",
-                "END THE NIGHT",
+                "PLAN YOUR NIGHT",
                 "CHOOSE A CAREER PATH",
                 "GROW THE PATH",
                 "BOSS FLOOR",
@@ -890,7 +873,7 @@ def main():
                 titles == expected_titles
                 and all(night_targets)
                 and tutorial_meta["tutorial"]["completed"]
-                and tutorial_meta["tutorial"]["nextStep"] == 13,
+                and tutorial_meta["tutorial"]["nextStep"] == 10,
                 {
                     "titles": titles,
                     "nightTargets": night_targets,

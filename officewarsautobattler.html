@@ -641,6 +641,7 @@ h1,h2,h3,.ct,.btn,.menu-btn,.replay-btn,
 .home-pc-setup,
 .home-phone-table,
 .home-phone-visual,
+.home-tablet-visual,
 .home-deal-table,
 .home-deal-laptop,
 .home-bed-visual,
@@ -730,11 +731,11 @@ h1,h2,h3,.ct,.btn,.menu-btn,.replay-btn,
   border:2px solid var(--ow-metal);
   background:#8ca5ad;
 }
-/* ---- Relationships: phone on a side table ---- */
+/* ---- Night Planner: iPad on a side table ---- */
 .home-hotspot-phone {
-  left:28.5%;
+  left:27.5%;
   bottom:var(--home-ground-line);
-  width:8%;
+  width:9.5%;
   height:26%;
 }
 .home-phone-table {
@@ -758,16 +759,36 @@ h1,h2,h3,.ct,.btn,.menu-btn,.replay-btn,
 .home-phone-table::before { left:14%; }
 .home-phone-table::after { right:14%; }
 .home-phone-visual {
-  left:30%;
+  left:16%;
   bottom:50%;
-  width:40%;
-  height:22%;
-  border:3px solid var(--ow-metal);
-  border-radius:3px;
+  width:68%;
+  height:28%;
+  border:4px solid #151c20;
+  border-radius:8px;
   background:
-    radial-gradient(circle at 50% 88%,#9bd1d4 0 6%,transparent 7%),
-    linear-gradient(180deg,#1f3742 0 12%,var(--ow-glass) 12% 84%,#13232b 84%);
+    radial-gradient(circle at 50% 8%,#65767e 0 3%,transparent 4%),
+    linear-gradient(135deg,rgba(255,255,255,.16),transparent 42%),
+    linear-gradient(180deg,#3b7789 0 18%,#173744 18% 82%,#0d1f27 82%);
   box-shadow:0 3px 0 rgba(16,28,33,.5);
+}
+.home-phone-visual::before {
+  content:"";
+  position:absolute;
+  inset:26% 13% 18%;
+  background:
+    linear-gradient(90deg,#f2b84b 0 20%,transparent 20% 26%,#44df7b 26% 46%,transparent 46% 52%,#74b9ff 52% 72%,transparent 72% 78%,#d990ef 78%),
+    linear-gradient(180deg,transparent 0 42%,rgba(255,255,255,.18) 42% 48%,transparent 48%);
+  image-rendering:pixelated;
+}
+.home-phone-visual::after {
+  content:"";
+  position:absolute;
+  bottom:5%;
+  left:42%;
+  width:16%;
+  height:4%;
+  border-radius:2px;
+  background:#8b9aa0;
 }
 /* ---- Deal desk: laptop on a low table ---- */
 .home-hotspot-deals {
@@ -1070,17 +1091,17 @@ h1,h2,h3,.ct,.btn,.menu-btn,.replay-btn,
 }
 .transition-sun {
   top:auto;
-  right:auto;
+  right:-6rem;
   bottom:14%;
-  left:-6rem;
+  left:auto;
   background:#ffd75f;
   box-shadow:0 0 30px rgba(255,215,95,.75);
 }
 .transition-moon {
   top:auto;
-  right:auto;
+  right:-6rem;
   bottom:14%;
-  left:-6rem;
+  left:auto;
   overflow:hidden;
   background:#f3efdb;
   box-shadow:0 0 20px rgba(243,239,219,.45);
@@ -1143,16 +1164,16 @@ h1,h2,h3,.ct,.btn,.menu-btn,.replay-btn,
    opposite eastern edge and climbs to the daytime resting position. */
 #phase-transition.sunrise .transition-sun {
   top:auto;
-  right:auto;
+  right:-6rem;
   bottom:14%;
-  left:-6rem;
+  left:auto;
   animation:ow-arc-ascend 1.1s linear forwards;
 }
 #phase-transition.sunrise .transition-moon {
   top:auto;
-  right:auto;
+  right:-6rem;
   bottom:14%;
-  left:-6rem;
+  left:auto;
   animation:ow-arc-descend 1.1s linear forwards;
 }
 #phase-transition.sunrise .transition-curtain {
@@ -1172,20 +1193,20 @@ h1,h2,h3,.ct,.btn,.menu-btn,.replay-btn,
   100% { opacity:1; filter:brightness(.2) saturate(.55); }
 }
 /* One shared east-to-west arc, split in half.
-   Full path, from the eastern edge to the western edge:
-     t0.00 translate(0,0)  t0.25 (26vw,-30vh)  t0.50 (50vw,-46vh)
-     t0.75 (74vw,-30vh)    t1.00 (100vw + 6rem, 18vh)
+   Full path, from the right/eastern edge to the left/western edge:
+     t0.00 translate(0,0)  t0.25 (-26vw,-30vh)  t0.50 (-50vw,-46vh)
+     t0.75 (-74vw,-30vh)   t1.00 (-100vw - 6rem, 18vh)
    `ascend` plays the first half and holds at the apex resting position;
    `descend` starts from that same apex and continues off the western edge. */
 @keyframes ow-arc-ascend {
   0% { transform:translate(0,0); }
-  50% { transform:translate(26vw,-30vh); }
-  100% { transform:translate(50vw,-46vh); }
+  50% { transform:translate(-26vw,-30vh); }
+  100% { transform:translate(-50vw,-46vh); }
 }
 @keyframes ow-arc-descend {
-  0% { transform:translate(50vw,-46vh); }
-  50% { transform:translate(74vw,-30vh); }
-  100% { transform:translate(calc(100vw + 6rem),18vh); opacity:.1; }
+  0% { transform:translate(-50vw,-46vh); }
+  50% { transform:translate(-74vw,-30vh); }
+  100% { transform:translate(calc(-100vw - 6rem),18vh); opacity:.1; }
 }
 @keyframes ow-curtain-in {
   0%,78% { opacity:0; }
@@ -1237,7 +1258,7 @@ h1,h2,h3,.ct,.btn,.menu-btn,.replay-btn,
   .home-room-plant::before { bottom:1.5rem; height:2.9rem; }
   .home-room-plant::after { height:1.5rem; border-width:2px; right:.5rem; left:.5rem; }
   .home-hotspot-shop { left:38.5%; width:21%; height:33%; }
-  .home-hotspot-phone { left:28.5%; width:8%; height:22%; }
+  .home-hotspot-phone { left:27.5%; width:9.5%; height:22%; }
   .home-hotspot-deals { left:61.5%; width:11%; height:24%; }
   .home-hotspot-outings { width:9%; height:50%; }
   .home-hotspot-sleep { left:2.5%; width:24%; height:28%; }
@@ -3390,6 +3411,150 @@ body.ow-workday .rival-hud-portrait {
   .schedule-track { grid-template-columns:repeat(var(--schedule-count),minmax(4.35rem,1fr)); }
 }
 .night-shell { width:100%; }
+.night-planner-panel {
+  max-width:min(98vw,74rem)!important;
+  padding:clamp(.35rem,1.2vh,.75rem)!important;
+  border:0!important;
+  background:transparent!important;
+  box-shadow:none!important;
+  overflow:hidden!important;
+}
+.night-planner-shell {
+  position:relative;
+  display:flex;
+  flex-direction:column;
+  box-sizing:border-box;
+  width:100%;
+  max-height:86vh;
+  min-height:min(42rem,82vh);
+  padding:clamp(.8rem,1.5vw,1.15rem);
+  overflow:hidden;
+  border:3px solid #87949a;
+  border-radius:26px;
+  background:
+    linear-gradient(145deg,rgba(255,255,255,.22),transparent 18%),
+    linear-gradient(180deg,#20282c,#0d1215);
+  box-shadow:
+    0 18px 48px rgba(0,0,0,.62),
+    inset 0 0 0 3px #050708,
+    inset 0 0 0 6px #2d373c;
+}
+.night-planner-shell::before {
+  content:"";
+  position:absolute;
+  z-index:3;
+  top:.36rem;
+  left:50%;
+  width:.52rem;
+  height:.52rem;
+  border:2px solid #435158;
+  border-radius:50%;
+  background:#071017;
+  transform:translateX(-50%);
+  box-shadow:inset 0 0 0 1px #1b5569;
+}
+.night-planner-shell::after {
+  content:"";
+  position:absolute;
+  z-index:3;
+  bottom:.36rem;
+  left:50%;
+  width:5.5rem;
+  height:.28rem;
+  border-radius:3px;
+  background:#68767c;
+  transform:translateX(-50%);
+  opacity:.72;
+}
+.night-planner-screen {
+  display:flex;
+  flex:1 1 auto;
+  flex-direction:column;
+  min-height:0;
+  overflow:hidden;
+  padding:clamp(.65rem,1.4vw,1rem);
+  border:2px solid #030708;
+  border-radius:12px;
+  background:
+    linear-gradient(180deg,rgba(37,91,108,.22),transparent 18%),
+    repeating-linear-gradient(0deg,rgba(255,255,255,.018) 0 1px,transparent 1px 4px),
+    #111c22;
+  box-shadow:inset 0 0 24px rgba(0,0,0,.66);
+}
+.night-planner-content {
+  flex:1 1 auto;
+  min-height:0;
+  overflow-x:hidden;
+  overflow-y:auto;
+  padding:.05rem .15rem .35rem;
+}
+.night-planner-brand {
+  display:flex;
+  align-items:center;
+  gap:.4rem;
+  color:#8fa4ad;
+  font-family:var(--ow-display-font);
+  font-size:.58rem;
+  font-weight:900;
+  letter-spacing:0;
+  text-transform:uppercase;
+}
+.night-planner-brand::before {
+  content:"";
+  width:.55rem;
+  height:.55rem;
+  border:2px solid #64c5d6;
+  border-radius:2px;
+  background:#1e5362;
+  box-shadow:inset 0 0 0 1px #0e2a33;
+}
+.night-planner-tabs {
+  display:grid;
+  grid-template-columns:repeat(var(--night-tab-count,4),minmax(7rem,1fr));
+  gap:.38rem;
+  margin:0 0 .75rem;
+}
+.night-planner-tab {
+  min-height:3rem;
+  padding:.42rem .5rem;
+  border:2px solid #425862;
+  border-radius:5px;
+  background:#172831;
+  color:#c9d4d9;
+  font:inherit;
+  cursor:pointer;
+}
+.night-planner-tab:hover,
+.night-planner-tab:focus-visible {
+  border-color:#f2b84b;
+  outline:2px solid #f2b84b;
+  outline-offset:2px;
+}
+.night-planner-tab[aria-selected="true"] {
+  border-color:#44df7b;
+  background:#16382f;
+  color:#fff;
+  box-shadow:inset 0 -3px 0 #2fbf68;
+}
+.night-planner-tab:disabled {
+  opacity:.44;
+  cursor:not-allowed;
+}
+.night-planner-tab strong {
+  display:block;
+  font-family:var(--ow-display-font);
+  font-size:.72rem;
+}
+.night-planner-tab span {
+  display:block;
+  margin-top:.14rem;
+  color:#8fa0a8;
+  font-size:.58rem;
+}
+.night-planner-hide {
+  border-color:#88a0aa!important;
+  color:#d8e2e6!important;
+}
 .night-panel-header {
   display:grid;
   grid-template-columns:auto minmax(0,1fr) auto;
@@ -3404,6 +3569,9 @@ body.ow-workday .rival-hud-portrait {
   color:#f2b84b!important;
   font-size:1rem!important;
   text-align:center!important;
+}
+.night-panel-header.planner {
+  grid-template-columns:minmax(8rem,1fr) minmax(0,2fr) minmax(8rem,1fr);
 }
 .night-panel-contact {
   display:flex;
@@ -3548,14 +3716,14 @@ body.ow-workday .rival-hud-portrait {
   text-align:center;
 }
 .night-footer {
-  position:sticky;
-  bottom:-1px;
+  position:relative;
   z-index:3;
+  flex:0 0 auto;
   display:flex;
   align-items:center;
   justify-content:space-between;
   gap:1rem;
-  margin:1rem -.2rem -.2rem;
+  margin:.75rem -.2rem -.2rem;
   padding:.7rem;
   border-top:2px solid #455761;
   background:rgba(17,26,33,.98);
@@ -3815,6 +3983,8 @@ body.ow-workday .rival-hud-portrait {
 .night-footer-actions {
   display:flex;
   align-items:center;
+  justify-content:flex-end;
+  flex-wrap:wrap;
   gap:.65rem;
 }
 .night-lights-toggle {
@@ -4073,6 +4243,19 @@ body.ow-workday .rival-hud-portrait {
     padding:.4rem .55rem;
     font-size:.72rem;
   }
+  .night-planner-shell {
+    max-height:calc(100vh - 30px);
+    min-height:calc(100vh - 30px);
+    padding:.7rem;
+    border-radius:18px;
+  }
+  .night-planner-screen { padding:.55rem; border-radius:8px; }
+  .night-planner-tabs {
+    grid-template-columns:repeat(2,minmax(7rem,1fr));
+  }
+  .night-planner-tab { min-height:2.45rem; padding:.3rem .4rem; }
+  .night-planner-tab strong { font-size:.62rem; }
+  .night-planner-tab span { font-size:.5rem; }
   .promotion-review-shell {
     display:grid;
     grid-template-rows:auto auto auto minmax(0,1fr);
@@ -6692,6 +6875,7 @@ function showOverlay(html){
   const wasOpen=overlay.classList.contains('active');
   if(!wasOpen)owOverlayReturnFocus=document.activeElement;
   const panel=document.getElementById('overlay-panel');
+  panel.classList.toggle('night-planner-panel',String(html).includes('night-planner-shell'));
   panel.innerHTML=html;
   overlay.classList.add('active');
   overlay.setAttribute('aria-hidden','false');
@@ -7154,6 +7338,7 @@ function startRun(options){
     lastPrimaryFamily:null, yesterdayPrimaryFamily:null,
     lastPrimaryTaskId:null, yesterdayPrimaryTaskId:null,
     lastPrimarySource:null, yesterdayPrimarySource:null,
+    nightViewPreference:'planner',
     home:'apartment', house:[],// upgrade ids owned
     rerollsMorning:CONFIG.REROLLS_MORNING, rerollsNight:CONFIG.REROLLS_NIGHT,
     manager:null, managerOrder:shuffleWith(MANAGERS),
@@ -11520,14 +11705,14 @@ function showHowToPlay(){
   document.getElementById('overlay').style.right='0';
   const pages=[
     {title:'The Climb',text:'Climb 7 floors of the corporate ladder, from INTERN to the CEO\'s office. Each floor gives you a project and a deadline. Finish the project before the deadline to get promoted. Beat floor 7 to take the CEO\'s job and win.'},
-    {title:'Your Day',text:'Every workday:\n• MORNING — compare task gains, costs, timing, and effects before choosing one.\n• LIVE STATS — task gains resolve when confirmed; the bars then show guaranteed bonuses and each resolved day event.\n• WORKDAY — watch 5 scheduled actions play out (6 with Espresso; lunch is always third).\n• PLAYBACK — click the current-speed button at the bottom right to cycle 1x, 2x, and 4x. SKIP DAY fast-forwards every remaining action and interaction; speed never changes outcomes.\n• TRACKER — your portrait follows the current action. Hover, focus, or tap completed points for exact details; future points stay hidden as ???.\n• ACTION GUIDE — open GUIDE in the ticker for current action rules. It stays closed until requested so the office remains visible.\n• CLOCK OUT — review grouped Progress, Stress, Cash, Relationships, carryover effects, and the expandable source log.\n• HOME — use the room objects for upgrades, Outings, Relationships, Deals when unlocked, Lights Out, and ending the day.'},
+    {title:'Your Day',text:'Every workday:\n• MORNING — compare task gains, costs, timing, and effects before choosing one.\n• LIVE STATS — task gains resolve when confirmed; the bars then show guaranteed bonuses and each resolved day event.\n• WORKDAY — watch 5 scheduled actions play out (6 with Espresso; lunch is always third).\n• PLAYBACK — click the current-speed button at the bottom right to cycle 1x, 2x, and 4x. SKIP DAY fast-forwards every remaining action and interaction; speed never changes outcomes.\n• TRACKER — your portrait follows the current action. Hover, focus, or tap completed points for exact details; future points stay hidden as ???.\n• ACTION GUIDE — open GUIDE in the ticker for current action rules. It stays closed until requested so the office remains visible.\n• CLOCK OUT — review grouped Progress, Stress, Cash, Relationships, carryover effects, and the expandable source log.\n• HOME — use the Night Planner for every night choice, or hide it and use the room objects instead.'},
     {title:'Task Cards',text:'Every task has its own fixed rarity, base project progress, base stress, and printed effect. Completing an ordinary task grants 1 XP to its Skill.\n\nSkill XP unlocks career-path choices at promotions. Common cards are dependable, while higher rarities bend or combine more systems. Pinned Tasks remain separate from the generated offer and use the normal primary-task choice when selected.'},
     {title:'Card Resolution',text:'Selection: confirming the morning primary task. It happens once per workday.\n\nComplete Play: resolves base progress, base stress, the full printed effect, Skill XP, counters, and card-play triggers.\n\nReplay: another Complete Play of the same card. It does not repeat Selection or primary-only triggers.\n\nComplete Additional Play: a Complete Play of another card without making it primary.\n\nPrinted-Effect Resolution: resolves only copied rules text. It grants no copied base values, XP, counters, or card-play triggers.\n\nAssist: Schmoozing secondary value. It is neither a card play nor a Printed-Effect Resolution.\n\nSource: the card that owns copied text. Host: the card currently resolving it.\n\nResolution Chain: one Selection and every play or effect it creates, resolved in order.'},
     {title:'Schedule Resolution',text:'Schedule Entry: one action placed on the workday timeline.\n\nNatural Schedule Entry: an entry made by the base schedule before cards and traits change it.\n\nAction Resolution: one execution of a Schedule Entry with one Outcome and its triggers.\n\nTriggered Schedule Entry: a temporary action created during playback; it resolves immediately after its parent.\n\nWorkday Event: a timed occurrence that is not a Schedule Entry, such as a desk visit or sabotage.\n\nOutcome: the favorable, unfavorable, or fixed result of an action.\n\nCoworker Bonus Activation: one application of a coworker bonus. Triggering twice differs from doubled strength.\n\nStandard Bonus Opportunity: each non-Chad coworker normally has one per workday. Forced Bonus Activation ignores and does not consume it.\n\nFlat Stress: stress without floor scaling or numerical stress modifiers. Focus and Guardian Angel can still protect you.'},
     {title:'Rerolls',text:'You start with 2 MORNING rerolls and 2 HOME rerolls for the entire run, and some workday actions can grant more.\n\nThey are not refreshed each day or floor.\n\nSpend them like they\'re your last vacation days.'},
     {title:'The Day Actions',text:'• ⌨️ Work on Task: bonus project progress\n• 🍽️ Lunch (always 3rd): mystery — watch whether it looks good or bad\n• 💧 Water Cooler: +1 task or Home reroll, 50/50\n• 💬 Office Chat: visit a co-worker inside their cubicle — usually relieves stress. A bad chat can make an enemy (watch for 😈 Sabotage the next day)\n• 😩 Slumped at Desk: adds stress (Chad WILL comment)\n• 📅 Team Meeting: the first favorable meeting on a floor adds one workday. After that, a favorable first meeting grants 5 project progress; an unfavorable one removes 5. Later meetings recover or add 10 stress.\n• 😠 Hostile Action: on boss floors, an angry 8-bit marker hangs beneath the affected tracker point. Hover or tap it to see the manager, action, and repercussions.\n\nFloor pressure multiplies stress gains, not ordinary stress recovery.'},
     {title:'Home & Upgrades',text:'You start in an APARTMENT with 3 upgrade slots. Home upgrades are permanent buffs bought with cash.\n\nLook for the 🚚 MOVE OUT card: Townhouse (6 slots) → House (9) → Penthouse (12). Bigger homes have cumulative move-in bonuses, your upgrades move with you, and moving gets more likely when your place is full.\n\nAutomatic sleep removes 4% stress every night. Choosing Lights Out removes 5% more, for 9% total before Home bonuses.'},
-    {title:'Co-workers',text:'Every desk is occupied and every co-worker is a person: they visit each other inside their cubicles, gossip, and stop by your desk after the middle action once a day with a small bonus. Open Relationships from your phone at Home to review each bonus. Conversations reserve one cubicle and block the cubicles immediately to its left and right, keeping neighboring speech bubbles apart. During Team Meetings, one co-worker stays seated while you and two more co-workers gather inside that same cubicle.\n\nAt Home, take someone on an OUTING to raise your relationship. A higher relationship means more desk visits, friendlier Office Chats, and bio sections unlocking at 20/40/60/80/100 in Relationships.\n\nYes, you can take Chad. It costs double, gains half, and he will be weird about it.'},
+    {title:'Co-workers',text:'Every desk is occupied and every co-worker is a person: they visit each other inside their cubicles, gossip, and stop by your desk after the middle action once a day with a small bonus. Open Relationships from the Night Planner or the room door to review each bonus. Conversations reserve one cubicle and block the cubicles immediately to its left and right, keeping neighboring speech bubbles apart. During Team Meetings, one co-worker stays seated while you and two more co-workers gather inside that same cubicle.\n\nAt Home, take someone on an OUTING to raise your relationship. A higher relationship means more desk visits, friendlier Office Chats, and bio sections unlocking at 20/40/60/80/100 in Relationships.\n\nYes, you can take Chad. It costs double, gains half, and he will be weird about it.'},
     {title:'Stress',text:'Stress is your health bar. Hit 100% and you BURN OUT — run over.\n\nStress carries between floors, but each non-final promotion removes up to 25 percentage points before you enter the next floor. Stress recovery — including Office Chat recovery, task recovery, Houseplant, Home Gym, promotion recovery, Weekend recovery, and nightly sleep — is not multiplied by floor pressure.'},
     {title:'The Rival',text:RIVAL.name+' wants every promotion you\'re up for, on every floor. He\'s building his own resume and buying his own upgrades — watch the numbers float over his desk during the workday. He has good days and bad days, but the higher he climbs, the fewer bad days he has.\n\nIf he finishes the project before you, he takes YOUR promotion and you\'re done. On BOSS floors (3, 5, 7) the manager backs him: he works faster and hostile "surprises" appear in your scheduled actions. Their tracker markers identify the manager as the responsible actor; Chad may still enjoy the result. Ignore what he says by the Water Cooler. Or don\'t.'},
     {title:'The Weekend',text:'After every 5th run-wide workday comes the weekend, even when that workday ends in a promotion. One mystery event offers a choice. Outcomes are hidden — some heal, some pay, some backfire spectacularly. Weekend recovery is unscaled; harmful stress still uses the current floor pressure.\n\nAt the CASINO you can switch between poker, slots, and blackjack without losing your chips. Chips persist between games and convert back to cash only when you choose Walk Away & Cash Out. Floor 3\'s weekend is always casino night.\n\nGood luck. HR definitely loves you very much.'}
@@ -11578,7 +11763,7 @@ async function owWithResolutionLock(action){
 const OW_SAVE_KEY='officewars.save.v1';
 const OW_META_KEY='officewars.meta.v1';
 const OW_SAVE_SCHEMA=1;
-const OW_META_SCHEMA=3;
+const OW_META_SCHEMA=4;
 const OW_STABLE_CHECKPOINTS=new Set([
   'floorIntro','morning','clockOut','night','weekend','weekendResult',
   'weekendCasino','promotion','postTask','workdayPrepared','nightResolved',
@@ -11651,6 +11836,23 @@ function owMigrateMeta(meta){
     }else if(oldNext>=8){
       // Schema 3 adds the bedside Night step after Relationships.
       tutorial.nextStep=Math.min(12,oldNext+1);
+    }
+    return owMigrateMeta({
+      schema:3,
+      tutorial,
+      settings:Object.assign({},meta.settings||{})
+    });
+  }
+  if(meta.schema===3){
+    const tutorial=Object.assign({},meta.tutorial||{});
+    const oldNext=Math.max(0,Number(tutorial.nextStep)||0);
+    if(tutorial.completed){
+      tutorial.nextStep=10;
+    }else if(oldNext>=6&&oldNext<=8){
+      // The four room-object Night lessons are now one Night Planner lesson.
+      tutorial.nextStep=5;
+    }else if(oldNext>=9){
+      tutorial.nextStep=Math.min(10,oldNext-3);
     }
     return{
       schema:OW_META_SCHEMA,
@@ -11729,6 +11931,9 @@ function owRehydrateRunState(run){
   }
   if(!Object.prototype.hasOwnProperty.call(run,'lastPrimarySource'))run.lastPrimarySource=null;
   if(!Object.prototype.hasOwnProperty.call(run,'yesterdayPrimarySource'))run.yesterdayPrimarySource=null;
+  if(!['planner','room'].includes(run.nightViewPreference)){
+    run.nightViewPreference='planner';
+  }
   run.debugSnapshots=[];
   return run;
 }
@@ -12039,6 +12244,9 @@ async function owContinueRun(){
     if(!Object.prototype.hasOwnProperty.call(nightState,'panelOpen')){
       nightState.panelOpen=!!(save.ui&&save.ui.active);
     }
+    if(!['planner','section','social'].includes(nightState.panelMode)){
+      nightState.panelMode=nightState.panelOpen?'section':'planner';
+    }
     owEnterHomeMode();
     renderNightTabs();
     await owMaybeShowOrientationForPhase('night');
@@ -12074,20 +12282,8 @@ const OW_ORIENTATION_STEPS=[
     copy:'Clock Out groups today\'s progress, stress, cash, and relationship changes. Check the carryover section before going home.'
   },
   {
-    id:'nightHome',phase:'night',target:'.home-hotspot-shop',title:'HOME SHOP',
-    copy:'Use the computer to spend tonight\'s Home purchase on a permanent upgrade or a larger space. Your owned items appear in the room and can be sold from their item slots.'
-  },
-  {
-    id:'nightOutings',phase:'night',target:'.home-hotspot-outings',title:'OUTINGS',
-    copy:'Take one coworker on an Outing to build the relationship. Better relationships improve their workday bonus and your interactions with them.'
-  },
-  {
-    id:'nightRelationships',phase:'night',target:'.home-hotspot-phone',title:'RELATIONSHIPS',
-    copy:'Use your phone to review coworkers. They trigger their bonuses when you meet them during the Workday, and Outings make those bonuses stronger.'
-  },
-  {
-    id:'nightSleep',phase:'night',target:'.home-hotspot-sleep',title:'END THE NIGHT',
-    copy:'The wall switch controls Lights Out, while the bed ends the day. Check the projected Stress above the room; finalizing automatically uses Lights Out when it is still legal.'
+    id:'nightPlanner',phase:'night',target:'.night-planner-shell',title:'PLAN YOUR NIGHT',
+    copy:'Use the Night Planner tabs to shop, make plans, review relationships, choose Lights Out, and finalize the night. Coworkers grant their bonuses when you meet them during the Workday; select Hide Planner to make the same choices through your room.'
   },
   {
     id:'promotionPath',phase:'promotionReview',target:'.promotion-path-options',title:'CHOOSE A CAREER PATH',
@@ -12186,6 +12382,9 @@ function owShowOrientationStep(index){
     renderDayActionLegend();
     layoutDayActionLegend();
   }
+  if(step.id==='nightPlanner'){
+    owOpenNightPlanner('home');
+  }
   const target=step.id==='capstone'
     ?[
       document.querySelector('.promotion-capstone-card'),
@@ -12283,7 +12482,7 @@ function owOptionCard(option,index,selected){
   const keywordTip=option.detail&&owKeywordTooltip(option.detail);
   return`<button type="button" class="card" ${option.disabled?'disabled':''} aria-pressed="${selected?'true':'false'}" ${keywordTip?`data-tip="${esc(keywordTip)}"`:''} style="width:13rem;text-align:left;border-color:${border};${disabled}" onclick="owToggleChoice(${index})">
     <div class="ct">${esc(option.label)}</div>
-    ${option.detail?`<div class="cd2">${owKeywordMarkup(option.detail,{focusable:false})}</div>`:''}
+    ${option.detail?`<div class="cd2">${owKeywordMarkup(option.detail,{focusable:false,stopClick:true})}</div>`:''}
   </button>`;
 }
 function owScheduleDisplayEntries(entries,source){
@@ -12686,13 +12885,143 @@ const OW_TRAITS={
 const OW_RULE_KEYWORDS=[
   {
     term:'Pinned Task',
-    aliases:['Pinned Task','Pinned Tasks'],
+    aliases:['Pinned Task','Pinned Tasks','pin','pinned'],
     definition:'A saved morning option outside the generated task offer. Selecting it still uses today\'s primary-task choice.'
+  },
+  {
+    term:'Complete Play',
+    aliases:['Complete Play','Complete Plays','complete play','complete plays','play it completely','play them completely','played completely'],
+    definition:'Resolve a card\'s progress, stress, printed effect, Skill XP, counters, and card-play triggers.'
   },
   {
     term:'Complete Additional Play',
     aliases:['Complete Additional Play','Complete Additional Plays','Complete Additional Card Play','Complete Additional Card Plays'],
     definition:'A full play of another card without making it the primary task.'
+  },
+  {
+    term:'Primary Task',
+    aliases:['Primary Task','Primary Tasks'],
+    definition:'The task selected for the morning. Additional plays and effect copies do not become the primary task.'
+  },
+  {
+    term:'Printed Common',
+    aliases:['printed-Common','printed Common','Printed Common'],
+    definition:'A task whose original printed rarity is Common, regardless of temporary family or play changes.'
+  },
+  {
+    term:'Base Stress',
+    aliases:['Base Stress'],
+    definition:'Stress before floor pressure and other applicable stress multipliers are applied.'
+  },
+  {
+    term:'Positive Stress',
+    aliases:['Positive Stress'],
+    definition:'Stress generated above zero rather than stress recovery. Floor pressure applies after card-specific adjustments.'
+  },
+  {
+    term:'Flat Stress',
+    aliases:['Flat Stress'],
+    definition:'Stress that ignores floor pressure and numerical stress modifiers. Focus and Guardian Angel can still protect you.'
+  },
+  {
+    term:'Expense Credit',
+    aliases:['Expense Credit'],
+    definition:'Temporary money for Home cards, Deals, and paid Outings tonight. It cannot earn interest and expires at Lights Out.'
+  },
+  {
+    term:'Commit',
+    aliases:['Commit','Commits'],
+    definition:'A permanent Coding resource, capped at 5. Each Commit adds 1 base progress to printed-Common Coding cards.'
+  },
+  {
+    term:'Natural',
+    aliases:['Natural'],
+    definition:'Generated by the base workday before cards, traits, and other effects modify the schedule.'
+  },
+  {
+    term:'Schedule Entry',
+    aliases:['Schedule Entry','Schedule Entries'],
+    definition:'One action placed on the locked workday timeline. Repeats resolve an entry again without adding another entry.'
+  },
+  {
+    term:'Bonus Action',
+    aliases:['Bonus Action','Bonus Actions'],
+    definition:'An additional Schedule Entry created by an effect rather than the base workday schedule.'
+  },
+  {
+    term:'Backup',
+    aliases:['Backup','Backups'],
+    definition:'A positive action stored by Failover Protocol to replace a later harmful action.'
+  },
+  {
+    term:'Coworker Bonus',
+    aliases:['Coworker Bonus','Coworker Bonuses'],
+    definition:'The benefit a coworker grants when met during the Workday. Each coworker normally has one standard activation per day.'
+  },
+  {
+    term:'Ordinary Action',
+    aliases:['Ordinary Action','Ordinary Actions'],
+    definition:'One of the six normal schedule types: Work on Task, Lunch, Water Cooler, Office Chat, Slumped at Desk, or Team Meeting.'
+  },
+  {
+    term:'Positive Action',
+    aliases:['Positive Action','Positive Actions','Positive Outcome','Positive Outcomes'],
+    definition:'An action that finishes with a helpful result after rerolls, replacements, and outcome overrides.'
+  },
+  {
+    term:'Task Reroll',
+    aliases:['Task Reroll','Task Rerolls'],
+    definition:'A resource spent during a standard morning or Automation Combo to replace offered tasks.'
+  },
+  {
+    term:'Home Reroll',
+    aliases:['Home Reroll','Home Rerolls'],
+    definition:'A resource spent at Night to refresh the visible Home Shop cards.'
+  },
+  {
+    term:'Accounted Cash',
+    aliases:['Accounted Cash'],
+    definition:'Spendable cash plus qualifying deferred amounts used to calculate Reserve Levels and nightly interest.'
+  },
+  {
+    term:'Interest-Eligible Cash',
+    aliases:['Interest-Eligible Cash'],
+    definition:'The Accounted Cash considered for nightly interest, limited by the current interest cap.'
+  },
+  {
+    term:'Clock Out',
+    aliases:['Clock Out'],
+    definition:'The end-of-workday resolution after the locked schedule finishes and before Night begins.'
+  },
+  {
+    term:'Work on Task',
+    aliases:['Work on Task','Work Actions','Work Action','Work'],
+    definition:'A schedule action that adds project progress.'
+  },
+  {
+    term:'Team Meeting',
+    aliases:['Team Meeting','Team Meetings','Meeting'],
+    definition:'A variable schedule action. Its result can extend the floor, change progress, or change stress.'
+  },
+  {
+    term:'Water Cooler',
+    aliases:['Water Cooler'],
+    definition:'A schedule action that grants either a Task Reroll or a Home Reroll.'
+  },
+  {
+    term:'Office Chat',
+    aliases:['Office Chat'],
+    definition:'A coworker interaction that usually recovers stress; a bad chat can create sabotage.'
+  },
+  {
+    term:'Slumped at Desk',
+    aliases:['Slumped at Desk','Slumps','Slump'],
+    definition:'A harmful schedule action that adds stress.'
+  },
+  {
+    term:'Lunch',
+    aliases:['Lunch'],
+    definition:'The third schedule action. Its rolled outcome can help or hurt.'
   },
   {
     term:'Standard Procedure',
@@ -12857,7 +13186,10 @@ function owKeywordMarkup(value,options){
     const start=offset+prefix.length;
     const entry=OW_RULE_KEYWORD_BY_ALIAS.get(matched.toLowerCase());
     html+=esc(text.slice(cursor,start));
-    html+=`<span class="rules-keyword" ${opts.focusable===false?'':`tabindex="0"`} data-tip="${esc(entry.term+': '+entry.definition)}" aria-label="${esc(entry.term+': '+entry.definition)}">${esc(matched)}</span>`;
+    const stopClick=opts.stopClick
+      ?' onclick="event.preventDefault();event.stopPropagation();showGlobalTooltip(this);return false;"'
+      :'';
+    html+=`<span class="rules-keyword" ${opts.focusable===false?'':`tabindex="0"`} data-tip="${esc(entry.term+': '+entry.definition)}" aria-label="${esc(entry.term+': '+entry.definition)}"${stopClick}>${esc(matched)}</span>`;
     cursor=start+matched.length;
     return whole;
   });
@@ -14017,6 +14349,7 @@ function owTaskChoiceCardMarkup(option,index,selected){
     (owIsCampaignCard(card)&&card.rarity!=='campaign'?' + CAMPAIGN':'');
   const familyColor=OW_HUD_FAMILY_COLORS[family]||'#edf3f5';
   const rarityColor=OW_RARITY_COLORS[card.rarity]||'#9fb0ba';
+  const keywordTip=owKeywordTooltip(owTaskKeywordSource(card,card.source));
   const metrics=mode==='full'||mode==='stats'
     ?`<span class="task-metrics">
         <span class="task-metric gain"><span class="task-metric-label">GAIN</span><span class="task-metric-value">+${fmt1(preview.progress)} PP</span></span>
@@ -14026,8 +14359,8 @@ function owTaskChoiceCardMarkup(option,index,selected){
   const effect=mode==='full'||mode==='effect'
     ?`<span class="task-effect-block">
         <span class="task-timing">${owTaskTimingLabel(card)}</span>
-        <span class="task-effect">${esc(card.task.effect)}</span>
-        ${mode==='full'?owMorningCardNotes(card,card.source):''}
+        <span class="task-effect">${owKeywordMarkup(card.task.effect,{focusable:false,stopClick:true})}</span>
+        ${mode==='full'?owMorningCardNotes(card,card.source,{focusable:false,stopClick:true}):''}
       </span>`
     :'';
   const status=option.taskCardStatus
@@ -14035,7 +14368,7 @@ function owTaskChoiceCardMarkup(option,index,selected){
     :'';
   return`<button type="button" class="card task-card task-choice-card mode-${mode} rarity-${card.rarity}"
       ${option.disabled?'disabled':''} aria-pressed="${selected?'true':'false'}"
-      aria-label="${esc(option.label)}"
+      aria-label="${esc(option.label)}" ${keywordTip?`data-tip="${esc(keywordTip)}"`:''}
       style="--family-color:${familyColor};--rarity-color:${rarityColor};${option.disabled?'opacity:.48;':''}"
       onclick="owToggleChoice(${index})">
     <span class="task-family-banner"><span>${fam.icon} ${esc(family.toUpperCase())}</span></span>
@@ -14431,21 +14764,30 @@ function owTaskTimingLabel(card){
   if(text.includes('when selected')||text.includes('selecting this'))return'ON SELECTION';
   return'WHEN PLAYED';
 }
-function owMorningCardNotes(card,source){
+function owTaskKeywordSource(card,source){
+  const parts=[card&&card.task&&card.task.effect||''];
+  if(owIsCampaignCard(card)&&card.rarity!=='campaign')parts.push(owCampaignBonusText(card));
+  if(card.hotLead)parts.push('Hot Lead Sales Cycle');
+  if(source==='pin')parts.push('Pinned Task');
+  return parts.join(' ');
+}
+function owMorningCardNotes(card,source,keywordOptions){
   const notes=[];
   if(owIsCampaignCard(card)&&card.rarity!=='campaign'){
-    notes.push(`<div class="task-card-note campaign">${esc(owCampaignBonusText(card))}</div>`);
+    notes.push(`<div class="task-card-note campaign">${owKeywordMarkup(owCampaignBonusText(card),keywordOptions)}</div>`);
   }
   if(card.hotLead){
-    notes.push('<div class="task-card-note hot-lead">HOT LEAD · Starts a Sales Cycle tomorrow.</div>');
+    notes.push(`<div class="task-card-note hot-lead">${owKeywordMarkup('HOT LEAD · Starts a Sales Cycle tomorrow.',keywordOptions)}</div>`);
   }
   if(source==='pin'){
     const pin=R.pins.find(item=>item.id===card.pinId)||{sources:['Effect']};
-    notes.push(`<div class="task-card-note pin">PINNED · ${esc(pin.sources.join(' + '))}</div>`);
+    notes.push(`<div class="task-card-note pin">${owKeywordMarkup('PINNED',keywordOptions)} · ${esc(pin.sources.join(' + '))}</div>`);
   }
   return notes.join('');
 }
-function owMorningCardContents(card,source){
+function owMorningCardContents(card,source,options){
+  const opts=options||{};
+  const keywordOptions=opts.keywordOptions||{};
   const family=owEffectiveFamily(card);
   const fam=FAMILIES[family]||{icon:'★'};
   const preview=owCardPreview(card,{primary:true});
@@ -14464,8 +14806,8 @@ function owMorningCardContents(card,source){
       </span>
       <span class="task-effect-block">
         <span class="task-timing">${owTaskTimingLabel(card)}</span>
-        <span class="task-effect">${esc(card.task.effect)}</span>
-        ${owMorningCardNotes(card,source)}
+        <span class="task-effect">${owKeywordMarkup(card.task.effect,keywordOptions)}</span>
+        ${owMorningCardNotes(card,source,keywordOptions)}
       </span>
     </span>`;
 }
@@ -14484,9 +14826,11 @@ function owMorningCardMarkup(card,index,source){
   const click=`selectMorning(${index},'${source}')`;
   const familyColor=OW_HUD_FAMILY_COLORS[family]||'#edf3f5';
   const rarityColor=OW_RARITY_COLORS[card.rarity]||'#9fb0ba';
+  const keywordTip=owKeywordTooltip(owTaskKeywordSource(card,source));
   return`<button type="button" class="card task-card rarity-${card.rarity}" id="mcard-${source}-${index}"
+      ${keywordTip?`data-tip="${esc(keywordTip)}"`:''}
       style="--family-color:${familyColor};--rarity-color:${rarityColor}" onclick="${click}">
-    ${owMorningCardContents(card,source)}
+    ${owMorningCardContents(card,source,{keywordOptions:{focusable:false,stopClick:true}})}
   </button>`;
 }
 function owMorningCompactOption(card,index,source){
@@ -14508,7 +14852,7 @@ function owMorningCompactDetail(card,index,source){
   const familyColor=OW_HUD_FAMILY_COLORS[family]||'#edf3f5';
   return`<div class="morning-compact-detail" style="--family-color:${familyColor}">
     <div><div class="morning-compact-family">${esc(family.toUpperCase())} · ${esc(card.rarity.toUpperCase())}</div><div class="morning-compact-detail-title">${esc(card.task.name)}</div></div>
-    <div class="morning-compact-detail-effect"><strong>${owTaskTimingLabel(card)}</strong><br>${esc(card.task.effect)}${owMorningCardNotes(card,source)}</div>
+    <div class="morning-compact-detail-effect"><strong>${owTaskTimingLabel(card)}</strong><br>${owKeywordMarkup(card.task.effect)}${owMorningCardNotes(card,source)}</div>
     <button type="button" class="btn morning-compact-select" onclick="selectMorning(${index},'${source}')">SELECT</button>
   </div>`;
 }
@@ -17353,7 +17697,17 @@ window.owAssignContact=function(){
   if(!owHasPendingContactSlot())return;
   openResumeBook('Sales');
 };
+function owNightDealsAvailable(){
+  return!!(
+    nightState&&(
+      (nightState.dealLimit||0)>0||
+      (nightState.extraPurchaseCredits||0)>0
+    )||
+    effectsOf('net30Contract').some(effect=>effect.tonight)
+  );
+}
 function owNightTabBar(){
+  const mode=nightState.panelMode||'section';
   const title={
     outings:'Outings',
     home:'Home Shop',
@@ -17367,9 +17721,13 @@ function owNightTabBar(){
       contact+=`<button class="btn" onclick="owAssignContact()">ASSIGN</button>`;
     }
   }
-  let h=`<div class="night-panel-header">
-    <button class="btn" type="button" onclick="owReturnHomeScene()">RETURN HOME</button>
-    <h2>${esc(title)}</h2>
+  const heading=mode==='planner'?'Night Planner':(mode==='social'?'Social':title);
+  const leading=mode==='planner'
+    ?'<span class="night-planner-brand">OfficeWars OS</span>'
+    :'<button class="btn" type="button" onclick="owReturnHomeScene()">RETURN TO ROOM</button>';
+  let h=`<div class="night-panel-header${mode==='planner'?' planner':''}">
+    ${leading}
+    <h2>${esc(heading)}</h2>
     <div class="night-panel-contact">${contact}</div>
   </div>`;
   const badges=[];
@@ -17382,6 +17740,32 @@ function owNightTabBar(){
     <span class="night-credit">CREDIT $${fmt1(R.expenseCredit||0)}</span>
     ${badges.join('')}
   </div>`;
+  const tabs=mode==='planner'
+    ?[
+      ['home','HOME SHOP','Upgrades and moving'],
+      ['outings','OUTINGS','Spend time together'],
+      ['relationships','RELATIONSHIPS','Coworkers and bonuses'],
+      ['deals','DEAL DESK','Contracts and purchases']
+    ]
+    :(mode==='social'
+      ?[
+        ['outings','OUTINGS','Make tonight\'s plan'],
+        ['relationships','RELATIONSHIPS','Review your coworkers']
+      ]
+      :[]);
+  if(tabs.length){
+    h+=`<div class="night-planner-tabs" style="--night-tab-count:${tabs.length}" role="tablist" aria-label="${mode==='planner'?'Night Planner':'Social'} sections">`;
+    tabs.forEach(([id,label,sub])=>{
+      const disabled=id==='deals'&&!owNightDealsAvailable();
+      h+=`<button type="button" class="night-planner-tab" role="tab"
+        aria-selected="${nightState.tab===id?'true':'false'}"
+        ${disabled?'disabled aria-disabled="true"':''}
+        onclick="owSwitchNightTab('${id}')">
+        <strong>${label}</strong><span>${disabled?'Unlock through Sales':sub}</span>
+      </button>`;
+    });
+    h+=`</div>`;
+  }
   return h;
 }
 function owNightPurchaseUsed(){
@@ -17505,9 +17889,7 @@ function owRenderHomeScene(){
   const preview=owNightRecoveryPreview();
   const cols=home.slots<=3?3:(home.slots<=6?3:(home.slots<=9?3:4));
   const slotMax=home.slots<=3?7:(home.slots<=6?6:(home.slots<=9?5.4:4.7));
-  const dealsAvailable=(nightState.dealLimit||0)>0||
-    (nightState.extraPurchaseCredits||0)>0||
-    effectsOf('net30Contract').some(effect=>effect.tonight);
+  const dealsAvailable=owNightDealsAvailable();
   const lightDisabled=preview.forcedLightsOut||
     (preview.lightsOutUnavailable&&!nightState.recPicked);
   scene.className='active home-tier-'+home.id+(preview.lightsOut?' lights-out':'');
@@ -17533,7 +17915,7 @@ function owRenderHomeScene(){
         <div class="home-scene-slots" style="--scene-slot-cols:${cols};--scene-slot-max:${slotMax}rem" aria-label="${esc(home.name)} item slots">
           ${owHomeSceneSlotsMarkup()}
         </div>
-        <button type="button" class="home-hotspot home-hotspot-shop" onclick="owOpenNightPanel('home')">
+        <button type="button" class="home-hotspot home-hotspot-shop" onclick="owOpenNightPanel('home','section')">
           <span class="home-pc-setup" aria-hidden="true">
             <span class="home-pc-desk"></span>
             <span class="home-pc-monitor"></span>
@@ -17545,18 +17927,18 @@ function owRenderHomeScene(){
           </span>
           <span class="home-hotspot-label">${preview.purchaseLocked?'SHOP LOCKED':'HOME SHOP'}</span>
         </button>
-        <button type="button" class="home-hotspot home-hotspot-phone" onclick="owOpenNightPanel('relationships')">
+        <button type="button" class="home-hotspot home-hotspot-phone home-hotspot-tablet" onclick="owOpenNightPlanner('home')">
           <span class="home-phone-table" aria-hidden="true"></span>
           <span class="home-phone-visual" aria-hidden="true"></span>
-          <span class="home-hotspot-label">RELATIONSHIPS</span>
+          <span class="home-hotspot-label">NIGHT PLANNER</span>
         </button>
-        ${dealsAvailable?`<button type="button" class="home-hotspot home-hotspot-deals" onclick="owOpenNightPanel('deals')">
+        ${dealsAvailable?`<button type="button" class="home-hotspot home-hotspot-deals" onclick="owOpenNightPanel('deals','section')">
           <span class="home-deal-table" aria-hidden="true"></span>
           <span class="home-deal-laptop" aria-hidden="true"></span>
           <span class="home-hotspot-label">${preview.purchaseLocked?'DEALS LOCKED':'DEAL DESK'}</span>
         </button>`:''}
-        <button type="button" class="home-hotspot home-hotspot-outings" onclick="owOpenNightPanel('outings')">
-          <span class="home-hotspot-label">${nightState.outingUsed?'OUTING DONE':'GO OUT'}</span>
+        <button type="button" class="home-hotspot home-hotspot-outings" onclick="owOpenSocialPanel('${nightState.outingUsed?'relationships':'outings'}')">
+          <span class="home-hotspot-label">${nightState.outingUsed?'SOCIAL &middot; OUTING DONE':'SOCIAL'}</span>
         </button>
         <button type="button" class="home-hotspot home-hotspot-lights${preview.lightsOut?' active':''}"
           aria-pressed="${preview.lightsOut?'true':'false'}"
@@ -17567,7 +17949,7 @@ function owRenderHomeScene(){
             (preview.lightsOutUnavailable?'LIGHTS OUT UNAVAILABLE':
             (preview.lightsOut?'LIGHTS OUT PICKED':'LIGHTS OUT'))}</span>
         </button>
-        <button type="button" class="home-hotspot home-hotspot-sleep" onclick="owFinalizeNight()">
+        <button type="button" class="home-hotspot home-hotspot-sleep" onclick="owFinalizeNightFromRoom()">
           <span class="home-bed-visual" aria-hidden="true">
             <span class="home-bed-frame"></span>
             <span class="home-bed-mattress"></span>
@@ -17582,7 +17964,7 @@ function owRenderHomeScene(){
 }
 function owFocusHomeControl(selector){
   requestAnimationFrame(()=>{
-    const target=document.querySelector(selector||'.home-hotspot-shop,.home-hotspot-outings,.home-hotspot-sleep');
+    const target=document.querySelector(selector||'.home-hotspot-tablet,.home-hotspot-shop,.home-hotspot-outings,.home-hotspot-sleep');
     if(target)target.focus();
   });
 }
@@ -17594,6 +17976,7 @@ function owBeginHomeTransition(){
   owSetTransitionMoonPhase();
   if(owHeadlessRunActive||owAutomatedChoiceResolver||owReducedMotion()){
     owEnterHomeMode();
+    renderNightTabs();
     void owMaybeShowOrientationForPhase('night');
     return;
   }
@@ -17605,7 +17988,8 @@ function owBeginHomeTransition(){
   },1220);
   owTransitionLater(()=>{
     owClearPhaseTransition();
-    owFocusHomeControl();
+    renderNightTabs();
+    if(!nightState.panelOpen)owFocusHomeControl();
     void owMaybeShowOrientationForPhase('night');
   },1700);
 }
@@ -17658,14 +18042,38 @@ window.owReturnFromOuting=function(){
     owFocusHomeControl('.home-hotspot-outings');
   },delay);
 };
-window.owOpenNightPanel=function(tab){
+window.owSwitchNightTab=function(tab){
+  if(R.phase!=='night'||!nightState)return;
+  if(tab==='deals'&&!owNightDealsAvailable())return;
+  const mode=nightState.panelMode||'section';
+  if(mode==='social'&&!['outings','relationships'].includes(tab))return;
+  nightState.tab=tab;
+  nightState.outingPid=null;
+  nightState.relPid=null;
+  renderNightTabs();
+  owPersistCheckpoint('night');
+};
+window.owOpenNightPanel=function(tab,mode){
   if(R.phase!=='night'||!nightState)return;
   nightState.tab=tab;
+  nightState.panelMode=mode||'section';
   nightState.panelOpen=true;
   nightState.outingPid=null;
   nightState.relPid=null;
   renderNightTabs();
   owPersistCheckpoint('night');
+};
+window.owOpenNightPlanner=function(tab){
+  if(R.phase!=='night'||!nightState)return;
+  const nextTab=tab==='deals'&&!owNightDealsAvailable()?'home':(tab||'home');
+  owOpenNightPanel(nextTab,'planner');
+};
+window.owOpenSocialPanel=function(tab){
+  if(R.phase!=='night'||!nightState)return;
+  owOpenNightPanel(
+    ['outings','relationships'].includes(tab)?tab:'outings',
+    'social'
+  );
 };
 window.owReturnHomeScene=function(){
   if(R.phase!=='night'||!nightState)return;
@@ -17716,13 +18124,23 @@ function owNightFooter(){
           onchange="owToggleLightsOut(this.checked)">
         <span><strong>LIGHTS OUT</strong><br>+${fmt1(recSleepAmt())}% recovery${forcedLightsOut?' · automatic':(lightsOutUnavailable?' · unavailable after purchase':'')}</span>
       </label>
-      <button class="btn night-finalize" type="button" onclick="owFinalizeNight()">FINALIZE NIGHT</button>
+      <button class="btn night-finalize" type="button" onclick="owFinalizeNightFromPlanner()">FINALIZE NIGHT</button>
+      <button class="btn night-planner-hide" type="button" onclick="owReturnHomeScene()">HIDE PLANNER</button>
     </div>
   </footer>`;
 }
 function owShowNightOverlay(html){
   owRenderHomeScene();
-  showOverlay(html);
+  const planner=nightState&&nightState.panelMode==='planner';
+  const content=planner
+    ?`<section class="night-planner-shell" aria-label="Night Planner tablet">
+      <div class="night-planner-screen">
+        <div class="night-planner-content">${html}</div>
+        ${owNightFooter()}
+      </div>
+    </section>`
+    :html;
+  showOverlay(content);
 }
 function owHomeVisualMarkup(){
   const home=curHome();
@@ -17775,7 +18193,7 @@ window.owToggleLightsOut=function(value){
 };
 nightTabBar=owNightTabBar;
 nightSwitchTab=function(id){
-  owOpenNightPanel(id);
+  owSwitchNightTab(id);
 };
 renderNightTabs=function(){
   if(!nightState)return;
@@ -17809,7 +18227,8 @@ nightPhase=function(options){
     extraPurchaseCredits:R.today.additionalNightPurchases||0,
     dealRerollAvailable:negotiation>=6,
     financeMode:false,
-    panelOpen:false
+    panelOpen:R.nightViewPreference!=='room',
+    panelMode:'planner'
   };
   R.dealCards=owWeightedDeals(3);
   capturePhaseSnapshot('night');
@@ -17817,6 +18236,7 @@ nightPhase=function(options){
   if(options&&options.animate)owBeginHomeTransition();
   else{
     owEnterHomeMode();
+    renderNightTabs();
     void owMaybeShowOrientationForPhase('night');
   }
 };
@@ -18148,6 +18568,7 @@ window.confirmOuting=function(){
 };
 async function owFinalizeNightUnlocked(options){
   if(R.phase!=='night')return;
+  const source=options&&options.source==='planner'?'planner':'room';
   const warnings=[];
   if(!nightState.outingUsed)warnings.push('unused Outing');
   if(!owLightsOutBlocksNightPurchases()){
@@ -18161,17 +18582,30 @@ async function owFinalizeNightUnlocked(options){
       'You still have '+warnings.join(', ')+'.',
       [
         {label:'Finalize Anyway',detail:'Apply sleep and advance the run.',value:true},
-        {label:'Return to Night Desk',detail:'Keep making night decisions.',value:false}
+        {
+          label:source==='planner'?'Return to Night Planner':'Return to Room',
+          detail:'Keep making night decisions.',
+          value:false
+        }
       ]
     );
     if(!answer){
       R.phase='night';
-      nightState.panelOpen=false;
+      nightState.panelOpen=source==='planner';
+      nightState.panelMode=source==='planner'?'planner':(nightState.panelMode||'section');
       renderNightTabs();
-      owFocusHomeControl('.home-hotspot-sleep');
+      if(source==='planner'){
+        requestAnimationFrame(()=>{
+          const button=document.querySelector('.night-finalize');
+          if(button)button.focus();
+        });
+      }else{
+        owFocusHomeControl('.home-hotspot-sleep');
+      }
       return;
     }
   }
+  R.nightViewPreference=source;
   owPrepareNightRecoveryForFinalization();
   owApplyNightResolution();
   nightState.panelOpen=false;
@@ -18194,8 +18628,21 @@ function owApplyNightResolution(){
   owGrantRecovery(recovery,'Night recovery',false);
   return recovery;
 }
+window.owFinalizeNightFromPlanner=function(){
+  return owWithResolutionLock(()=>owFinalizeNightUnlocked({
+    animate:true,
+    source:'planner'
+  }));
+};
+window.owFinalizeNightFromRoom=function(){
+  return owWithResolutionLock(()=>owFinalizeNightUnlocked({
+    animate:true,
+    source:'room'
+  }));
+};
 window.owFinalizeNight=function(){
-  return owWithResolutionLock(()=>owFinalizeNightUnlocked({animate:true}));
+  const planner=nightState&&nightState.panelOpen&&nightState.panelMode==='planner';
+  return planner?owFinalizeNightFromPlanner():owFinalizeNightFromRoom();
 };
 finishNight=function(){owFinalizeNight();};
 

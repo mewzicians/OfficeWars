@@ -14,10 +14,10 @@ from playwright.sync_api import sync_playwright
 ROOT = Path(__file__).resolve().parent
 URL = (ROOT / "officewarsautobattler.html").as_uri()
 META = {
-    "schema": 3,
+    "schema": 4,
     "tutorial": {
         "completed": True,
-        "nextStep": 13,
+        "nextStep": 10,
         "skipped": False,
         "replayRequested": False,
     },
@@ -46,6 +46,7 @@ def setup_home(page, home_id):
           R.stress = 42;
           R.cash = 725;
           R.expenseCredit = 175;
+          R.nightViewPreference = 'room';
           R.home = homeId;
           R.house = ['standingDesk'];
           R.today = R.today || {log: [], cardFlags: {}};
@@ -181,7 +182,7 @@ def main():
                             windowRect,
                             moon,
                             shop: rect('.home-hotspot-shop'),
-                            phone: rect('.home-hotspot-phone'),
+                            tablet: rect('.home-hotspot-tablet'),
                             deals: rect('.home-hotspot-deals'),
                             bed: rect('.home-hotspot-sleep'),
                             door: rect('.home-hotspot-outings'),
@@ -191,7 +192,9 @@ def main():
                               '.home-pc-monitor,.home-pc-neck,.home-pc-base,' +
                               '.home-pc-tower,.home-pc-keyboard,.home-pc-mouse'
                             ).length,
-                            phonePresent: !!document.querySelector('.home-phone-visual'),
+                            tabletPresent: !!document.querySelector(
+                              '.home-hotspot-tablet .home-phone-visual'
+                            ),
                             oldBookPresent: !!document.querySelector('.home-hotspot-book'),
                             stressRatio: stressTrack && stressFill
                               ? stressFill.width / stressTrack.width
@@ -232,7 +235,7 @@ def main():
                         <= max(3, home["room"]["height"] * 0.018)
                         for rect in [
                             home["shop"],
-                            home["phone"],
+                            home["tablet"],
                             home["deals"],
                             home["bed"],
                             home["door"],
@@ -247,17 +250,17 @@ def main():
                     side_view_order = all(
                         home[left]["left"] < home[right]["left"]
                         for left, right in [
-                            ("bed", "phone"),
-                            ("phone", "shop"),
+                            ("bed", "tablet"),
+                            ("tablet", "shop"),
                             ("shop", "deals"),
                             ("deals", "door"),
                         ]
                     )
                     bed_reads_large = (
                         home["bed"]
-                        and home["phone"]
-                        and home["bed"]["width"] >= home["phone"]["width"] * 2.4
-                        and home["bed"]["height"] >= home["phone"]["height"] * 1.2
+                        and home["tablet"]
+                        and home["bed"]["width"] >= home["tablet"]["width"] * 2.4
+                        and home["bed"]["height"] >= home["tablet"]["height"] * 1.2
                     )
                     if not (
                         home["phase"] == "night"
@@ -279,7 +282,7 @@ def main():
                         and side_view_order
                         and bed_reads_large
                         and home["pcParts"] == 6
-                        and home["phonePresent"]
+                        and home["tabletPresent"]
                         and not home["oldBookPresent"]
                         and abs(home["stressRatio"] - 0.42) <= 0.03
                         and check_viewport(rects, width, height)
@@ -302,7 +305,7 @@ def main():
                           ).length,
                           back: [...document.querySelectorAll(
                             '.night-panel-header button'
-                          )].some(button => button.textContent.includes('RETURN HOME'))
+                            )].some(button => button.textContent.includes('RETURN TO ROOM'))
                         })"""
                     )
                     if not (
@@ -460,7 +463,7 @@ def main():
                 transition_arcs = page.evaluate(
                     """() => {
                       const wanted = new Set([
-                        'ow-sun-set','ow-moon-rise','ow-sun-rise','ow-moon-set'
+                        'ow-arc-ascend','ow-arc-descend'
                       ]);
                       const found = {};
                       for (const sheet of document.styleSheets) {
@@ -479,12 +482,13 @@ def main():
                       return found;
                     }"""
                 )
-                # The sun and moon share one east-to-west arc but never occupy
-                # the same stretch of it. One body plays the ascending eastern
-                # half while the other plays the descending western half.
+                # The sun and moon share one right/east-to-left/west arc but
+                # never occupy the same stretch of it. One body plays the
+                # ascending eastern half while the other plays the descending
+                # western half.
                 expected_arc_directions = {
-                    "ow-arc-ascend": "translate(26vw",
-                    "ow-arc-descend": "translate(74vw",
+                    "ow-arc-ascend": "translate(-26vw",
+                    "ow-arc-descend": "translate(-74vw",
                 }
                 if any(
                     transition_arcs.get(key, {}).get("steps", 0) < 3
@@ -492,9 +496,10 @@ def main():
                     for key, expected in expected_arc_directions.items()
                 ):
                     failures.append(f"{name}:transition-arcs:{transition_arcs}")
-                if "100vw" not in transition_arcs.get("ow-arc-descend", {}).get(
+                exit_text = transition_arcs.get("ow-arc-descend", {}).get(
                     "text", ""
-                ):
+                )
+                if "100vw" not in exit_text or "6rem" not in exit_text:
                     failures.append(f"{name}:transition-arc-exit:{transition_arcs}")
                 ascend = transition_arcs.get("ow-arc-ascend", {}).get("transforms", [])
                 descend = transition_arcs.get("ow-arc-descend", {}).get(
@@ -565,7 +570,7 @@ def main():
                     and sunrise_phase["sun"]["timing"] == "linear"
                     and sunrise_phase["moon"]["timing"] == "linear"
                     and all(
-                        float(body["left"].replace("px", "")) < 0
+                        float(body["right"].replace("px", "")) < 0
                         for phase in [sunset_phase, sunrise_phase]
                         for body in phase.values()
                     )

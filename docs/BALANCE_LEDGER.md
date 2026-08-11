@@ -1,6 +1,6 @@
 # OfficeWars Balance Ledger
 
-Last updated: 2026-08-10
+Last updated: 2026-08-11
 
 ## Status Rules
 
@@ -34,10 +34,10 @@ The real HTML now contains the approved overhaul candidate:
   and eight-cubicle office;
 - one versioned active-run save, Continue Run, deterministic prepared-Workday
   restoration, persistent result summaries, and safe casino restoration; and
-- the thirteen-step contextual orientation across the first day, Home Shop,
-  Outings, Relationships, ending the night, first path choice, first boss
-  floor, and first Capstone, with persistent completion, Skip Orientation,
-  and reset through Options for the next New Run;
+- the ten-step contextual orientation across the first day, consolidated Night
+  Planner, first path choice, first boss floor, and first Capstone, with
+  persistent completion, Skip Orientation, and reset through Options for the
+  next New Run;
 - visual schedule trackers for every schedule preview, comparison, guarantee,
   replacement, and final Schedule Desk decision;
 - a dedicated interactive flat side-view Home scene with room controls,
@@ -56,7 +56,8 @@ The real HTML now contains the approved overhaul candidate:
   Delegates, Contacts, and relevant run resources before task selection;
   Pinned Tasks use compact identity rows that open full task cards; Resume
   milestone squares expose exact path effects through hover, focus, and tap;
-  named trait mechanics use a shared high-contrast tooltip glossary; and
+  named trait mechanics and task-card rules terms use a shared high-contrast
+  tooltip glossary; and
 - accepting Finalize Night automatically selects Lights Out when it remains
   legal and the player did not select it manually. A Home or Deal purchase
   still blocks it unless an explicit exception applies.
@@ -68,13 +69,18 @@ percent, five base workday actions, and rank pairs
 
 ### Current Candidate Verification
 
-Checked on 2026-08-10:
+Checked on 2026-08-11:
 
 - `officewarsautobattler.html` has SHA-256
-  `F51F2F7C7A11098FA7DABF5692767D14D14B75F45AFA9CADC6EB3DA96A141A46`.
+  `387FB7F1062CFEA15E3D14A44D40E85FA4455EA53AE3B37BCC0E182DD9B6C969`.
   Hashes are taken over LF content, matching the repository and public package.
+- Current implementation evidence is
+  `verification/TASK_KEYWORDS_CELESTIAL_NIGHT_PLANNER_2026-08-11.md`.
+  Home/schedule, smoke, persistence/tutorial, advanced interaction, visual,
+  focused keyword/celestial, focused Night Planner, and full no-simulation
+  verification pass on this hash.
 - Options provides a persistent master-volume slider and tutorial reset. The
-  reset schedules the thirteen-step orientation for the next New Run; How to
+  reset schedules the ten-step orientation for the next New Run; How to
   Play no longer duplicates that command.
 - The Resume rail gives all five Skills distinct, bright 8-bit office
   scenes behind their progression information. The scenes are decorative,
@@ -94,28 +100,36 @@ Checked on 2026-08-10:
 - Resume 3, 6, and 10 XP squares expose the exact selected-path effect through
   hover, focus, and tap. Unchosen Skills state that specialization has not been
   selected yet.
-- Named trait mechanics such as Codebase, Polish, Scope Renegotiation, and
-  Reserve Levels use one cyan keyword treatment and one data-driven glossary.
-  Hover, keyboard focus, and tap expose short definitions without changing
-  the underlying trait text.
+- Named trait mechanics and rules-loaded task terms such as Codebase, Polish,
+  Commit, Positive Stress, Coworker Bonus, and Reserve Levels use one cyan
+  keyword treatment and one data-driven glossary. Hover, keyboard focus, and
+  tap expose short definitions without changing the underlying rules text;
+  tapping a keyword inside a selectable card does not select the card.
 - Night now replaces the office with the player's living space. Its room
-  controls open Home Shop, Relationships, Outings, unlocked Deals, Lights Out,
-  and End Day. All four Home tiers use the same readable side-view elevation:
-  bed, phone, PC desk, Deal laptop, plant, and door are grounded on one shallow
+  controls open the complete Night Planner, Home Shop, Social tabs, unlocked
+  Deals, Lights Out, and End Day. All four Home tiers use the same readable
+  side-view elevation: bed, iPad, PC desk, Deal laptop, plant, and door are
+  grounded on one shallow
   patterned floor boundary instead of sitting inside a deep floor band. Item
   slots use a wall shelf, the Home name sits below the furniture, the moon
   stays inside the window, and Lights Out dims the room. Cash, Expense Credit,
   a top Stress bar, and projected post-sleep Stress remain prominent.
+- The iPad-style Night Planner consolidates Home Shop, Outings, Relationships,
+  and conditional Deal Desk tabs above persistent Stress, Lights Out, Finalize
+  Night, and Hide Planner controls. The PC, Social door, Deal laptop, switch,
+  and bed remain focused room shortcuts. Finalizing through the Planner or bed
+  preserves that interface as the next Night's opening preference.
 - Every manager has a distinct office portrait and color. Ordinary floors keep
   the manager seated at the desk; boss floors use a cosmetic patrol that is
   absent from the gameplay cast and consumes no gameplay RNG.
 - Clock Out enters Home through sunset and a door-opening presentation.
   Outings fade to their story and back to the room; End Day uses sunrise to
   return to the office. The sun and moon share one east-to-west arc but never
-  occupy the same stretch of it: the departing body finishes the western half
-  and drops below that edge while the arriving body enters from the opposite
-  eastern edge and climbs to the vacated resting position. Reduced-motion and
-  automated paths skip animation timing without changing state.
+  occupy the same stretch of it: screen-right is east, screen-left is west,
+  the departing body finishes the western half and drops below the left edge,
+  and the arriving body enters from the right/eastern edge and climbs to the
+  vacated resting position. Reduced-motion and automated paths skip animation
+  timing without changing state.
 - Schedule decisions use action-icon trackers with source badges and
   highlighted differences instead of prose lists. Multiple schedules appear
   as stacked selectable timelines.
@@ -139,11 +153,12 @@ Checked on 2026-08-10:
   publishes its own result in the same settlement step that updates the HUD.
   Repeated actions follow the same rule for every resolution.
 - The current hash passes the focused Home and celestial-sequence runner, the
+  task-keyword and celestial-direction runner, focused Night Planner runner,
   browser smoke suite, all 24 focused persistence checks, all eight advanced
   interaction groups, the readability visual matrix, and the full verifier's
-  no-simulation player-surface and responsive-layout pass. Focused current-hash
+  no-simulation player-surface and responsive-layout pass. Current-hash
   evidence is recorded in
-  `verification/HOME_GROUNDING_CELESTIAL_SEQUENCE_2026-08-10.md`.
+  `verification/TASK_KEYWORDS_CELESTIAL_NIGHT_PLANNER_2026-08-11.md`.
 - The focused persistence suite passes 24 checks. It covers valid, corrupt,
   and incompatible saves; deterministic Morning and prepared-Workday restore;
   Night panel restore; exactly-once `nightResolved` continuation; result
@@ -177,9 +192,9 @@ Checked on 2026-08-10:
   uses the same purchase-versus-Lights-Out gate as player finalization. Fresh
   structural balance simulation remains Not Run, and the preceding report's
   other Not Run and Blocked rows retain their status.
-- The current exhaustive implementation report is
+- The preceding exhaustive implementation report is
   `verification/FULL_VERIFICATION_2026-08-10_0A8F74E5.md`. It finds no current
-  implementation blocker while retaining structural simulation, formal
+  implementation blocker on its named hash while retaining structural simulation, formal
   screen-reader execution, exhaustive picker and save-boundary traversal,
   rapid-input fuzzing, and memory profiling as Not Run or Blocked.
 - Earlier dated reports remain exact historical evidence for their named
@@ -284,15 +299,16 @@ Checked on 2026-08-10:
 - If the game is restored during a prepared Workday, restore its deterministic
   checkpoint and automatically Skip its remaining playback to Clock Out. Do
   not attempt to serialize live animation timers or resolver closures.
-- Teach the basic journey through thirteen contextual callouts: the project
-  race and stress, morning task anatomy, the Resume, Workday playback, Clock
-  Out, Home Shop, Outings, Relationships, ending the night, the first
-  three-path Promotion choice, the 6 and 10 XP milestone model, the first boss
-  floor, and the first claimed Capstone. Keep advanced traits and card
-  interactions for players to discover.
-- During the Night tutorial, spotlight the room's Home Shop computer, Outings
-  door, Relationships phone, and End Day bed. Do not teach Deals in the basic
-  orientation because they require a card or trait unlock.
+- Teach the basic journey through ten contextual callouts: the project race
+  and stress, morning task anatomy, the Resume, Workday playback, Clock Out,
+  the consolidated Night Planner, the first three-path Promotion choice, the 6
+  and 10 XP milestone model, the first boss floor, and the first claimed
+  Capstone. Keep advanced traits and card interactions for players to discover.
+- During the Night tutorial, automatically open and spotlight the consolidated
+  Planner. Explain its shopping, Outing, Relationship, Lights Out, and
+  finalization controls; state that coworker bonuses trigger when coworkers are
+  met during the Workday; and tell the player that Hide Planner exposes the
+  equivalent room controls. Do not separately teach conditional Deals.
 - On the first actual or provisional Capstone claim, explain that the first
   claimed Capstone becomes the run's only Capstone. If the claim occurs during
   Workday resolution, wait for the next stable player-facing phase.
@@ -303,10 +319,11 @@ Checked on 2026-08-10:
   playback and `1x`, `2x`, `4x`, and Skip controls. Open the live Action Guide
   and explain Work on Task, Lunch, Water Cooler, Office Chat, Slumped at Desk,
   and Team Meeting. Do not interrupt playback after it starts.
-- Present Night as the player's living space rather than the office. Use room
-  objects for Home Shop, Relationships, Outings, unlocked Deals, Lights Out,
-  and End Day. Transition into Home through sunset and a door opening, fade
-  Outings to black and back, and return to the office through sunrise.
+- Present Night as the player's living space rather than the office. Open the
+  consolidated iPad-style Night Planner by default while keeping complete room
+  controls for Home Shop, Social, unlocked Deals, Lights Out, and End Day.
+  Transition into Home through sunset and a door opening, fade Outings to black
+  and back, and return to the office through sunrise.
 - Do not rig first-run cards or outcomes. Store completed tutorial steps across
   refreshes and allow Options to reset the orientation for the next New Run.
 - Require confirmation before `New Run` replaces an existing active save.
@@ -555,7 +572,8 @@ Route each surviving workday through exactly one of these sequences:
 - Traits claimed after the Weekend cannot retroactively modify that Night,
   promotion recovery, or Weekend.
 
-Use one flexible `Night Desk`:
+Use one flexible Night phase with a consolidated `Night Planner` and optional
+room controls:
 
 1. Generate the night's Home and Deal catalogs and initialize every purchase,
    Outing, Expense Credit, discount, and financing allowance.

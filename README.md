@@ -43,7 +43,7 @@ No installation, server, account, or build step is required.
 |---|---|
 | **Morning** | Choose from Coding, Management, Design, Sales, and Operations task cards. |
 | **Workday** | Watch, accelerate, or skip a deterministic office simulation without changing its outcome. |
-| **Night** | Spend, recover, build relationships, and improve your Home. |
+| **Night** | Use the Night Planner or your room to spend, recover, build relationships, and improve your Home. |
 | **Weekend** | Navigate mystery events, casino detours, and the consequences of your week. |
 | **Promotion** | Claim Skill career paths and carry your build toward the CEO's Office. |
 
@@ -105,6 +105,8 @@ python -m pip install -r requirements-dev.txt
 python -m playwright install chromium
 python .officewars-smoke-run.py
 python .officewars-home-schedule-verify.py
+python .officewars-task-keyword-verify.py
+python .officewars-night-planner-verify.py
 python .officewars-persistence-verify.py
 python .officewars-advanced-verify.py
 python .officewars-full-verify.py 0

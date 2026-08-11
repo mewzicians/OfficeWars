@@ -1427,7 +1427,7 @@ async () => {
       nightState.outingUsed = true;
       nightState.homeLimit = 0;
       nightState.dealLimit = 0;
-      await owFinalizeNightUnlocked();
+      await owFinalizeNightUnlocked({source: 'planner'});
       automaticLightsOut = {
         picked: nightState.recPicked,
         stress: R.stress,
@@ -1457,9 +1457,9 @@ async () => {
       nightState.dealLimit = 0;
       owAutomatedChoiceResolver = request =>
         request.title === 'Finalize Night'
-          ? chooseLabel(request, 'Return to Night Desk')
+          ? chooseLabel(request, 'Return to Night Planner')
           : firstLegal(request);
-      await owFinalizeNightUnlocked();
+      await owFinalizeNightUnlocked({source: 'planner'});
       returnedNight = {
         picked: nightState.recPicked,
         stress: R.stress,
@@ -1657,7 +1657,7 @@ async () => {
     const tutorialSteps = OfficeWarsTest.orientationSteps();
     const workdayStep = tutorialSteps.find(step => step.id === 'workday');
     const relationshipStep = tutorialSteps.find(step =>
-      step.id === 'nightRelationships'
+      step.id === 'nightPlanner'
     );
 
     return {
@@ -1689,9 +1689,9 @@ async () => {
           optionTerms.length === 2 &&
           optionTerms.every(term => term.tabIndex === -1),
         tutorial_replaces_deals_with_capstone:
-          tutorialSteps.length === 13 &&
+          tutorialSteps.length === 10 &&
           !tutorialSteps.some(step => step.id === 'nightDeals') &&
-          tutorialSteps.some(step => step.id === 'nightSleep') &&
+          tutorialSteps.some(step => step.id === 'nightPlanner') &&
           tutorialSteps.some(step => step.id === 'capstone'),
         workday_tutorial_covers_every_ordinary_action:
           !!workdayStep &&

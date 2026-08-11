@@ -15,10 +15,10 @@ GAME_URL = (Path(ROOT) / "officewarsautobattler.html").as_uri()
 QUIET = "--quiet" in sys.argv
 META_COMPLETE = json.dumps(
     {
-        "schema": 3,
+        "schema": 4,
         "tutorial": {
             "completed": True,
-            "nextStep": 13,
+            "nextStep": 10,
             "skipped": False,
             "replayRequested": False,
         },
@@ -293,6 +293,7 @@ async ({state}) => {
     R.cash = 725;
     R.expenseCredit = 175;
     R.house = ['standingDesk'];
+    R.nightViewPreference = 'room';
     hideOverlay();
     hideOverlayToggle();
     nightPhase();
@@ -303,7 +304,7 @@ async ({state}) => {
     } else if (state === 'night-lights') {
       owToggleLightsOut(true);
     } else if (state === 'outing-lights') {
-      owOpenNightPanel('outings');
+      owOpenSocialPanel('outings');
       pickOutingPid('karen');
       const freeOuting = OUTINGS.findIndex(outing => outing.cost === 0);
       nightState.outingCards = [freeOuting];
@@ -746,7 +747,7 @@ READABILITY_REPORT = """
       occupiedIsButton: occupied?.tagName === 'BUTTON',
       occupiedLabel: occupied?.getAttribute('aria-label'),
       stressBar: visible(document.querySelector('.home-stress-bar')),
-      phone: visible(document.querySelector('.home-hotspot-phone')),
+      tablet: visible(document.querySelector('.home-hotspot-tablet')),
       oldBook: !!document.querySelector('.home-hotspot-book'),
       decor: [
         '.home-room-art', '.home-room-shelf', '.home-room-plant'
@@ -1188,7 +1189,7 @@ with sync_playwright() as playwright:
                     or home.get("occupied") != 1
                     or not home.get("occupiedIsButton")
                     or not home.get("stressBar")
-                    or not home.get("phone")
+                    or not home.get("tablet")
                     or home.get("oldBook")
                     or "Standing Desk" not in
                         (home.get("occupiedLabel") or "")

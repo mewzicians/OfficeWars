@@ -1,6 +1,6 @@
 # OfficeWars Current Handoff
 
-Last updated: 2026-08-10
+Last updated: 2026-08-11
 
 ## Read First
 
@@ -38,6 +38,9 @@ Last updated: 2026-08-10
 32. `docs/PATCH_NOTES_HOME_ART_REDESIGN_2026-08-10.md`
 33. `docs/PATCH_NOTES_CELESTIAL_OPPOSING_ARCS_2026-08-10.md`
 34. `verification/FULL_VERIFICATION_2026-08-10_F51F2F7C.md`
+35. `verification/FULL_VERIFICATION_2026-08-11_F51F2F7C.md`
+36. `docs/PATCH_NOTES_TASK_KEYWORDS_CELESTIAL_NIGHT_PLANNER_2026-08-11.md`
+37. `verification/TASK_KEYWORDS_CELESTIAL_NIGHT_PLANNER_2026-08-11.md`
 
 Read `docs/ARCHIVE_SUPERSEDED.md` only when historical reasoning is needed.
 
@@ -66,14 +69,14 @@ gameplay IDs; resolves sabotage immediately after the midpoint desk visit; and
 rolls back gameplay state and both random streams if Skip resolution throws.
 
 The current HTML has SHA-256
-`F51F2F7C7A11098FA7DABF5692767D14D14B75F45AFA9CADC6EB3DA96A141A46`.
+`387FB7F1062CFEA15E3D14A44D40E85FA4455EA53AE3B37BCC0E182DD9B6C969`.
 Hashes are taken over LF content, matching the repository and public package; a
 CRLF working copy produces a different value.
 It replaces the three speed buttons with one cycling 1x/2x/4x button and makes
 the new 1x equal to the previous 2x presentation pace. It also replaces
 Endless with Continue Run, autosaves committed state, restores prepared
 Workdays deterministically to Clock Out, preserves casino games and run
-results, and teaches the basic journey through thirteen contextual callouts. The
+results, and teaches the basic journey through ten contextual callouts. The
 player's project progress now fills behind the top-center project title under
 a fixed readability scrim, shows the exact fraction, and pulses on change. The
 bottom-left player HUD now contains only the portrait and Stress bar. Workday
@@ -89,18 +92,21 @@ four-part Campaign status band showing the Campaign name, requested task and
 family, completed steps, and Campaigns completed. `Rebrand Initiative` now
 explains Campaign replacement, ordered completion, and its reward promise.
 Night now removes the office HUD and presents the player's current living
-space. Room controls open Home Shop, Relationships, Outings, unlocked Deals,
-Lights Out, and End Day. Cash, Expense Credit, Stress, and projected
-post-sleep Stress remain prominent; occupied item slots expose tooltips and an
-accessible sale confirmation. Apartment, Townhouse, House, and Penthouse use
-distinct wall treatments while sharing one flat side-view layout. The bed,
-Relationships phone, full Home Shop PC, Deal laptop, plant, and Outings door
-follow a stable left-to-right order and meet one shallow patterned floor
-boundary. Furniture bodies remain above the baseboard instead of sitting
-inside a deep floor band. Item capacity appears on a wall storage shelf instead
-of a perspective rug. The moon appears inside the window, the Home name sits
-below the furniture, the top status includes a Stress bar, and Lights Out
-visibly dims the room.
+space. The iPad-style Night Planner consolidates Home Shop, Outings,
+Relationships, and conditional Deal Desk tabs with persistent Stress, Lights
+Out, Finalize Night, and Hide Planner controls. Room shortcuts open the full
+Planner, Home Shop, Social tabs, Deal Desk, Lights Out, and End Day. Finalizing
+from the Planner or bed preserves that interface as the next Night's opening
+preference. Cash, Expense Credit, Stress, and projected post-sleep Stress
+remain prominent; occupied item slots expose tooltips and an accessible sale
+confirmation. Apartment, Townhouse, House, and Penthouse use distinct wall
+treatments while sharing one flat side-view layout. The bed, Night Planner
+iPad, full Home Shop PC, Deal laptop, plant, and Social door follow a stable
+left-to-right order and meet one shallow patterned floor boundary. Furniture
+bodies remain above the baseboard instead of sitting inside a deep floor band.
+Item capacity appears on a wall storage shelf instead of a perspective rug.
+The moon appears inside the window, the Home name sits below the furniture,
+the top status includes a Stress bar, and Lights Out visibly dims the room.
 
 The manager office now shows the current manager with a distinct portrait and
 color. Managers remain seated on ordinary floors and use a cosmetic patrol on
@@ -110,12 +116,12 @@ space, and cannot change Workday outcomes or Skip behavior.
 Clock Out enters Home through a sunset and door-opening presentation. Outings
 fade to their story and back to the room; End Day uses sunrise to return to the
 office. The sun and moon share one east-to-west arc but never occupy the same
-stretch of it. The departing body completes the western half and drops below
-that edge while the arriving body enters from the opposite eastern edge and
-climbs to the vacated resting position, so the two are always on opposite sides
-of the sky. Automated and reduced-motion paths bypass presentation timing without changing
-state. Sleep writes a stable `nightResolved` checkpoint before sunrise so a
-refresh cannot repeat recovery.
+stretch of it. Screen-right is east and screen-left is west. The departing
+body completes the western half and drops below the left edge while the
+arriving body enters from the right/eastern edge and climbs to the vacated
+resting position, so the two never cross. Automated and reduced-motion paths
+bypass presentation timing without changing state. Sleep writes a stable
+`nightResolved` checkpoint before sunrise so a refresh cannot repeat recovery.
 
 Schedule previews and choices now use action-icon timelines with source badges
 and highlighted differences. Prototype Test stacks its schedule options;
@@ -145,8 +151,10 @@ Eye for Detail now records the previous primary task's selection source.
 Revision does not create another Revision pin when the task came from Pinned
 Tasks, while the same task can pin again after a later generated-offer play.
 Masterpiece and other independent pin sources are unchanged. Named trait
-mechanics use a shared high-contrast glossary in path-choice, Promotion, and
-Resume text, with short definitions on hover, keyboard focus, and tap.
+mechanics and task-card rules terms use a shared high-contrast glossary in
+path-choice, Promotion, Resume, Morning, Pinned Task, and separate-picker
+text, with short definitions on hover, keyboard focus, and tap. Tapping a
+keyword inside a selectable card does not select that card.
 
 Every separate task picker uses the Morning task-card visual language.
 Complete-play and future-primary decisions show the full card, printed-effect
@@ -155,15 +163,15 @@ category-only choices show identity only. Automation additional Combo cards
 explicitly grant no Skill XP while retaining completion counters, Codebase,
 and other Complete Play triggers.
 
-The orientation moves through Home Shop, Outings, Relationships, and End Day
-on the first Night, explains the first three-path Promotion choice and later
-6/10 XP milestones, covers the first boss-floor introduction, and finishes
-when the first Capstone is claimed. Its Workday callout opens the live Action
-Guide and explains all six ordinary actions with current values. Deals are
-omitted because they require a card or trait unlock. The Relationships step
-explains that coworker bonuses trigger when the player meets them during the
-Workday. Options contains the persistent master-volume setting and the
-tutorial reset command; How to Play no longer duplicates that command.
+The first Night tutorial automatically opens and spotlights the consolidated
+Planner. It explains shopping, Outings, Relationships, coworker bonus timing,
+Lights Out, finalization, and the optional room interface in one callout. The
+orientation then explains the first three-path Promotion choice and later 6/10
+XP milestones, covers the first boss-floor introduction, and finishes when the
+first Capstone is claimed. Its Workday callout opens the live Action Guide and
+explains all six ordinary actions with current values. Conditional Deals are
+not separately taught. Options contains the persistent master-volume setting
+and the tutorial reset command; How to Play no longer duplicates that command.
 
 Player-facing progression language now calls Coding, Management, Design,
 Sales, and Operations `Skills`; internal data still uses `family` identifiers.
@@ -180,18 +188,23 @@ Lights-Out legality gate. A simulated Home or Deal purchase therefore receives
 only automatic sleep unless Moodboard or another explicit exception permits
 both.
 
-The current exhaustive report is
-`verification/FULL_VERIFICATION_2026-08-10_F51F2F7C.md`. On the current hash the
-verified rows are JavaScript syntax, standalone load, required IDs, zero
-external requests, zero page and console errors, roster and structural
-invariants, the player-surface sweep at three viewports, Home room geometry
-across all four tiers, both phase transitions, and reduced-motion bypass.
+The current implementation report is
+`verification/TASK_KEYWORDS_CELESTIAL_NIGHT_PLANNER_2026-08-11.md`. The current
+hash passes the focused keyword/celestial, Night Planner, Home/schedule, smoke,
+24-check persistence/tutorial, eight-group advanced interaction, and
+readability visual suites plus the full no-simulation verifier. All 50 ordinary
+cards pass preview, markup, and primary Complete Play traversal. No sampled
+page error, console error, external runtime request, clipped text, or viewport
+overflow was found.
 
-The smoke, persistence, advanced interaction, full-verifier runtime audit, and
-every simulation row are Blocked on the current hash: they require Python and
-Playwright, which were unavailable on the machine used for that pass. They are
-neither passing nor failing. Their last real results belong to hash
-`470F4146` and do not transfer.
+The preceding exhaustive report is
+`verification/FULL_VERIFICATION_2026-08-11_F51F2F7C.md`. It remains exact
+historical evidence for its named earlier hash.
+
+The imported Home verifier initially failed because its keyframe discovery set
+still named four retired animations while its assertions expected the two
+current half-arcs. The discovery set was repaired without changing gameplay,
+and the focused runner now passes at desktop and landscape sizes.
 
 The preceding exhaustive implementation report is
 `verification/FULL_VERIFICATION_2026-08-10_0A8F74E5.md`. It finds no
@@ -346,4 +359,4 @@ invoked automatically when a request clearly matches their scope.
 `officewars-public-repo-2026-08-07/` is the source workspace's public
 repository package; its contents become the repository root when exported.
 Both packages' mapped game, guidance, active documents, verifiers, reports, and
-hashes were synchronized with the root candidate on 2026-08-10.
+hashes were synchronized with the root candidate on 2026-08-11.

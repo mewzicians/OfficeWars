@@ -28,14 +28,15 @@ menu offers Continue Run when that save is valid and requires confirmation
 before a new run replaces it. Committed choices and stable phase transitions
 autosave without allowing a refresh to reroll an offer or undo a cost.
 
-A first-play contextual orientation teaches the basic journey through thirteen
+A first-play contextual orientation teaches the basic journey through ten
 short callouts. It covers the project race and stress, morning task anatomy,
-the Resume, autonomous Workday controls, Clock Out, Home Shop, Outings,
-Relationships, ending the night, the first three-path Promotion choice, the 6
-and 10 XP milestones, the first boss floor, and the first claimed Capstone.
-Deals stay out of the basic orientation because they require a card or trait
-unlock. Each callout spotlights its relevant existing interface while
-darkening the rest of the screen. The first Workday pauses once before
+the Resume, autonomous Workday controls, Clock Out, the consolidated Night
+Planner, the first three-path Promotion choice, the 6 and 10 XP milestones,
+the first boss floor, and the first claimed Capstone. The Night lesson covers
+shopping, Outings, Relationships, coworker bonus timing, Lights Out, explicit
+finalization, and the optional room interface without separately teaching
+conditional Deals. Each callout spotlights its relevant existing interface
+while darkening the rest of the screen. The first Workday pauses once before
 playback and opens the live Action Guide, which explains Work on Task, Lunch,
 Water Cooler, Office Chat, Slumped at Desk, and Team Meeting using current
 values. Playback is not interrupted after it begins. Players can skip the
@@ -178,9 +179,11 @@ resources before commitment. Concise summaries may use progressive disclosure,
 but complete timing and effect text remains available through hover, keyboard
 focus, tap, the Resume, or the active-effect strip.
 
-Named trait mechanics use a consistent high-contrast keyword treatment.
-Hover, keyboard focus, and tap reveal one short shared-glossary definition;
-the same term always uses the same definition wherever trait rules are shown.
+Rules-loaded terms in trait text and task-card effects use a consistent
+high-contrast keyword treatment. Hover, keyboard focus, and tap reveal one
+short shared-glossary definition; the same term always uses the same
+definition in the Resume, Promotion, Morning offer, Pinned Task details, and
+separate task pickers.
 
 Pinned Tasks remain separate from the generated offer. Morning shows each pin
 as a compact Skill, name, and rarity row; activating it opens the standard full
@@ -315,32 +318,41 @@ with a shallow patterned floor, a clear baseboard boundary, and furniture
 grounded on that boundary. Clock Out transitions through a sunset and door
 opening into the room; ending the day transitions through sunrise back to the
 office. The sun and moon share one east-to-west arc but never occupy the same
-stretch of it. At each transition the departing body completes the western half
-of the arc and drops below that edge, while the arriving body enters from the
-opposite eastern edge and climbs to the resting position the departing body
-held. The sun sets and the moon rises at sunset; the moon sets and the sun
-rises at sunrise. Reduced-motion and automated runs bypass presentation timing
-without changing outcomes.
+stretch of it. Screen-right is east and screen-left is west. At each
+transition the departing body completes the western half of the arc and drops
+below the left edge, while the arriving body enters from the right/eastern
+edge and climbs to the resting position the departing body held. The sun sets
+in the west and the moon rises in the east at sunset; the moon sets in the
+west and the sun rises in the east at sunrise. Reduced-motion and automated
+runs bypass presentation timing without changing outcomes.
 
-Generate Home and Deal catalogs at Night start, then let the player use room
-objects for Outings, Home Shop, Relationships, unlocked Deals, Lights Out, and
-ending the day in any legal order. Outings remain independent of the recovery
-choice. Manual Lights Out and Home or Deal purchases are mutually exclusive
-unless an effect explicitly permits both; Moodboard's automatic Lights Out is
-the current exception. Purchases do not end Night automatically. An explicit
-finalization applies sleep and any available Lights Out recovery, expires
-night-only resources, and advances the run. Newly purchased Home effects apply
-immediately. Repeated effects remain separate but do not bypass normal Night
-limits unless they explicitly add an action, purchase, or Outing.
+Generate Home and Deal catalogs at Night start, then open the consolidated
+iPad-style Night Planner unless the player most recently ended Night from the
+room. Its Home Shop, Outings, Relationships, and conditional Deal Desk tabs
+share persistent Stress, Lights Out, Finalize Night, and Hide Planner controls.
+The room remains a complete optional interface: the iPad opens the full
+Planner, the computer opens Home Shop, the door opens Social tabs for Outings
+and Relationships, the laptop opens Deal Desk, the switch selects Lights Out,
+and the bed finalizes Night. Ending Night through the Planner makes the next
+Night open there; using the bed preserves the room preference.
 
-The room keeps Cash, Expense Credit, current Stress, and projected post-sleep
-Stress prominent, including a top Stress bar. Interactive furniture follows a
-stable left-to-right elevation: End Day bed, Relationships phone, Home Shop
-computer, Deal laptop, and Outings door. Every furniture body stays above the
-baseboard while its feet meet the shared floor edge; the Home name remains
-below that edge. The wall switch selects Lights Out. The moon appears through
-the room window, and Lights Out visibly dims the room without hiding its
-controls. Home capacity appears as accessible visual item slots on a wall
+Outings remain independent of the recovery choice. Manual Lights Out and Home
+or Deal purchases are mutually exclusive unless an effect explicitly permits
+both; Moodboard's automatic Lights Out is the current exception. Purchases do
+not end Night automatically. An explicit finalization applies sleep and any
+available Lights Out recovery, expires night-only resources, and advances the
+run. Newly purchased Home effects apply immediately. Repeated effects remain
+separate but do not bypass normal Night limits unless they explicitly add an
+action, purchase, or Outing.
+
+The Planner and room keep Cash, Expense Credit, current Stress, and projected
+post-sleep Stress prominent, including a top Stress bar. Interactive furniture
+follows a stable left-to-right elevation: End Day bed, Night Planner iPad,
+Home Shop computer, Deal laptop, and Social door. Every furniture body stays
+above the baseboard while its feet meet the shared floor edge; the Home name
+remains below that edge. The wall switch selects Lights Out. The moon appears
+through the room window, and Lights Out visibly dims the room without hiding
+its controls. Home capacity appears as accessible visual item slots on a wall
 storage shelf. Occupied slots expose their effect and open a sell confirmation
 through pointer, keyboard, or tap activation. Outing stories briefly fade the
 room to black, then return the player to the same living space.

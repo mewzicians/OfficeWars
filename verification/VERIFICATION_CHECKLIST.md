@@ -4,16 +4,16 @@
 
 The rollout and readability candidate exists. The current candidate has
 SHA-256
-`470F4146FBA177FD6B7062A0093DDCF7C2826B797FE9AE74317BD1D146050FF7`.
-The current focused evidence is in
-`verification/HOME_GROUNDING_CELESTIAL_SEQUENCE_2026-08-10.md`: all four Home
-tiers ground their furniture on the shallow floor boundary, item slots remain
-readable on the wall shelf, room dimming passes, and the sun and moon follow
-the same east-to-west arc with the correct lead order. Current runtime and
-responsive suites pass. Fresh structural balance simulation is Not Run. The
-preceding exhaustive report remains
-`verification/FULL_VERIFICATION_2026-08-10_55D9A6ED.md`; older dated reports
-remain evidence only for the exact hashes they name.
+`387FB7F1062CFEA15E3D14A44D40E85FA4455EA53AE3B37BCC0E182DD9B6C969`.
+The current evidence is in
+`verification/TASK_KEYWORDS_CELESTIAL_NIGHT_PLANNER_2026-08-11.md`: focused
+keyword/celestial, Night Planner, Home/schedule, smoke,
+persistence/tutorial, advanced interaction, and visual verification pass.
+Task-card rules terms share the glossary treatment, the sun and moon move from
+right/east to left/west without crossing, and the consolidated Night Planner
+remains optional beside complete room controls. Fresh structural balance
+simulation is Not Run. Older dated reports remain evidence only for the exact
+hashes they name.
 
 The boxes below remain a reusable requirement inventory rather than a claim of
 completion. An unchecked box does not mean the feature is absent, and a result
@@ -104,11 +104,11 @@ during a verification-only request unless the user separately asks for fixes.
 - [ ] Victory and defeat summaries survive refresh and Return to Main Menu
   clears only the active run.
 - [ ] Tutorial completion is stored separately from the run save.
-- [ ] The thirteen orientation steps spotlight the correct existing UI across
-  Floor Intro, Morning, pre-Workday, Clock Out, Home Shop, Outings,
-  Relationships, End Day, the first three-path Promotion choice, milestone
-  growth, the first boss floor, and the first claimed Capstone. Deals remain
-  conditional discovery.
+- [ ] The ten orientation steps spotlight the correct existing UI across Floor
+  Intro, Morning, pre-Workday, Clock Out, the consolidated Night Planner, the
+  first three-path Promotion choice, milestone growth, the first boss floor,
+  and the first claimed Capstone. The Night lesson explains coworker bonus
+  timing and the optional room interface; Deals remain conditional discovery.
 - [ ] The first Workday callout opens the current Action Guide and explains
   Work on Task, Lunch, Water Cooler, Office Chat, Slumped at Desk, and Team
   Meeting without consuming RNG or starting playback.
@@ -337,11 +337,11 @@ its details, or the appropriate phase summary.
 
 | Card | Required player-facing trace |
 |---|---|
-| Expense Allowance | Add the exact Expense Credit to the economy breakdown and Night Desk, with eligible uses and Lights Out expiration. |
+| Expense Allowance | Add the exact Expense Credit to the economy breakdown and Night Planner, with eligible uses and Lights Out expiration. |
 | Referral Fee | Track distinct successful coworker activations up to three and itemize each Effect Instance's Clock Out payment. |
 | Sales Quota | Show net workday progress toward 20 and the pending or earned Clock Out payment. |
 | Cross-Sell | Mark paid Home, Deal, and Outing categories, pending rebate progress, and each instance's payout or expiration. |
-| Client Entertainment | Choose a coworker with current relationship shown and mark the free 8-relationship Outing allowance in the Night Desk. |
+| Client Entertainment | Choose a coworker with current relationship shown and mark the free 8-relationship Outing allowance in the Night Planner. |
 | Comparison Shopping | After catalogs generate, choose one visible item, reveal exactly two eligible alternatives, and compare all three prices and effects in a compact window. |
 | Commission Advance | Show the immediate cash, completion deadline, and pending 20 flat-stress consequence through tomorrow's Clock Out. |
 | Corporate Expense Account | Show Expense Credit, the additional Home-or-Deal purchase, remaining uses, and Lights Out expiration. |
@@ -376,7 +376,7 @@ its details, or the appropriate phase summary.
 | Eye for Detail | Cards and Resume Book expose per-card Polish; Pinned Tasks show Revision or Masterpiece source, exact scaling, and permanence. A primary selected from Pinned Tasks must not create another Revision pin, while a later generated-offer play of the same task may. |
 | Moodboard | HUD and Resume show current Focus, cap, expiration or carryover, absorption, progress conversion, refresh, and automatic Lights Out; its automatic Lights Out does not block Home or Deal purchases. |
 | Brand Strategy | Resume shows the separate questline, current Campaign and ordered step, multiplier and unlocked rewards; Morning shows the Campaign name, requested task and family, completed-step count, Campaigns completed, protected Campaign card, and final-capstone two-card selection. |
-| Negotiation | Night Desk shows Deal weights through actual distinct offers, free reroll, purchase count, exact Client Call values, pay and interest modifiers, Scope eligibility, and capstone strength. |
+| Negotiation | Night Planner shows Deal weights through actual distinct offers, free reroll, purchase count, exact Client Call values, pay and interest modifiers, Scope eligibility, and capstone strength. |
 | Schmoozing | Resume Book shows optional pending slots and eligible Contacts during every non-workday phase without blocking progression; morning previews each secondary Assist, specialty, Raj payment, Priya XP, cap, and up to two Inner Circle targets. |
 | Closing | Morning marks the Hot Lead or fully replaces the offer with two Cycle cards and Close; Deal Ladder shows actual and reward Chain, exact next stress, Close tier, tokens, Seasoned stacks, and persistent rewards. |
 | Efficiency | Promotion chooses Standard Procedures; Schedule Desk and playback mark their source, order, repeats, and exact positive-action progress. |
@@ -431,7 +431,7 @@ its details, or the appropriate phase summary.
 | Schedule Desk | Candidate schedule choice, automatic guarantees, replacements, bonus entries, Team Briefings, repeats, accepted Outcomes, participant choices, source badges, and final locked count in one consolidated flow. |
 | Workday playback | Natural, replacement, bonus, repeated, and Triggered actions; fixed Workday Events; Standard and Forced coworker activations; source and Outcome feedback synchronized to the action as it settles; deterministic 1x, 2x, 4x, and Skip. |
 | Clock Out summary | Recovery and conversion, progress, Chad and Joint Venture, performance conditions, pay, interest, debt stress, returned and new reserves, duration changes, and final-result priority in exact order. |
-| Night Desk | Home, Deal, and Outing actions in any legal order; spendable cash, Expense Credit, discounts, financing, rebates, purchase limits, family and item pickers, the two-way manual Lights Out purchase lock and exceptions, unused-resource warnings, sleep, and explicit finalization. |
+| Night Planner and room | Home, Deal, Relationship, and Outing actions in any legal order; spendable cash, Expense Credit, discounts, financing, rebates, purchase limits, Skill and item pickers, the two-way manual Lights Out purchase lock and exceptions, unused-resource warnings, sleep, and explicit finalization. The Planner consolidates all sections while room objects open the complete Planner or focused sections. |
 | Weekend | Exact event choices and outcomes, Hackathon study family picker, Networking Brunch coworker picker, Focus and Guardian Angel handling, and due promotion route. |
 | Promotion Review | Five-family rail, exact XP, path and milestone choices, Delegates, Contacts, Standard Procedures, Masterpiece, simultaneous capstones, losing consequences, revision, and one final batch confirmation. |
 | Resume rail and Book | Exact XP over 10; paths and capstone; Codebase, Commit, per-card Polish and completion history, Velocity, Focus, Delegates, Contacts, Procedures, stored task, Reserve state, Campaigns, Deal Ladder, Seasoned stacks, and persistent Closing rewards. |
@@ -445,7 +445,7 @@ its details, or the appropriate phase summary.
 - [ ] Every row in the card, trait, reward, resource, and phase UI impact
   matrices has a reachable, readable, keyboard- and tap-usable implementation.
 - [ ] No unavoidable choice opens during AFK workday playback or Clock Out.
-  Every choice occurs at the Morning Task Desk, Schedule Desk, Night Desk,
+  Every choice occurs at the Morning Task Desk, Schedule Desk, Night phase,
   Weekend, or Promotion Review.
 - [ ] No named counter, charge, token, reserve, debt, delayed effect,
   expiration, modifier, or irreversible choice exists only in hidden state.
@@ -527,9 +527,9 @@ its details, or the appropriate phase summary.
   differences, source badges where relevant, keyboard-operable selection, and
   no horizontal overflow at desktop or landscape-phone sizes.
 - [ ] Home mode hides office-only HUD, keeps Cash, Credit, current Stress, and
-  projected post-sleep Stress visible, and exposes Home Shop, Relationships,
-  Outings, unlocked Deals, Lights Out, End Day, and occupied item slots as
-  keyboard-operable controls.
+  projected post-sleep Stress visible, and exposes the complete Night Planner,
+  focused Home Shop, Social, unlocked Deals, Lights Out, End Day, and occupied
+  item slots as keyboard-operable controls.
 
 ## Accessibility Evidence
 
@@ -538,6 +538,9 @@ its details, or the appropriate phase summary.
 - [ ] Every modal or picker moves focus inside, traps it while open when
   appropriate, returns focus on close, and has a clear legal dismissal rule.
 - [ ] Hover-only details are also available through keyboard focus and tap.
+- [ ] Rules-loaded task-card keywords use the shared glossary in full,
+  compact, Pinned Task, and separate-picker views; tapping one never selects
+  its card.
 - [ ] Family, rarity, status, favorable or unfavorable Outcome, and bar state
   never rely on color alone.
 - [ ] Text and essential UI meet readable contrast at every documented state.

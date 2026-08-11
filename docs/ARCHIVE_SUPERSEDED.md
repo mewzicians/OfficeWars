@@ -1,6 +1,6 @@
 # OfficeWars Superseded Design Archive
 
-Last updated: 2026-08-07
+Last updated: 2026-08-11
 
 This document is an index to historical OfficeWars material. Nothing listed
 here is active or approved for implementation unless it was later restored to
@@ -51,6 +51,8 @@ to resume current planning.
 | Enterprise | Buyout, Chad reduction, or earlier reward tables | Five unique persistent rewards plus Enterprise Dividend |
 | Task timing | Hold task gains until Clock Out | Resolve direct task gains atomically on selection |
 | HUD | Full-width bottom taskbar and manual Resume minimize control | Standalone character HUD clusters and compact Resume rail |
+| First-play Night tutorial | Four separate room-object lessons inside a thirteen-step orientation | One consolidated Night Planner lesson inside a ten-step orientation |
+| Night decision surface | Room objects as the only complete Night navigation | Consolidated iPad-style Night Planner plus complete optional room shortcuts |
 
 ## Completed Planning Gates
 

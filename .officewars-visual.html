@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>OfficeWars Visual Fixture</title>
+  <style>
+    html, body, iframe {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      border: 0;
+      overflow: hidden;
+      background: #0e1820;
+    }
+  </style>
+</head>
+<body>
+<iframe id="game" title="OfficeWars visual test"></iframe>
+<script>
+const frame = document.getElementById('game');
+const params = new URLSearchParams(location.search);
+const state = params.get('state') || 'morning';
+frame.addEventListener('load', async () => {
+  const game = frame.contentWindow;
+  const waitFor = async predicate => {
+    const deadline = performance.now() + 15000;
+    while (!predicate()) {
+      if (performance.now() > deadline) throw new Error('Visual fixture timeout: ' + state);
+      await new Promise(resolve => setTimeout(resolve, 10));
+    }
+  };
+  try {
+    await waitFor(() =>
+      game.document.documentElement.dataset.officewarsReady === 'true'
+    );
+    if (state === 'menu') {
+      document.title = 'READY:menu';
+      return;
+    }
+    game.startRun({seed: 73001});
+    game.owClockIn();
+    await waitFor(() => game.R.phase === 'morning');
+    if (state === 'workday') {
+      game.OfficeWarsTest.setTimingScale(3);
+      const common = game.R.morningCards.findIndex(card => card.rarity === 'common');
+      game.selectMorning(common >= 0 ? common : 0, 'offer');
+      await game.confirmMorning();
+      await waitFor(() => game.R.phase === 'workday');
+    } else if (state === 'night') {
+      game.nightPhase();
+      await waitFor(() => game.R.phase === 'night');
+    }
+    document.title = 'READY:' + state;
+  } catch (error) {
+    document.title = 'ERROR:' + state + ':' + error.message;
+  }
+});
+frame.src = 'officewarsautobattler.html';
+</script>
+</body>
+</html>

@@ -40,12 +40,12 @@ description: Continue OfficeWars game-design and balance planning from the repos
 - Do not lock adjacent recommendations that the user did not address.
 - When a newer decision replaces an older one, keep the active ledger concise
   and add only useful historical context to
-  `/docs/ARCHIVE_SUPERSEDED.md`.
+  `docs/ARCHIVE_SUPERSEDED.md`.
 - When the user approves a decision and file edits are permitted, update
-  `/docs/BALANCE_LEDGER.md` in the same task.
+  `docs/BALANCE_LEDGER.md` in the same task.
 - If the active collaboration mode forbids edits, report the exact ledger update
   that remains pending.
-- Update `/docs/GAME_DESIGN.md` only for stable system-level changes, not every
+- Update `docs/GAME_DESIGN.md` only for stable system-level changes, not every
   numeric experiment.
 
 ## Boundaries
@@ -66,40 +66,35 @@ description: Continue OfficeWars game-design and balance planning from the repos
 ## Current Repository Phase
 
 - The active HTML contains the approved rollout, readability candidate,
-  cycling playback-speed update, versioned active-run persistence, and
-  thirteen-step contextual orientation. Its relationship copy, two-way manual
-  Lights Out purchase rule, active Campaign status band, consolidated player
-  project HUD, synchronized Workday ticker, reusable task-picker cards, and
-  Automation Skill-XP exception, grounded Home scene, and no-crossing
-  celestial sequence are current at SHA-256
-  `470F4146FBA177FD6B7062A0093DDCF7C2826B797FE9AE74317BD1D146050FF7`.
+  cycling playback speed, versioned active-run persistence, thirteen-step
+  contextual orientation, grounded Home redesign, and opposing celestial
+  transition arcs. Its SHA-256 is
+  `F51F2F7C7A11098FA7DABF5692767D14D14B75F45AFA9CADC6EB3DA96A141A46`.
 - Do not restart or reimplement the overhaul from the rollout plan unless a
   verified finding requires a fix.
 - The first full bidirectional verification ran on 2026-08-06 and failed ship
-  signoff. Read `/verification/FULL_VERIFICATION_2026-08-06.md` before fixing
+  signoff. Read `verification/FULL_VERIFICATION_2026-08-06.md` before fixing
   or tuning the candidate.
 - Findings F1-F4 are resolved and passed the focused retest in
-  `/verification/BLOCKERS_1_4_RETEST_2026-08-06.md`.
+  `verification/BLOCKERS_1_4_RETEST_2026-08-06.md`.
 - All eight targeted high-risk interaction groups passed the deterministic
   suite recorded in
-  `/verification/ADVANCED_INTERACTION_VERIFICATION_2026-08-06.md`.
+  `verification/ADVANCED_INTERACTION_VERIFICATION_2026-08-06.md`.
 - The deterministic Skip repair and expanded browser suite passed local
   validation on 2026-08-07. Read
-  `/verification/SKIP_FIX_LOCAL_VALIDATION_2026-08-07.md` for that snapshot's
+  `verification/SKIP_FIX_LOCAL_VALIDATION_2026-08-07.md` for that snapshot's
   evidence and cross-version simulation comparison.
-- The current hash passes smoke, persistence, automated, advanced, and 29-case
-  visual checks. Read
-  `/verification/FULL_VERIFICATION_2026-08-10_55D9A6ED.md` for the current
-  Pass, Fail, Not Run, and Blocked matrix. Earlier dated reports remain
-  evidence only for their named hashes.
-- The player-facing Night rule passes, but the headless Night policy grants
-  manual Lights Out after purchasing. Current balance simulation is therefore
-  Blocked. The prior 58.4 percent scripted-skilled result is historical
-  snapshot telemetry, not current balance evidence.
+- The current hash passes Home/schedule, smoke, persistence, advanced
+  interaction, visual, and full no-simulation verification. Read
+  `verification/FULL_VERIFICATION_2026-08-11_F51F2F7C.md` for the current
+  matrix. Earlier dated reports remain evidence only for their named hashes.
+- Fresh structural simulation under the corrected Night policy remains Not
+  Run. The prior 58.4 percent scripted-skilled result is historical snapshot
+  telemetry, not current balance evidence.
 - Balance finding F5, structural tuning, explicitly unverified rows, human
   evidence, and the deferred Home set design remain unfinished.
-- Read `/docs/HANDOFF.md` for current implementation status and
-  `/docs/BALANCE_LEDGER.md` for exact mechanics and decision status.
+- Read `docs/HANDOFF.md` for current implementation status and
+  `docs/BALANCE_LEDGER.md` for exact mechanics and decision status.
 
 ## Useful Invocations
 
