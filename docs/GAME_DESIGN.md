@@ -314,10 +314,13 @@ space rather than the office. Each Home uses a flat side-view room composition
 with a shallow patterned floor, a clear baseboard boundary, and furniture
 grounded on that boundary. Clock Out transitions through a sunset and door
 opening into the room; ending the day transitions through sunrise back to the
-office. The sun and moon follow the same complete east-to-west arc without
-crossing: the sun leads the moon at sunset, and the moon leads the sun at
-sunrise. Reduced-motion and automated runs bypass presentation timing without
-changing outcomes.
+office. The sun and moon share one east-to-west arc but never occupy the same
+stretch of it. At each transition the departing body completes the western half
+of the arc and drops below that edge, while the arriving body enters from the
+opposite eastern edge and climbs to the resting position the departing body
+held. The sun sets and the moon rises at sunset; the moon sets and the sun
+rises at sunrise. Reduced-motion and automated runs bypass presentation timing
+without changing outcomes.
 
 Generate Home and Deal catalogs at Night start, then let the player use room
 objects for Outings, Home Shop, Relationships, unlocked Deals, Lights Out, and

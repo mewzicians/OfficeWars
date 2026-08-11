@@ -35,6 +35,9 @@ Last updated: 2026-08-10
 29. `verification/HOME_SIDE_VIEW_ARCS_2026-08-10.md`
 30. `docs/PATCH_NOTES_HOME_GROUNDING_CELESTIAL_SEQUENCE_2026-08-10.md`
 31. `verification/HOME_GROUNDING_CELESTIAL_SEQUENCE_2026-08-10.md`
+32. `docs/PATCH_NOTES_HOME_ART_REDESIGN_2026-08-10.md`
+33. `docs/PATCH_NOTES_CELESTIAL_OPPOSING_ARCS_2026-08-10.md`
+34. `verification/FULL_VERIFICATION_2026-08-10_F51F2F7C.md`
 
 Read `docs/ARCHIVE_SUPERSEDED.md` only when historical reasoning is needed.
 
@@ -63,7 +66,9 @@ gameplay IDs; resolves sabotage immediately after the midpoint desk visit; and
 rolls back gameplay state and both random streams if Skip resolution throws.
 
 The current HTML has SHA-256
-`470F4146FBA177FD6B7062A0093DDCF7C2826B797FE9AE74317BD1D146050FF7`.
+`F51F2F7C7A11098FA7DABF5692767D14D14B75F45AFA9CADC6EB3DA96A141A46`.
+Hashes are taken over LF content, matching the repository and public package; a
+CRLF working copy produces a different value.
 It replaces the three speed buttons with one cycling 1x/2x/4x button and makes
 the new 1x equal to the previous 2x presentation pace. It also replaces
 Endless with Continue Run, autosaves committed state, restores prepared
@@ -104,9 +109,11 @@ space, and cannot change Workday outcomes or Skip behavior.
 
 Clock Out enters Home through a sunset and door-opening presentation. Outings
 fade to their story and back to the room; End Day uses sunrise to return to the
-office. The sun and moon follow the same complete east-to-west five-stage arc
-without crossing. The sun leads at sunset, and the moon leads at sunrise.
-Automated and reduced-motion paths bypass presentation timing without changing
+office. The sun and moon share one east-to-west arc but never occupy the same
+stretch of it. The departing body completes the western half and drops below
+that edge while the arriving body enters from the opposite eastern edge and
+climbs to the vacated resting position, so the two are always on opposite sides
+of the sky. Automated and reduced-motion paths bypass presentation timing without changing
 state. Sleep writes a stable `nightResolved` checkpoint before sunrise so a
 refresh cannot repeat recovery.
 
@@ -173,14 +180,21 @@ Lights-Out legality gate. A simulated Home or Deal purchase therefore receives
 only automatic sleep unless Moodboard or another explicit exception permits
 both.
 
-The current hash passes smoke, all 24 persistence checks, all eight advanced
-interaction groups, and the full verifier's no-simulation player-surface and
-responsive layout checks. Current focused evidence is recorded in
-`verification/HOME_GROUNDING_CELESTIAL_SEQUENCE_2026-08-10.md`; preceding
-dated reports remain exact evidence for their named hashes.
+The current exhaustive report is
+`verification/FULL_VERIFICATION_2026-08-10_F51F2F7C.md`. On the current hash the
+verified rows are JavaScript syntax, standalone load, required IDs, zero
+external requests, zero page and console errors, roster and structural
+invariants, the player-surface sweep at three viewports, Home room geometry
+across all four tiers, both phase transitions, and reduced-motion bypass.
+
+The smoke, persistence, advanced interaction, full-verifier runtime audit, and
+every simulation row are Blocked on the current hash: they require Python and
+Playwright, which were unavailable on the machine used for that pass. They are
+neither passing nor failing. Their last real results belong to hash
+`470F4146` and do not transfer.
 
 The preceding exhaustive implementation report is
-`verification/FULL_VERIFICATION_2026-08-10_0A8F74E5.md`. It finds no current
+`verification/FULL_VERIFICATION_2026-08-10_0A8F74E5.md`. It finds no
 implementation blocker on its named hash while preserving structural simulation, formal
 screen-reader execution, exhaustive picker and save-boundary traversal,
 rapid-input fuzzing, and memory profiling as Not Run or Blocked.

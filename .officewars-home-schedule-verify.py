@@ -479,28 +479,32 @@ def main():
                       return found;
                     }"""
                 )
+                # The sun and moon share one east-to-west arc but never occupy
+                # the same stretch of it. One body plays the ascending eastern
+                # half while the other plays the descending western half.
                 expected_arc_directions = {
-                    "ow-sun-set": "translate(76vw",
-                    "ow-moon-rise": "translate(76vw",
-                    "ow-sun-rise": "translate(76vw",
-                    "ow-moon-set": "translate(76vw",
+                    "ow-arc-ascend": "translate(26vw",
+                    "ow-arc-descend": "translate(74vw",
                 }
                 if any(
-                    transition_arcs.get(key, {}).get("steps", 0) < 5
+                    transition_arcs.get(key, {}).get("steps", 0) < 3
                     or expected not in transition_arcs.get(key, {}).get("text", "")
-                    or "100vw" not in transition_arcs.get(key, {}).get("text", "")
                     for key, expected in expected_arc_directions.items()
                 ):
                     failures.append(f"{name}:transition-arcs:{transition_arcs}")
-                arc_paths = [
-                    transition_arcs.get(key, {}).get("transforms", [])
-                    for key in [
-                        "ow-sun-set", "ow-moon-rise",
-                        "ow-sun-rise", "ow-moon-set"
-                    ]
-                ]
-                if not arc_paths or any(path != arc_paths[0] for path in arc_paths[1:]):
-                    failures.append(f"{name}:transition-paths:{arc_paths}")
+                if "100vw" not in transition_arcs.get("ow-arc-descend", {}).get(
+                    "text", ""
+                ):
+                    failures.append(f"{name}:transition-arc-exit:{transition_arcs}")
+                ascend = transition_arcs.get("ow-arc-ascend", {}).get("transforms", [])
+                descend = transition_arcs.get("ow-arc-descend", {}).get(
+                    "transforms", []
+                )
+                # The two halves must be cut from one path and join at the apex,
+                # so the arriving body lands exactly where the departing body
+                # started.
+                if not ascend or not descend or ascend[-1] != descend[0]:
+                    failures.append(f"{name}:transition-apex:{ascend}:{descend}")
                 transition_phasing = page.evaluate(
                     """() => {
                       const root = document.getElementById('phase-transition');
@@ -514,6 +518,7 @@ def main():
                         );
                         return {
                           sun: {
+                            name:sun.animationName,
                             delay:sun.animationDelay,
                             duration:sun.animationDuration,
                             timing:sun.animationTimingFunction,
@@ -521,6 +526,7 @@ def main():
                             right:sun.right
                           },
                           moon: {
+                            name:moon.animationName,
                             delay:moon.animationDelay,
                             duration:moon.animationDuration,
                             timing:moon.animationTimingFunction,
@@ -539,11 +545,17 @@ def main():
                 )
                 sunset_phase = transition_phasing["sunset"]
                 sunrise_phase = transition_phasing["sunrise"]
+                # Opposing halves, not a shared path with a delay offset: every
+                # delay is zero and the two bodies always run opposite halves.
                 if not (
-                    sunset_phase["sun"]["delay"].startswith("-0.22")
+                    sunset_phase["sun"]["delay"] == "0s"
                     and sunset_phase["moon"]["delay"] == "0s"
-                    and sunrise_phase["moon"]["delay"].startswith("-0.2")
                     and sunrise_phase["sun"]["delay"] == "0s"
+                    and sunrise_phase["moon"]["delay"] == "0s"
+                    and sunset_phase["sun"]["name"] == "ow-arc-descend"
+                    and sunset_phase["moon"]["name"] == "ow-arc-ascend"
+                    and sunrise_phase["sun"]["name"] == "ow-arc-ascend"
+                    and sunrise_phase["moon"]["name"] == "ow-arc-descend"
                     and sunset_phase["sun"]["duration"]
                     == sunset_phase["moon"]["duration"]
                     and sunrise_phase["sun"]["duration"]

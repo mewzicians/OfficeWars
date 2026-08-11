@@ -71,7 +71,8 @@ percent, five base workday actions, and rank pairs
 Checked on 2026-08-10:
 
 - `officewarsautobattler.html` has SHA-256
-  `470F4146FBA177FD6B7062A0093DDCF7C2826B797FE9AE74317BD1D146050FF7`.
+  `F51F2F7C7A11098FA7DABF5692767D14D14B75F45AFA9CADC6EB3DA96A141A46`.
+  Hashes are taken over LF content, matching the repository and public package.
 - Options provides a persistent master-volume slider and tutorial reset. The
   reset schedules the thirteen-step orientation for the next New Run; How to
   Play no longer duplicates that command.
@@ -110,10 +111,11 @@ Checked on 2026-08-10:
   absent from the gameplay cast and consumes no gameplay RNG.
 - Clock Out enters Home through sunset and a door-opening presentation.
   Outings fade to their story and back to the room; End Day uses sunrise to
-  return to the office. The sun and moon travel east-to-west on the same
-  full-width five-stage arc without crossing. The sun leads at sunset; the
-  moon leads at sunrise. Reduced-motion and automated paths skip animation
-  timing without changing state.
+  return to the office. The sun and moon share one east-to-west arc but never
+  occupy the same stretch of it: the departing body finishes the western half
+  and drops below that edge while the arriving body enters from the opposite
+  eastern edge and climbs to the vacated resting position. Reduced-motion and
+  automated paths skip animation timing without changing state.
 - Schedule decisions use action-icon trackers with source badges and
   highlighted differences instead of prose lists. Multiple schedules appear
   as stacked selectable timelines.
