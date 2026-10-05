@@ -1,118 +1,100 @@
 <div align="center">
 
-# 🏢 OfficeWars
+# OfficeWars
 
 **Do the work. Dodge the drama. Survive the org chart.**
 
 A single-file office autobattler about climbing seven corporate floors before
-stress, deadlines, or your rival end the run.
+Stress, the fixed workweek, or Chad ends the run.
 
-[**▶ Play OfficeWars**](https://mewzicians.github.io/OfficeWars/officewarsautobattler.html) ·
-[Project status](docs/PROJECT_STATUS.md) ·
-[Feedback policy](CONTRIBUTING.md) ·
-[Playtest guide](docs/PLAYTEST_GUIDE.md)
+This repository is distributed under the play-only terms in `LICENSE`.
+
+[**Play OfficeWars**](https://mewzicians.github.io/OfficeWars/officewarsautobattler.html)
+· [Project status](docs/PROJECT_STATUS.md)
+· [Contributing](CONTRIBUTING.md)
+· [Playtest guide](docs/PLAYTEST_GUIDE.md)
 
 ![No build step](https://img.shields.io/badge/build-none-42d392?style=flat-square)
 ![Single-file game](https://img.shields.io/badge/game-single--file_HTML-53c7e8?style=flat-square)
 ![Status: playtest](https://img.shields.io/badge/status-playtest-f0a020?style=flat-square)
-![License: play only](https://img.shields.io/badge/license-play_only-e74c3c?style=flat-square)
 
 </div>
 
 ![OfficeWars workday](docs/assets/officewars-workday.png)
 
-> **Current status:** OfficeWars is a playable development candidate, not a
-> finished balance release. Readability, run persistence, first-day
-> orientation, the Options screen, and the highest-risk interactions pass the
-> current verification suites. The headless Night policy now obeys the same
-> purchase-versus-Lights-Out rule as players; fresh balance simulation and
-> human playtesting remain the next release gates.
+> **Current status:** Workday and Office Politics Phases 1-5, Home Phase 1,
+> and the Guided Intern first-play tutorial are implemented. Seven Homes, 28
+> available items, nine sets, the Home planner, and Active Buffs are live.
+> Cash Jar and Galactic code is present but gated off.
 
 ## Play
 
 No installation, server, account, or build step is required.
 
-1. [Play in your browser](https://mewzicians.github.io/OfficeWars/officewarsautobattler.html),
-   or download this repository and open `officewarsautobattler.html`.
-2. Pick a task, shape your build, and let the workday play out.
-3. Continue an active run after refreshing or leaving the page.
-4. On a phone, rotate to landscape.
+1. Open `officewarsautobattler.html` locally or play through GitHub Pages.
+2. Choose a task and its fixed manager response.
+3. Watch at 1x/2x/4x or use hidden Skip.
+4. Resolve political decisions, manage Night, and climb toward the CEO.
+5. On a phone, rotate to landscape.
 
-## Play-Only Permission
+## The Workday
 
-OfficeWars is **not open-source software**. Copyright © 2026 mewzicians. All
-rights are reserved.
-
-You may access, download, and run an unmodified copy solely as necessary to
-play OfficeWars for personal, non-commercial use. No permission is granted to
-modify, adapt, redistribute, republish, host, sell, sublicense, create
-derivative works from, or reuse the game's code, writing, art, design, or other
-assets.
-
-Public source visibility does not grant additional permission. See
-[LICENSE](LICENSE) for the complete terms.
-
-## The Workday, Weaponized
-
-| Phase | Your move |
+| Phase | Player decision |
 |---|---|
-| **Morning** | Choose from Coding, Management, Design, Sales, and Operations task cards. |
-| **Workday** | Watch, accelerate, or skip a deterministic office simulation without changing its outcome. |
-| **Night** | Use the Night Planner or your room to spend, recover, build relationships, and improve your Home. |
-| **Weekend** | Navigate mystery events, casino detours, and the consequences of your week. |
-| **Promotion** | Claim Skill career paths and carry your build toward the CEO's Office. |
+| Morning | Choose a primary task and fixed Comply, Resist, or Negotiate package |
+| Workday | Watch cinematic actions and commit irreversible political choices |
+| Skip / Reload | Continue through unanswered events without revealing future state |
+| Clock Out | Review manager, project, coworker, Chad, boss, and economy results |
+| Night | Use Home, Outings, Deals, recovery, and office politics |
+| Weekend | Resolve mystery or Casino events before Promotion Review |
+| Promotion | Claim Skill paths and build the next floor |
 
-Build around 50 ordinary task cards, fixed rarities, 14 visible career paths,
-a hidden Campaign path, eight managers, an eight-cubicle office, and unusual
-win conditions such as Brand Strategy Campaigns and Closing's multi-day Sales
-Cycle.
-
-<table>
-  <tr>
-    <td width="50%">
-      <img src="docs/assets/officewars-morning.png" alt="Choosing a morning task in OfficeWars">
-      <br><sub><b>Choose your work.</b> Every card advances a Skill and nudges the run in a different direction.</sub>
-    </td>
-    <td width="50%">
-      <img src="docs/assets/officewars-landscape.png" alt="OfficeWars running in phone landscape mode">
-      <br><sub><b>Take it with you.</b> The full office fits into a landscape phone layout.</sub>
-    </td>
-  </tr>
-</table>
+The implemented game includes fifty ordinary task cards, fixed rarities,
+dynamic six-person floor rosters, Relationship and standing, managers,
+Project Briefs, Boss Schemes, Alumni, Favors, Closing, Brand Strategy, and
+versioned deterministic saves. Night also includes the seven-level Home
+ladder, three-offer shop, item inventory and sets, deposits, sales, and
+Prepare Tomorrow.
 
 ## Project Status
 
-Structural balance remains open. Prior simulation telemetry is historical
-because it predates the corrected purchase-versus-Lights-Out policy. Read
-[Project Status](docs/PROJECT_STATUS.md) before changing balance.
+The implemented candidate is:
+
+- SHA-256:
+  `816A35B40CD4F36C6CF25CD766BF6FEB94A1D77D885C56947B73F6C4228F52AA`
+- size: `1,730,955` bytes
+- active-run schema: `9`
+
+Cash Jar and Galactic activation, 1,000-paired-seed Home tuning, formal
+screen-reader execution, and human evidence remain Not Run. Read
+[Project Status](docs/PROJECT_STATUS.md) before changing balance or status.
 
 ## Project Map
 
 | Path | Purpose |
 |---|---|
-| `officewarsautobattler.html` | Implemented game and source of runtime truth |
-| `docs/GAME_DESIGN.md` | Stable product and gameplay model |
-| `docs/BALANCE_LEDGER.md` | Implemented values, locked decisions, and open questions |
-| `docs/HANDOFF.md` | Current implementation and verification handoff |
-| `docs/WORKING_WITH_AGENTS.md` | How humans and AI agents collaborate on this project |
-| `AGENTS.md` | Repository instructions for coding agents |
-| `verification/` | Dated verification evidence |
-| `.officewars-*.py` | Optional Playwright verification and simulation tools |
+| `officewarsautobattler.html` | Implemented game and runtime truth |
+| `docs/GAME_DESIGN.md` | Stable gameplay model |
+| `docs/BALANCE_LEDGER.md` | Exact values and decision status |
+| `docs/HANDOFF.md` | Current implementation handoff |
+| `docs/PROJECT_STATUS.md` | Candidate and evidence boundary |
+| `docs/WORKING_WITH_AGENTS.md` | Human/agent collaboration method |
+| `docs/ARCHIVE_SUPERSEDED.md` | Inactive history index |
+| `verification/` | Dated evidence and active checklist |
+| `AGENTS.md` | Repository instructions |
+| `AUTOMATION_POLICY.md` | Visible automation and chud convention |
 
-Historical ideas are not active requirements. Use
-[`docs/ARCHIVE_SUPERSEDED.md`](docs/ARCHIVE_SUPERSEDED.md) only when the reason
-behind an old direction matters.
+Historical ideas are not active requirements. Dated reports remain evidence
+for the exact snapshot they name.
 
-## Feedback
+## Contributing
 
-Bug reports, balance observations, and playtest feedback are welcome through
-GitHub Issues. Start with the [feedback policy](CONTRIBUTING.md). Balance
-reports should include the affected floor, build, failure mode, and evidence.
-A measured outlier is a reason to investigate, not an automatic nerf.
+Read [CONTRIBUTING.md](CONTRIBUTING.md). Separate implementation facts, Locked
+design, Draft tuning, Open questions, and Recovery Required content.
 
-The repository does not accept unsolicited code or asset contributions.
-Submitting feedback does not grant permission to modify or redistribute
-OfficeWars.
+AI-assisted work must follow
+[Working With Agents](docs/WORKING_WITH_AGENTS.md), verify implementation
+claims against the HTML, and obey [Automation Policy](AUTOMATION_POLICY.md).
 
 ## Optional Verification
 
@@ -120,13 +102,17 @@ OfficeWars.
 python -m pip install -r requirements-dev.txt
 python -m playwright install chromium
 python .officewars-smoke-run.py
-python .officewars-home-schedule-verify.py
-python .officewars-task-keyword-verify.py
-python .officewars-night-planner-verify.py
 python .officewars-persistence-verify.py
+python .officewars-phase1-verify.py
+python .officewars-phase2-verify.py
+python .officewars-phase3-verify.py
+python .officewars-phase4-verify.py
+python .officewars-phase5-verify.py
+python .officewars-home-phase1-verify.py
+python .officewars-home-schedule-verify.py
+python .officewars-night-planner-verify.py
 python .officewars-advanced-verify.py
 python .officewars-full-verify.py 0
 ```
 
-The game itself has no Python dependency. These commands are only for
-development and verification.
+The game itself has no Python dependency.

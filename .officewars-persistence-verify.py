@@ -1,6 +1,7 @@
 import json
 import os
 import sys
+import time
 from pathlib import Path
 
 
@@ -12,15 +13,31 @@ from playwright.sync_api import sync_playwright
 
 ROOT = Path(__file__).resolve().parent
 GAME_URL = (ROOT / "officewarsautobattler.html").as_uri()
+
+# Interface captures are browsable reference material, so they land in the
+# private vault section when that section exists and in a gitignored local
+# folder otherwise. A public clone has no Wiki/ and takes the fallback. Names
+# carry no leading dot, because Obsidian hides dotfiles and a hidden reference
+# image cannot be browsed.
+CAPTURES = ROOT / "Wiki/Projects/OfficeWars/Visual Reference"
+if not CAPTURES.is_dir():
+    CAPTURES = ROOT / "artifacts/visual-reference"
+CAPTURES.mkdir(parents=True, exist_ok=True)
 READY = "document.documentElement.dataset.officewarsReady === 'true'"
 META_COMPLETE = json.dumps(
     {
-        "schema": 5,
+        "schema": 6,
         "tutorial": {
             "completed": True,
-            "nextStep": 13,
+            "nextStep": 0,
             "skipped": False,
             "replayRequested": False,
+        },
+        "guidedIntern": {
+            "required": True,
+            "completed": True,
+            "replayRequested": False,
+            "version": 1,
         },
     }
 )
@@ -139,12 +156,15 @@ def main():
             corrupt = page.evaluate(
                 """() => ({
                   removed: localStorage.getItem(OW_SAVE_KEY) === null,
-                  hidden: document.getElementById('menu-continue').hidden
+                  hidden: document.getElementById('menu-continue').hidden,
+                  notice: document.getElementById('menu-save-notice').textContent
                 })"""
             )
             expect(
                 "corrupt-save-discarded",
-                corrupt["removed"] and corrupt["hidden"],
+                corrupt["removed"]
+                and corrupt["hidden"]
+                and "could not be restored" in corrupt["notice"],
                 corrupt,
             )
             page.evaluate(
@@ -155,12 +175,17 @@ def main():
             incompatible = page.evaluate(
                 """() => ({
                   removed: localStorage.getItem(OW_SAVE_KEY) === null,
-                  hidden: document.getElementById('menu-continue').hidden
+                  hidden: document.getElementById('menu-continue').hidden,
+                  notice: document.getElementById('menu-save-notice').textContent
                 })"""
             )
             expect(
                 "incompatible-save-discarded",
-                incompatible["removed"] and incompatible["hidden"],
+                incompatible["removed"]
+                and incompatible["hidden"]
+                and "retired Home system" in incompatible["notice"]
+                and "Settings and tutorial progress were preserved"
+                in incompatible["notice"],
                 incompatible,
             )
 
@@ -292,14 +317,105 @@ def main():
             )
 
             def restore_prepared():
+                page.reload(wait_until="load", timeout=30_000)
+                page.wait_for_function(READY, timeout=15_000)
                 page.evaluate(
                     "(raw) => localStorage.setItem(OW_SAVE_KEY, raw)", prepared_raw
                 )
+                continuation = page.evaluate(
+                    """async () => {
+                      const before = JSON.parse(
+                        localStorage.getItem(OW_SAVE_KEY)
+                      ).checkpoint;
+                      await owContinueRun();
+                      return {
+                        before,
+                        phase: R.phase,
+                        checkpoint: JSON.parse(
+                          localStorage.getItem(OW_SAVE_KEY)
+                        ).checkpoint,
+                        review: R.politicsReview &&
+                          R.politicsReview.status,
+                        headless: owHeadlessRunActive
+                      };
+                    }"""
+                )
+                if continuation["phase"] != "politicsReview":
+                    raise AssertionError(
+                        "Prepared restore bypassed Review: "
+                        + json.dumps(continuation)
+                    )
+                wait_phase(page, "politicsReview")
+                review = page.evaluate(
+                    """() => {
+                      const save = JSON.parse(localStorage.getItem(OW_SAVE_KEY));
+                      return {
+                        phase: R.phase,
+                        checkpoint: save.checkpoint,
+                        pages: R.politicsReview.pages.length,
+                        pageTypes: R.politicsReview.pages.map(
+                          page => page.type
+                        ),
+                        choices: Object.keys(R.politicsReview.choices).length,
+                        confirmed: R.politicsReview.confirmed,
+                        settled: R.politicsReview.settled,
+                        codingXp: R.familyXP.Coding,
+                        plays: R.today.taskPlays.length,
+                        focusId: document.activeElement && document.activeElement.id
+                      };
+                    }"""
+                )
+                page.evaluate(
+                    """async () => {
+                      owAutoStagePoliticsReview(
+                        R.politicsReview,
+                        'skilled'
+                      );
+                      await owConfirmPoliticsReview();
+                    }"""
+                )
+                wait_phase(page, "politicsReviewSettled")
+                settled_raw = page.evaluate(
+                    "localStorage.getItem(OW_SAVE_KEY)"
+                )
+                settled_before = page.evaluate(
+                    """() => ({
+                      phase:R.phase,
+                      project:R.project.progress,
+                      stress:R.stress,
+                      cash:R.cash,
+                      results:R.politicsReview.results.length,
+                      checkpoint:JSON.parse(
+                        localStorage.getItem(OW_SAVE_KEY)
+                      ).checkpoint
+                    })"""
+                )
                 page.reload(wait_until="load", timeout=30_000)
                 page.wait_for_function(READY, timeout=15_000)
+                page.evaluate(
+                    "(raw) => localStorage.setItem(OW_SAVE_KEY, raw)",
+                    settled_raw,
+                )
                 page.evaluate("owContinueRun()")
+                wait_phase(page, "politicsReviewSettled")
+                settled_after = page.evaluate(
+                    """() => ({
+                      phase:R.phase,
+                      project:R.project.progress,
+                      stress:R.stress,
+                      cash:R.cash,
+                      results:R.politicsReview.results.length,
+                      checkpoint:JSON.parse(
+                        localStorage.getItem(OW_SAVE_KEY)
+                      ).checkpoint,
+                      resultsVisible:document.getElementById(
+                        'overlay-panel'
+                      ).textContent.includes('OFFICE POLITICS · RESULTS')
+                    })"""
+                )
+                page.evaluate("owContinueFromPoliticsReview()")
                 wait_phase(page, "clockOut")
-                return page.evaluate(
+                clock_out = page.evaluate(
                     """() => ({
                       project: R.project.progress,
                       stress: R.stress,
@@ -311,21 +427,215 @@ def main():
                       gameplayRng: RNG.snapshot().gameplayState
                     })"""
                 )
+                return {
+                    "review": review,
+                    "settledRestore": {
+                        "before": settled_before,
+                        "after": settled_after,
+                    },
+                    "clockOut": clock_out,
+                }
 
-            first_restore = restore_prepared()
-            second_restore = restore_prepared()
+            def restore_cinematic_prepared():
+                page.reload(wait_until="load", timeout=30_000)
+                page.wait_for_function(READY, timeout=15_000)
+                page.evaluate(
+                    "(raw) => localStorage.setItem(OW_SAVE_KEY, raw)",
+                    prepared_raw,
+                )
+                page.evaluate("owContinueRun()")
+                wait_phase(page, "workdayPoliticalQueue")
+                page.wait_for_function(
+                    """() => document.activeElement&&
+                      document.activeElement.classList.contains(
+                        'cinematic-choice'
+                      )""",
+                    timeout=5_000,
+                )
+                queue = page.evaluate(
+                    """() => {
+                      const save=JSON.parse(localStorage.getItem(OW_SAVE_KEY));
+                      const current=R.today.politicalEvents.find(
+                        event=>event.id===R.workdayPresentation.currentEventId
+                      );
+                      return{
+                        phase:R.phase,
+                        checkpoint:save.checkpoint,
+                        currentEvent:current&&current.id,
+                        snapshot:current&&current.snapshot,
+                        eventCount:R.today.politicalEvents.length,
+                        answered:R.today.politicalEvents.filter(
+                          event=>!!event.choice
+                        ).length,
+                        path:R.workdayPresentation.path,
+                        codingXp:R.familyXP.Coding,
+                        plays:R.today.taskPlays.length,
+                        focus:R.workdayPresentation.focus
+                      };
+                    }"""
+                )
+
+                deadline = time.time() + 20
+                while time.time() < deadline:
+                    phase = page.evaluate("R.phase")
+                    if phase == "politicsResultsReel":
+                        break
+                    if phase in (
+                        "workdayPoliticalChoice",
+                        "workdayPoliticalQueue",
+                    ):
+                        page.evaluate(
+                            """() => {
+                              const event=R.today.politicalEvents.find(
+                                item=>item.id===
+                                  R.workdayPresentation.currentEventId
+                              );
+                              const option=event&&event.page.options.find(
+                                item=>
+                                  (event.type==='project'&&
+                                    item.label==='Safe')||
+                                  (event.type==='relationship'&&
+                                    item.label==='Take No Action')||
+                                  (event.type==='boss'&&
+                                    item.label==='Counter')
+                              )||event&&event.page.options.find(
+                                item=>R.cash>=Number(
+                                  item.cost&&item.cost.cash||0
+                                )
+                              );
+                              if(event&&option){
+                                owChooseCinematicPolitics(event.id,option.id);
+                              }
+                            }"""
+                        )
+                    time.sleep(0.01)
+                if page.evaluate("R.phase") != "politicsResultsReel":
+                    raise AssertionError(
+                        "Cinematic restore did not reach results reel"
+                    )
+
+                page.evaluate("owRevealCinematicResult(0)")
+                reel_raw = page.evaluate("localStorage.getItem(OW_SAVE_KEY)")
+                reel_before = page.evaluate(
+                    """() => ({
+                      phase:R.phase,
+                      project:R.project.progress,
+                      stress:R.stress,
+                      cash:R.cash,
+                      results:owCinematicResultRows().length,
+                      reelIndex:R.workdayPresentation.reelIndex,
+                      revealed:document.querySelectorAll(
+                        '.cinematic-result-card.revealed'
+                      ).length,
+                      checkpoint:JSON.parse(
+                        localStorage.getItem(OW_SAVE_KEY)
+                      ).checkpoint
+                    })"""
+                )
+                page.reload(wait_until="load", timeout=30_000)
+                page.wait_for_function(READY, timeout=15_000)
+                page.evaluate(
+                    "(raw) => localStorage.setItem(OW_SAVE_KEY, raw)",
+                    reel_raw,
+                )
+                page.evaluate("owContinueRun()")
+                wait_phase(page, "politicsResultsReel")
+                reel_after = page.evaluate(
+                    """() => ({
+                      phase:R.phase,
+                      project:R.project.progress,
+                      stress:R.stress,
+                      cash:R.cash,
+                      results:owCinematicResultRows().length,
+                      reelIndex:R.workdayPresentation.reelIndex,
+                      revealed:document.querySelectorAll(
+                        '.cinematic-result-card.revealed'
+                      ).length,
+                      checkpoint:JSON.parse(
+                        localStorage.getItem(OW_SAVE_KEY)
+                      ).checkpoint
+                    })"""
+                )
+                page.evaluate(
+                    """() => {
+                      owRevealAllCinematicResults();
+                      owFinishCinematicResults();
+                    }"""
+                )
+                wait_phase(page, "clockOut")
+                clock_out = page.evaluate(
+                    """() => ({
+                      project:R.project.progress,
+                      stress:R.stress,
+                      cash:R.cash,
+                      rival:R.rival.progress,
+                      daysLeft:R.daysLeft,
+                      codingXp:R.familyXP.Coding,
+                      plays:R.today.taskPlays.length,
+                      gameplayRng:RNG.snapshot().gameplayState
+                    })"""
+                )
+                return {
+                    "queue": queue,
+                    "reelRestore": {
+                        "before": reel_before,
+                        "after": reel_after,
+                    },
+                    "clockOut": clock_out,
+                }
+
+            first_restore = restore_cinematic_prepared()
+            second_restore = restore_cinematic_prepared()
+            expect(
+                "prepared-workday-restores-hidden-queue",
+                first_restore["queue"]["phase"] == "workdayPoliticalQueue"
+                and first_restore["queue"]["checkpoint"]
+                == "workdayPoliticalQueue"
+                and first_restore["queue"]["eventCount"] >= 1
+                and first_restore["queue"]["answered"] == 0
+                and first_restore["queue"]["path"] == "reload-skip"
+                and first_restore["queue"]["snapshot"] is not None,
+                first_restore["queue"],
+            )
             expect(
                 "prepared-workday-deterministic-restore",
                 first_restore == second_restore,
                 {"first": first_restore, "second": second_restore},
             )
             expect(
+                "results-reel-restores-once",
+                first_restore["reelRestore"]["before"]["project"]
+                == first_restore["reelRestore"]["after"]["project"]
+                and first_restore["reelRestore"]["before"]["stress"]
+                == first_restore["reelRestore"]["after"]["stress"]
+                and first_restore["reelRestore"]["before"]["cash"]
+                == first_restore["reelRestore"]["after"]["cash"]
+                and first_restore["reelRestore"]["before"]["results"]
+                == first_restore["reelRestore"]["after"]["results"]
+                and first_restore["reelRestore"]["before"]["reelIndex"]
+                == first_restore["reelRestore"]["after"]["reelIndex"]
+                and first_restore["reelRestore"]["after"]["revealed"] >= 1
+                and first_restore["reelRestore"]["after"]["checkpoint"]
+                == "politicsResultsReel",
+                first_restore["reelRestore"],
+            )
+            expect(
                 "task-reward-not-duplicated",
-                first_restore["codingXp"] == 1 and first_restore["plays"] == 1,
+                first_restore["queue"]["codingXp"] == 1
+                and first_restore["queue"]["plays"] == 1
+                and first_restore["clockOut"]["codingXp"] == 1
+                and first_restore["clockOut"]["plays"] == 1,
                 first_restore,
             )
 
             page.evaluate("afterDayResults()")
+            page.evaluate(
+                """() => {
+                  if (R.phase === 'roleVote') {
+                    owContinueRoleVote();
+                  }
+                }"""
+            )
             wait_phase(page, "night")
             page.evaluate(
                 """() => {
@@ -697,248 +1007,299 @@ def main():
             expect("casino-restore-no-page-errors", not casino_errors, casino_errors)
             casino_context.close()
 
-            tutorial_context = browser.new_context(
-                viewport={"width": 1440, "height": 900}
+            guided_context = browser.new_context(
+                viewport={"width": 1440, "height": 900},
+                reduced_motion="reduce",
             )
-            tutorial_page = tutorial_context.new_page()
-            tutorial_errors = []
-            tutorial_page.on(
-                "pageerror", lambda error: tutorial_errors.append(str(error))
+            guided_page = guided_context.new_page()
+            guided_errors = []
+            guided_page.on(
+                "pageerror", lambda error: guided_errors.append(str(error))
             )
-            load(tutorial_page, clear=True, tutorial_complete=False)
-            tutorial_page.evaluate("owRequestNewRun()")
-            tutorial_page.wait_for_function(
-                "document.getElementById('tutorial-callout').classList.contains('active')"
+            load(guided_page, clear=True, tutorial_complete=False)
+            guided_page.evaluate("owRequestNewRun()")
+            guided_page.wait_for_function(
+                """() => R && R.phase === 'floorIntro' &&
+                  R.runMode === 'guidedIntern' &&
+                  document.querySelector('.guided-intro-briefing') &&
+                  !document.getElementById('guided-coordinator')
+                    .classList.contains('active')"""
             )
-            tutorial_page.screenshot(
-                path=ROOT / ".visual-tutorial-desktop.png", full_page=True
+            opening = guided_page.evaluate(
+                """() => ({
+                  phase:R.phase,
+                  floor:R.floor,
+                  manager:R.manager.id,
+                  runMode:R.runMode,
+                  lesson:owGuidedState().lessonId,
+                  openingStep:owGuidedState().openingStep,
+                  visited:[...owGuidedState().visitedLessons],
+                  checkpoint:owReadActiveSave().checkpoint,
+                  lessons:OfficeWarsTest.guidedInternLessons().length,
+                  copy:document.getElementById(
+                    'guided-intro-instruction'
+                  )?.textContent,
+                  buttons:[...document.querySelectorAll(
+                    '.guided-intro-actions button'
+                  )].map(button=>button.textContent.trim()),
+                  clockCount:[...document.querySelectorAll('button')]
+                    .filter(button=>
+                      button.textContent.trim()==='CLOCK IN'
+                    ).length,
+                  verticalOverflow:
+                    document.getElementById('overlay-panel').scrollHeight-
+                    document.getElementById('overlay-panel').clientHeight,
+                  overflowY:getComputedStyle(
+                    document.getElementById('overlay-panel')
+                  ).overflowY,
+                  dockActive:document.getElementById(
+                    'guided-coordinator'
+                  ).classList.contains('active'),
+                  oldUi:[
+                    'tutorial-callout',
+                    'tutorial-backdrop',
+                    'tutorial-focus-ring'
+                  ].some(id=>document.getElementById(id))
+                })"""
             )
-            titles = [
-                tutorial_page.text_content("#tutorial-title"),
-            ]
-            tutorial_page.click("#tutorial-next")
-            tutorial_page.set_viewport_size({"width": 844, "height": 390})
-            tutorial_page.evaluate("owClockIn()")
-            wait_phase(tutorial_page, "morning")
-            tutorial_page.wait_for_function(
-                "document.getElementById('tutorial-callout').classList.contains('active')"
-            )
-            tutorial_page.screenshot(
-                path=ROOT / ".visual-tutorial-landscape.png", full_page=True
-            )
-            titles.append(tutorial_page.text_content("#tutorial-title"))
-            tutorial_page.click("#tutorial-next")
-            tutorial_page.wait_for_function(
-                "document.getElementById('tutorial-callout').classList.contains('active')"
-            )
-            titles.append(tutorial_page.text_content("#tutorial-title"))
-            tutorial_page.click("#tutorial-next")
-            tutorial_page.evaluate(
-                """() => {
-                  const task = TASK_BY_ID.get('regressionTests');
-                  R.morningCards = [{
-                    task,
-                    rarity: task.rarity,
-                    source: 'offer',
-                    modifiers: {}
-                  }];
-                  renderMorningUI();
-                  selectMorning(0, 'offer');
-                  void confirmMorning();
-                }"""
-            )
-            try:
-                tutorial_page.wait_for_function(
-                    "document.getElementById('tutorial-title').textContent === 'KNOW THE WORKDAY'",
-                    timeout=30_000,
-                )
-            except Exception:
-                print(
-                    "WORKDAY_TUTORIAL_TIMEOUT="
-                    + json.dumps(
-                        tutorial_page.evaluate(
-                            """() => ({
-                              phase: R && R.phase,
-                              title: document.getElementById('tutorial-title')
-                                .textContent,
-                              active: document.getElementById('tutorial-callout')
-                                .classList.contains('active'),
-                              choice: owChoiceState && owChoiceState.title,
-                              overlay: document.getElementById('overlay-panel')
-                                .innerText.slice(0, 300),
-                              meta: OfficeWarsTest.meta()
-                            })"""
-                        )
-                    )
-                )
-                raise
-            titles.append(tutorial_page.text_content("#tutorial-title"))
-            tutorial_page.click("#tutorial-next")
-            wait_phase(tutorial_page, "workday")
-            tutorial_page.evaluate("skipWorkDay()")
-            tutorial_page.wait_for_function(
-                "document.getElementById('tutorial-title').textContent === 'REVIEW CLOCK OUT'",
-                timeout=30_000,
-            )
-            titles.append(tutorial_page.text_content("#tutorial-title"))
-            tutorial_page.click("#tutorial-next")
-            tutorial_page.evaluate("afterDayResults()")
-            wait_phase(tutorial_page, "night")
-            night_targets = []
-            for expected_title, expected_tab, expected_target in [
-                ("SHOP FOR YOUR HOME", "home", ".night-home-desk"),
-                ("MAKE AN OUTING", "outings", ".night-outings-desk"),
-                (
-                    "CHECK RELATIONSHIPS",
-                    "relationships",
-                    ".night-relationships-desk",
-                ),
-                ("RECOVER AND FINISH", "home", ".night-footer"),
-            ]:
-                tutorial_page.wait_for_function(
-                    "(title) => document.getElementById('tutorial-title').textContent === title",
-                    arg=expected_title,
-                    timeout=30_000,
-                )
-                titles.append(tutorial_page.text_content("#tutorial-title"))
-                night_targets.append(
-                    tutorial_page.evaluate(
-                        """({tab, target}) => (
-                          nightState.tab === tab &&
-                          owOrientationTarget?.matches(target)
-                        )""",
-                        {"tab": expected_tab, "target": expected_target},
-                    )
-                )
-                tutorial_page.click("#tutorial-next")
-
-            tutorial_page.evaluate(
-                """() => {
-                  R.phase = 'promotionReview';
-                  R.familyXP.Coding = 3;
-                  void owRunPromotionReview();
-                }"""
-            )
-            for expected_title in ["CHOOSE A CAREER PATH", "GROW THE PATH"]:
-                tutorial_page.wait_for_function(
-                    "(title) => document.getElementById('tutorial-title').textContent === title",
-                    arg=expected_title,
-                    timeout=30_000,
-                )
-                titles.append(tutorial_page.text_content("#tutorial-title"))
-                tutorial_page.click("#tutorial-next")
-            tutorial_page.evaluate(
-                """() => {
-                  owToggleChoice(0);
-                  owConfirmChoice();
-                }"""
-            )
-            tutorial_page.wait_for_function(
-                "owChoiceState && owChoiceState.title === 'Promotion Review'",
-                timeout=30_000,
-            )
-            tutorial_page.evaluate("owChooseImmediate(0)")
-            tutorial_page.wait_for_function(
-                "R.phase === 'floorIntro' && R.floor === 2",
-                timeout=30_000,
-            )
-            tutorial_page.evaluate(
-                """() => {
-                  R.floor = 2;
-                  nextFloor();
-                }"""
-            )
-            tutorial_page.wait_for_function(
-                "document.getElementById('tutorial-title').textContent === 'BOSS FLOOR'",
-                timeout=30_000,
-            )
-            titles.append(tutorial_page.text_content("#tutorial-title"))
-            tutorial_page.click("#tutorial-next")
-            tutorial_page.evaluate(
-                """() => {
-                  R.capstone = {
-                    family: 'Coding',
-                    path: 'cleanCode',
-                    status: 'active'
-                  };
-                  updateHUD();
-                  void owMaybeShowOrientationForPhase(R.phase);
-                }"""
-            )
-            tutorial_page.wait_for_function(
-                "document.getElementById('tutorial-title').textContent === 'ONE CAPSTONE'",
-                timeout=30_000,
-            )
-            titles.append(tutorial_page.text_content("#tutorial-title"))
-            tutorial_page.click("#tutorial-next")
-            tutorial_meta = tutorial_page.evaluate("OfficeWarsTest.meta()")
-            expected_titles = [
-                "THE PROJECT RACE",
-                "CHOOSE TODAY'S TASK",
-                "BUILD YOUR RESUME",
-                "KNOW THE WORKDAY",
-                "REVIEW CLOCK OUT",
-                "SHOP FOR YOUR HOME",
-                "MAKE AN OUTING",
-                "CHECK RELATIONSHIPS",
-                "RECOVER AND FINISH",
-                "CHOOSE A CAREER PATH",
-                "GROW THE PATH",
-                "BOSS FLOOR",
-                "ONE CAPSTONE",
-            ]
             expect(
-                "full-journey-orientation",
-                titles == expected_titles
-                and all(night_targets)
-                and tutorial_meta["tutorial"]["completed"]
-                and tutorial_meta["tutorial"]["nextStep"] == 13,
-                {
-                    "titles": titles,
-                    "nightTargets": night_targets,
-                    "meta": tutorial_meta,
+                "guided-first-profile-routing",
+                opening == {
+                    "phase": "floorIntro",
+                    "floor": 1,
+                    "manager": "guidedCoordinator",
+                    "runMode": "guidedIntern",
+                    "lesson": "GI-OPEN",
+                    "openingStep": 0,
+                    "visited": ["GI-OPEN"],
+                    "checkpoint": "floorIntro",
+                    "lessons": 18,
+                    "copy": (
+                        "This bar tracks Project Progress (PP) for the floor. "
+                        "Each morning you choose a daily task; tasks and "
+                        "Workday events add PP here."
+                    ),
+                    "buttons": ["BACK", "NEXT"],
+                    "clockCount": 0,
+                    "verticalOverflow": 0,
+                    "overflowY": "hidden",
+                    "dockActive": False,
+                    "oldUi": False,
                 },
+                opening,
+            )
+            guided_page.screenshot(
+                path=CAPTURES / "visual-guided-intern-desktop.png",
+                full_page=True,
+            )
+            inert = guided_page.evaluate(
+                """async () => {
+                  const before={
+                    project:R.project.progress,
+                    cash:R.cash,
+                    gameplay:RNG.gameplayState,
+                    lesson:owGuidedState().lessonId
+                  };
+                  const moved=owGuidedOpeningMove(1);
+                  await new Promise(resolve=>setTimeout(resolve,100));
+                  const step=OfficeWarsTest.guidedInternOpeningSteps()[
+                    owGuidedState().openingStep
+                  ];
+                  const target=document.querySelector(step.target);
+                  return {
+                    before,
+                    after:{
+                      project:R.project.progress,
+                      cash:R.cash,
+                      gameplay:RNG.gameplayState,
+                      lesson:owGuidedState().lessonId
+                    },
+                    moved,
+                    openingStep:owGuidedState().openingStep,
+                    focused:document.activeElement?.id,
+                    highlighted:target?.classList.contains('is-spotlight'),
+                    buttons:[...document.querySelectorAll(
+                      '.guided-intro-actions button'
+                    )].map(button=>button.textContent.trim())
+                  };
+                }"""
+            )
+            expect(
+                "guided-instruction-controls-are-inert",
+                inert["before"] == inert["after"]
+                and inert["moved"]
+                and inert["openingStep"] == 1
+                and inert["focused"] == "guided-intro-next"
+                and inert["highlighted"]
+                and inert["buttons"] == ["BACK", "NEXT"],
+                inert,
+            )
+            guided_page.wait_for_timeout(250)
+            expect(
+                "guided-no-instructional-auto-advance",
+                guided_page.evaluate(
+                    """() => ({
+                      lesson:owGuidedState().lessonId,
+                      openingStep:owGuidedState().openingStep
+                    })"""
+                )
+                == {"lesson": "GI-OPEN", "openingStep": 1},
+                guided_page.evaluate("OfficeWarsTest.guidedInternState()"),
             )
 
-            tutorial_page.evaluate(
+            guided_page.reload(wait_until="load", timeout=30_000)
+            guided_page.wait_for_function(READY, timeout=15_000)
+            guided_page.evaluate("void owContinueRun()")
+            guided_page.wait_for_function(
+                """() => R && R.phase === 'floorIntro' &&
+                  R.runMode === 'guidedIntern' &&
+                  owGuidedState().lessonId === 'GI-OPEN' &&
+                  document.querySelector('.guided-intro-briefing') &&
+                  !document.getElementById('guided-coordinator')
+                    .classList.contains('active')"""
+            )
+            restored = guided_page.evaluate(
+                """() => ({
+                  phase:R.phase,
+                  runMode:R.runMode,
+                  lesson:owGuidedState().lessonId,
+                  openingStep:owGuidedState().openingStep,
+                  visited:[...owGuidedState().visitedLessons],
+                  checkpoint:owReadActiveSave().checkpoint
+                })"""
+            )
+            expect(
+                "guided-opening-reloads",
+                restored == {
+                    "phase": "floorIntro",
+                    "runMode": "guidedIntern",
+                    "lesson": "GI-OPEN",
+                    "openingStep": 1,
+                    "visited": ["GI-OPEN"],
+                    "checkpoint": "floorIntro",
+                },
+                restored,
+            )
+            guided_page.set_viewport_size({"width": 844, "height": 390})
+            guided_page.screenshot(
+                path=CAPTURES / "visual-guided-intern-landscape.png",
+                full_page=True,
+            )
+            landscape = guided_page.evaluate(
                 """() => {
-                  localStorage.removeItem(OW_SAVE_KEY);
-                  localStorage.removeItem(OW_META_KEY);
-                  owReturnToMainMenu();
-                  owRequestNewRun();
+                  const panel=document.querySelector(
+                    '.guided-intro-briefing'
+                  );
+                  const overlayPanel=document.getElementById(
+                    'overlay-panel'
+                  );
+                  const step=OfficeWarsTest.guidedInternOpeningSteps()[
+                    owGuidedState().openingStep
+                  ];
+                  const target=document.querySelector(step.target);
+                  const rect=panel.getBoundingClientRect();
+                  const targetRect=target.getBoundingClientRect();
+                  return {
+                    visible:!!panel&&rect.width>0&&rect.height>0,
+                    left:rect.left,
+                    right:rect.right,
+                    top:rect.top,
+                    bottom:rect.bottom,
+                    width:innerWidth,
+                    height:innerHeight,
+                    highlighted:target.classList.contains('is-spotlight'),
+                    overlap:!(
+                      rect.right<=targetRect.left||
+                      rect.left>=targetRect.right||
+                      rect.bottom<=targetRect.top||
+                      rect.top>=targetRect.bottom
+                    ),
+                    verticalOverflow:
+                      overlayPanel.scrollHeight-
+                      overlayPanel.clientHeight,
+                    overflowY:getComputedStyle(
+                      overlayPanel
+                    ).overflowY
+                  };
                 }"""
             )
-            tutorial_page.wait_for_function(
-                "document.getElementById('tutorial-callout').classList.contains('active')"
-            )
-            tutorial_page.click(
-                "#tutorial-callout button",
-                position={"x": 10, "y": 10},
-            )
-            skipped_meta = tutorial_page.evaluate("OfficeWarsTest.meta()")
             expect(
-                "orientation-skip-persists",
-                skipped_meta["tutorial"]["completed"]
-                and skipped_meta["tutorial"]["skipped"],
-                skipped_meta,
+                "guided-landscape-fits-viewport",
+                landscape["visible"]
+                and landscape["left"] >= -1
+                and landscape["right"] <= landscape["width"] + 1
+                and landscape["top"] >= -1
+                and landscape["bottom"] <= landscape["height"] + 1
+                and landscape["highlighted"]
+                and not landscape["overlap"]
+                and landscape["verticalOverflow"] == 0
+                and landscape["overflowY"] == "hidden",
+                landscape,
             )
-            replay_meta = tutorial_page.evaluate(
+
+            guided_page.evaluate(
                 """() => {
-                  owRequestOrientationReplay();
-                  return OfficeWarsTest.meta();
+                  const meta=owReadMeta();
+                  meta.guidedIntern.completed=true;
+                  meta.guidedIntern.replayRequested=false;
+                  owWriteMeta(meta);
+                  showOptions();
                 }"""
             )
-            expect(
-                "orientation-replay-reset",
-                not replay_meta["tutorial"]["completed"]
-                and replay_meta["tutorial"]["nextStep"] == 0
-                and replay_meta["tutorial"]["replayRequested"],
-                replay_meta,
+            guided_page.click("#options-guided-replay")
+            guided_page.wait_for_function(
+                """() => document.getElementById('menu-dialog')
+                  .classList.contains('open')"""
+            )
+            replay_warning = guided_page.evaluate(
+                """() => ({
+                  replayRequested:owReadMeta().guidedIntern.replayRequested,
+                  dialog:document.getElementById('menu-dialog-title').textContent,
+                  confirm:document.getElementById('menu-dialog-confirm').textContent
+                })"""
             )
             expect(
-                "tutorial-no-page-errors", not tutorial_errors, tutorial_errors
+                "guided-replay-uses-replacement-warning",
+                replay_warning["replayRequested"]
+                and replay_warning["dialog"] == "REPLACE ACTIVE RUN?"
+                and replay_warning["confirm"] == "START NEW RUN",
+                replay_warning,
             )
-            tutorial_context.close()
+            guided_page.click("#menu-dialog-confirm")
+            guided_page.wait_for_function(
+                """() => R && R.phase === 'floorIntro' &&
+                  R.runMode === 'guidedIntern' &&
+                  owGuidedState().lessonId === 'GI-OPEN' &&
+                  document.querySelector('.guided-intro-briefing')"""
+            )
+            fresh_replay = guided_page.evaluate(
+                """() => ({
+                  runMode:R.runMode,
+                  lesson:owGuidedState().lessonId,
+                  openingStep:owGuidedState().openingStep,
+                  visited:[...owGuidedState().visitedLessons],
+                  replayRequested:owReadMeta().guidedIntern.replayRequested,
+                  oldUi:!!document.getElementById('tutorial-callout')
+                })"""
+            )
+            expect(
+                "guided-replay-starts-fresh-real-run",
+                fresh_replay == {
+                    "runMode": "guidedIntern",
+                    "lesson": "GI-OPEN",
+                    "openingStep": 0,
+                    "visited": ["GI-OPEN"],
+                    "replayRequested": False,
+                    "oldUi": False,
+                },
+                fresh_replay,
+            )
+            expect(
+                "guided-persistence-no-page-errors",
+                not guided_errors,
+                guided_errors,
+            )
+            guided_context.close()
         finally:
             browser.close()
 

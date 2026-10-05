@@ -1,0 +1,1493 @@
+{
+  "wav": "prototypes/officewars-boss-a-stable-render.wav",
+  "sample_rate": 24000,
+  "frames": 2194286,
+  "duration_seconds": 91.428583,
+  "step_seconds": 0.178571429,
+  "mark_tolerance_ms": 60,
+  "global_delta": {
+    "mean": 0.00033528,
+    "median": 0.00012207,
+    "p99_9": 0.0043335,
+    "p99_99": 0.00576782,
+    "max": 0.19897461
+  },
+  "marks": [
+    {
+      "mark_seconds": 4.0,
+      "peak_seconds": 3.9505,
+      "peak_offset_ms": -49.5,
+      "peak_delta": 0.00497437,
+      "delta_percentile": 99.96477,
+      "local_rms": 0.0097034,
+      "nearest_step": 22,
+      "step_offset_ms": 21.929,
+      "movement": "Challenge Issued",
+      "events": [
+        "brush-snare",
+        "bass",
+        "paper-brush",
+        "short-chord",
+        "identity-lead"
+      ]
+    },
+    {
+      "mark_seconds": 10.3,
+      "peak_seconds": 10.285208,
+      "peak_offset_ms": -14.792,
+      "peak_delta": 0.00314331,
+      "delta_percentile": 99.37055,
+      "local_rms": 0.00263478,
+      "nearest_step": 58,
+      "step_offset_ms": -71.935,
+      "movement": "Challenge Issued",
+      "events": [
+        "brush-snare"
+      ]
+    },
+    {
+      "mark_seconds": 17.6,
+      "peak_seconds": 17.541042,
+      "peak_offset_ms": -58.958,
+      "peak_delta": 0.00485229,
+      "delta_percentile": 99.9563,
+      "local_rms": 0.00581683,
+      "nearest_step": 98,
+      "step_offset_ms": 41.042,
+      "movement": "Challenge Issued",
+      "events": [
+        "brush-snare",
+        "identity-lead"
+      ]
+    },
+    {
+      "mark_seconds": 33.4,
+      "peak_seconds": 33.410958,
+      "peak_offset_ms": 10.958,
+      "peak_delta": 0.00588989,
+      "delta_percentile": 99.9918,
+      "local_rms": 0.00863449,
+      "nearest_step": 187,
+      "step_offset_ms": 18.101,
+      "movement": "Pressure Mounts",
+      "events": [
+        "bass",
+        "identity-lead"
+      ]
+    },
+    {
+      "mark_seconds": 47.1,
+      "peak_seconds": 47.155083,
+      "peak_offset_ms": 55.083,
+      "peak_delta": 0.00418091,
+      "delta_percentile": 99.8739,
+      "local_rms": 0.01040986,
+      "nearest_step": 264,
+      "step_offset_ms": 12.226,
+      "movement": "Open Floor",
+      "events": [
+        "kick",
+        "bass",
+        "sustained-chord",
+        "undercurrent",
+        "identity-lead"
+      ]
+    },
+    {
+      "mark_seconds": 60.3,
+      "peak_seconds": 60.2545,
+      "peak_offset_ms": -45.5,
+      "peak_delta": 0.00323486,
+      "delta_percentile": 99.45837,
+      "local_rms": 0.0049412,
+      "nearest_step": 337,
+      "step_offset_ms": 75.929,
+      "movement": "Open Floor",
+      "events": [
+        "bass",
+        "paper-brush"
+      ]
+    },
+    {
+      "mark_seconds": 62.8,
+      "peak_seconds": 62.857208,
+      "peak_offset_ms": 57.208,
+      "peak_delta": 0.00262451,
+      "delta_percentile": 98.62361,
+      "local_rms": 0.00789181,
+      "nearest_step": 352,
+      "step_offset_ms": 0.065,
+      "movement": "Open Floor",
+      "events": [
+        "kick",
+        "bass",
+        "sustained-chord",
+        "undercurrent",
+        "identity-lead"
+      ]
+    },
+    {
+      "mark_seconds": 64.0,
+      "peak_seconds": 63.947042,
+      "peak_offset_ms": -52.958,
+      "peak_delta": 0.00622559,
+      "delta_percentile": 99.99503,
+      "local_rms": 0.00997319,
+      "nearest_step": 358,
+      "step_offset_ms": 18.47,
+      "movement": "Open Floor",
+      "events": [
+        "brush-snare",
+        "bass",
+        "paper-brush",
+        "short-chord",
+        "identity-lead"
+      ]
+    },
+    {
+      "mark_seconds": 67.8,
+      "peak_seconds": 67.857208,
+      "peak_offset_ms": 57.208,
+      "peak_delta": 0.00268555,
+      "delta_percentile": 98.73271,
+      "local_rms": 0.00865848,
+      "nearest_step": 380,
+      "step_offset_ms": 0.065,
+      "movement": "Open Floor",
+      "events": [
+        "kick",
+        "bass",
+        "identity-lead"
+      ]
+    },
+    {
+      "mark_seconds": 68.5,
+      "peak_seconds": 68.443208,
+      "peak_offset_ms": -56.792,
+      "peak_delta": 0.00012207,
+      "delta_percentile": 51.51822,
+      "local_rms": 9.411e-05,
+      "nearest_step": 383,
+      "step_offset_ms": 50.351,
+      "movement": "Open Floor",
+      "events": [
+        "paper-brush"
+      ]
+    },
+    {
+      "mark_seconds": 70.2,
+      "peak_seconds": 70.183083,
+      "peak_offset_ms": -16.917,
+      "peak_delta": 0.18856812,
+      "delta_percentile": 99.99982,
+      "local_rms": 0.00933742,
+      "nearest_step": 393,
+      "step_offset_ms": 4.512,
+      "movement": "Claim the Floor",
+      "events": [
+        "bass",
+        "paper-brush"
+      ]
+    },
+    {
+      "mark_seconds": 72.8,
+      "peak_seconds": 72.857208,
+      "peak_offset_ms": 57.208,
+      "peak_delta": 0.00231934,
+      "delta_percentile": 98.00072,
+      "local_rms": 0.00713308,
+      "nearest_step": 408,
+      "step_offset_ms": 0.065,
+      "movement": "Claim the Floor",
+      "events": [
+        "kick",
+        "bass",
+        "sustained-chord",
+        "undercurrent",
+        "identity-lead"
+      ]
+    },
+    {
+      "mark_seconds": 73.4,
+      "peak_seconds": 73.360167,
+      "peak_offset_ms": -39.833,
+      "peak_delta": 0.00280762,
+      "delta_percentile": 98.93314,
+      "local_rms": 0.00232075,
+      "nearest_step": 411,
+      "step_offset_ms": -32.69,
+      "movement": "Claim the Floor",
+      "events": [
+        "bass"
+      ]
+    },
+    {
+      "mark_seconds": 74.1,
+      "peak_seconds": 74.067125,
+      "peak_offset_ms": -32.875,
+      "peak_delta": 0.00268555,
+      "delta_percentile": 98.73271,
+      "local_rms": 0.00214711,
+      "nearest_step": 415,
+      "step_offset_ms": -40.018,
+      "movement": "Claim the Floor",
+      "events": [
+        "paper-brush"
+      ]
+    },
+    {
+      "mark_seconds": 75.2,
+      "peak_seconds": 75.183042,
+      "peak_offset_ms": -16.958,
+      "peak_delta": 0.18508911,
+      "delta_percentile": 99.99954,
+      "local_rms": 0.00712096,
+      "nearest_step": 421,
+      "step_offset_ms": 4.47,
+      "movement": "Claim the Floor",
+      "events": [
+        "paper-brush"
+      ]
+    },
+    {
+      "mark_seconds": 76.5,
+      "peak_seconds": 76.440292,
+      "peak_offset_ms": -59.708,
+      "peak_delta": 0.00567627,
+      "delta_percentile": 99.98883,
+      "local_rms": 0.01474379,
+      "nearest_step": 428,
+      "step_offset_ms": 11.72,
+      "movement": "Claim the Floor",
+      "events": [
+        "kick",
+        "bass",
+        "paper-brush"
+      ]
+    },
+    {
+      "mark_seconds": 77.7,
+      "peak_seconds": 77.683042,
+      "peak_offset_ms": -16.958,
+      "peak_delta": 0.18515015,
+      "delta_percentile": 99.99968,
+      "local_rms": 0.00854304,
+      "nearest_step": 435,
+      "step_offset_ms": 4.47,
+      "movement": "Claim the Floor",
+      "events": [
+        "bass",
+        "paper-brush"
+      ]
+    },
+    {
+      "mark_seconds": 78.4,
+      "peak_seconds": 78.40925,
+      "peak_offset_ms": 9.25,
+      "peak_delta": 0.00299072,
+      "delta_percentile": 99.19318,
+      "local_rms": 0.00083835,
+      "nearest_step": 439,
+      "step_offset_ms": 16.393,
+      "movement": "Claim the Floor",
+      "events": [
+        "paper-brush"
+      ]
+    },
+    {
+      "mark_seconds": 80.2,
+      "peak_seconds": 80.183042,
+      "peak_offset_ms": -16.958,
+      "peak_delta": 0.18508911,
+      "delta_percentile": 99.99954,
+      "local_rms": 0.00873456,
+      "nearest_step": 449,
+      "step_offset_ms": 4.47,
+      "movement": "Claim the Floor",
+      "events": [
+        "bass",
+        "paper-brush"
+      ]
+    },
+    {
+      "mark_seconds": 82.7,
+      "peak_seconds": 82.683042,
+      "peak_offset_ms": -16.958,
+      "peak_delta": 0.19897461,
+      "delta_percentile": 100.0,
+      "local_rms": 0.00819698,
+      "nearest_step": 463,
+      "step_offset_ms": 4.47,
+      "movement": "Claim the Floor",
+      "events": [
+        "paper-brush",
+        "callback-lead"
+      ]
+    },
+    {
+      "mark_seconds": 90.3,
+      "peak_seconds": 90.2515,
+      "peak_offset_ms": -48.5,
+      "peak_delta": 0.00100708,
+      "delta_percentile": 92.39019,
+      "local_rms": 0.00594648,
+      "nearest_step": 505,
+      "step_offset_ms": 72.929,
+      "movement": "Claim the Floor",
+      "events": [
+        "bass",
+        "paper-brush"
+      ]
+    }
+  ],
+  "event_summary": {
+    "brush-snare": {
+      "marks": 4,
+      "mean_peak_delta": 0.00479889
+    },
+    "bass": {
+      "marks": 14,
+      "mean_peak_delta": 0.0428881
+    },
+    "paper-brush": {
+      "marks": 13,
+      "mean_peak_delta": 0.07459905
+    },
+    "short-chord": {
+      "marks": 2,
+      "mean_peak_delta": 0.00559998
+    },
+    "identity-lead": {
+      "marks": 8,
+      "mean_peak_delta": 0.00421906
+    },
+    "kick": {
+      "marks": 5,
+      "mean_peak_delta": 0.00349732
+    },
+    "sustained-chord": {
+      "marks": 3,
+      "mean_peak_delta": 0.00304159
+    },
+    "undercurrent": {
+      "marks": 3,
+      "mean_peak_delta": 0.00304159
+    },
+    "callback-lead": {
+      "marks": 1,
+      "mean_peak_delta": 0.19897461
+    }
+  },
+  "global_peaks": [
+    {
+      "seconds": 82.683042,
+      "delta": 0.19897461,
+      "nearest_mark_seconds": 82.7,
+      "mark_distance_ms": 16.958,
+      "nearest_step": 463,
+      "movement": "Claim the Floor",
+      "events": [
+        "paper-brush",
+        "callback-lead"
+      ]
+    },
+    {
+      "seconds": 90.183083,
+      "delta": 0.19897461,
+      "nearest_mark_seconds": 90.3,
+      "mark_distance_ms": 116.917,
+      "nearest_step": 505,
+      "movement": "Claim the Floor",
+      "events": [
+        "bass",
+        "paper-brush"
+      ]
+    },
+    {
+      "seconds": 70.183083,
+      "delta": 0.18856812,
+      "nearest_mark_seconds": 70.2,
+      "mark_distance_ms": 16.917,
+      "nearest_step": 393,
+      "movement": "Claim the Floor",
+      "events": [
+        "bass",
+        "paper-brush"
+      ]
+    },
+    {
+      "seconds": 76.433042,
+      "delta": 0.18566895,
+      "nearest_mark_seconds": 76.5,
+      "mark_distance_ms": 66.958,
+      "nearest_step": 428,
+      "movement": "Claim the Floor",
+      "events": [
+        "kick",
+        "bass",
+        "paper-brush"
+      ]
+    },
+    {
+      "seconds": 72.683042,
+      "delta": 0.18515015,
+      "nearest_mark_seconds": 72.8,
+      "mark_distance_ms": 116.958,
+      "nearest_step": 407,
+      "movement": "Claim the Floor",
+      "events": [
+        "paper-brush"
+      ]
+    },
+    {
+      "seconds": 73.933083,
+      "delta": 0.18515015,
+      "nearest_mark_seconds": 74.1,
+      "mark_distance_ms": 166.917,
+      "nearest_step": 414,
+      "movement": "Claim the Floor",
+      "events": [
+        "brush-snare",
+        "bass",
+        "paper-brush",
+        "short-chord",
+        "identity-lead"
+      ]
+    },
+    {
+      "seconds": 77.683042,
+      "delta": 0.18515015,
+      "nearest_mark_seconds": 77.7,
+      "mark_distance_ms": 16.958,
+      "nearest_step": 435,
+      "movement": "Claim the Floor",
+      "events": [
+        "bass",
+        "paper-brush"
+      ]
+    },
+    {
+      "seconds": 75.183042,
+      "delta": 0.18508911,
+      "nearest_mark_seconds": 75.2,
+      "mark_distance_ms": 16.958,
+      "nearest_step": 421,
+      "movement": "Claim the Floor",
+      "events": [
+        "paper-brush"
+      ]
+    },
+    {
+      "seconds": 80.183042,
+      "delta": 0.18508911,
+      "nearest_mark_seconds": 80.2,
+      "mark_distance_ms": 16.958,
+      "nearest_step": 449,
+      "movement": "Claim the Floor",
+      "events": [
+        "bass",
+        "paper-brush"
+      ]
+    },
+    {
+      "seconds": 10.183042,
+      "delta": 0.1602478,
+      "nearest_mark_seconds": 10.3,
+      "mark_distance_ms": 116.958,
+      "nearest_step": 57,
+      "movement": "Challenge Issued",
+      "events": [
+        "bass",
+        "paper-brush"
+      ]
+    },
+    {
+      "seconds": 3.933042,
+      "delta": 0.15765381,
+      "nearest_mark_seconds": 4.0,
+      "mark_distance_ms": 66.958,
+      "nearest_step": 22,
+      "movement": "Challenge Issued",
+      "events": [
+        "brush-snare",
+        "bass",
+        "paper-brush",
+        "short-chord",
+        "identity-lead"
+      ]
+    },
+    {
+      "seconds": 33.216333,
+      "delta": 0.14178467,
+      "nearest_mark_seconds": 33.4,
+      "mark_distance_ms": 183.667,
+      "nearest_step": 186,
+      "movement": "Pressure Mounts",
+      "events": [
+        "brush-snare"
+      ]
+    },
+    {
+      "seconds": 73.216333,
+      "delta": 0.1416626,
+      "nearest_mark_seconds": 73.4,
+      "mark_distance_ms": 183.667,
+      "nearest_step": 410,
+      "movement": "Claim the Floor",
+      "events": [
+        "brush-snare",
+        "identity-lead"
+      ]
+    },
+    {
+      "seconds": 68.216292,
+      "delta": 0.1072998,
+      "nearest_mark_seconds": 68.5,
+      "mark_distance_ms": 283.708,
+      "nearest_step": 382,
+      "movement": "Open Floor",
+      "events": [
+        "brush-snare",
+        "bass",
+        "identity-lead"
+      ]
+    },
+    {
+      "seconds": 60.183083,
+      "delta": 0.08657837,
+      "nearest_mark_seconds": 60.3,
+      "mark_distance_ms": 116.917,
+      "nearest_step": 337,
+      "movement": "Open Floor",
+      "events": [
+        "bass",
+        "paper-brush"
+      ]
+    },
+    {
+      "seconds": 63.933042,
+      "delta": 0.08526611,
+      "nearest_mark_seconds": 64.0,
+      "mark_distance_ms": 66.958,
+      "nearest_step": 358,
+      "movement": "Open Floor",
+      "events": [
+        "brush-snare",
+        "bass",
+        "paper-brush",
+        "short-chord",
+        "identity-lead"
+      ]
+    },
+    {
+      "seconds": 62.683042,
+      "delta": 0.08496094,
+      "nearest_mark_seconds": 62.8,
+      "mark_distance_ms": 116.958,
+      "nearest_step": 351,
+      "movement": "Open Floor",
+      "events": [
+        "paper-brush"
+      ]
+    },
+    {
+      "seconds": 67.683042,
+      "delta": 0.08486938,
+      "nearest_mark_seconds": 67.8,
+      "mark_distance_ms": 116.958,
+      "nearest_step": 379,
+      "movement": "Open Floor",
+      "events": [
+        "bass",
+        "paper-brush"
+      ]
+    },
+    {
+      "seconds": 78.216333,
+      "delta": 0.08154297,
+      "nearest_mark_seconds": 78.4,
+      "mark_distance_ms": 183.667,
+      "nearest_step": 438,
+      "movement": "Claim the Floor",
+      "events": [
+        "kick",
+        "brush-snare",
+        "bass",
+        "short-chord"
+      ]
+    },
+    {
+      "seconds": 88.225667,
+      "delta": 0.00808716,
+      "nearest_mark_seconds": 90.3,
+      "mark_distance_ms": 2074.333,
+      "nearest_step": 494,
+      "movement": "Claim the Floor",
+      "events": [
+        "kick",
+        "brush-snare",
+        "bass",
+        "paper-brush",
+        "short-chord",
+        "identity-lead"
+      ]
+    },
+    {
+      "seconds": 41.086833,
+      "delta": 0.00772095,
+      "nearest_mark_seconds": 47.1,
+      "mark_distance_ms": 6013.167,
+      "nearest_step": 230,
+      "movement": "Pressure Mounts",
+      "events": [
+        "kick",
+        "brush-snare",
+        "bass",
+        "paper-brush",
+        "short-chord",
+        "identity-lead"
+      ]
+    },
+    {
+      "seconds": 43.943917,
+      "delta": 0.00762939,
+      "nearest_mark_seconds": 47.1,
+      "mark_distance_ms": 3156.083,
+      "nearest_step": 246,
+      "movement": "Pressure Mounts",
+      "events": [
+        "kick",
+        "brush-snare",
+        "bass",
+        "paper-brush",
+        "short-chord",
+        "identity-lead"
+      ]
+    },
+    {
+      "seconds": 88.242708,
+      "delta": 0.00762939,
+      "nearest_mark_seconds": 90.3,
+      "mark_distance_ms": 2057.292,
+      "nearest_step": 494,
+      "movement": "Claim the Floor",
+      "events": [
+        "kick",
+        "brush-snare",
+        "bass",
+        "paper-brush",
+        "short-chord",
+        "identity-lead"
+      ]
+    },
+    {
+      "seconds": 42.508958,
+      "delta": 0.00747681,
+      "nearest_mark_seconds": 47.1,
+      "mark_distance_ms": 4591.042,
+      "nearest_step": 238,
+      "movement": "Pressure Mounts",
+      "events": [
+        "kick",
+        "brush-snare",
+        "bass",
+        "short-chord",
+        "identity-lead"
+      ]
+    },
+    {
+      "seconds": 21.07825,
+      "delta": 0.00732422,
+      "nearest_mark_seconds": 17.6,
+      "mark_distance_ms": 3478.25,
+      "nearest_step": 118,
+      "movement": "Challenge Issued",
+      "events": [
+        "kick",
+        "brush-snare",
+        "bass",
+        "paper-brush",
+        "short-chord",
+        "identity-lead"
+      ]
+    },
+    {
+      "seconds": 41.095917,
+      "delta": 0.00732422,
+      "nearest_mark_seconds": 47.1,
+      "mark_distance_ms": 6004.083,
+      "nearest_step": 230,
+      "movement": "Pressure Mounts",
+      "events": [
+        "kick",
+        "brush-snare",
+        "bass",
+        "paper-brush",
+        "short-chord",
+        "identity-lead"
+      ]
+    },
+    {
+      "seconds": 18.223375,
+      "delta": 0.00717163,
+      "nearest_mark_seconds": 17.6,
+      "mark_distance_ms": 623.375,
+      "nearest_step": 102,
+      "movement": "Challenge Issued",
+      "events": [
+        "kick",
+        "brush-snare",
+        "bass",
+        "paper-brush",
+        "short-chord",
+        "identity-lead"
+      ]
+    },
+    {
+      "seconds": 86.438583,
+      "delta": 0.00717163,
+      "nearest_mark_seconds": 82.7,
+      "mark_distance_ms": 3738.583,
+      "nearest_step": 484,
+      "movement": "Claim the Floor",
+      "events": [
+        "kick",
+        "bass",
+        "identity-lead"
+      ]
+    },
+    {
+      "seconds": 19.305125,
+      "delta": 0.00714111,
+      "nearest_mark_seconds": 17.6,
+      "mark_distance_ms": 1705.125,
+      "nearest_step": 108,
+      "movement": "Challenge Issued",
+      "events": [
+        "kick",
+        "bass",
+        "paper-brush",
+        "identity-lead"
+      ]
+    },
+    {
+      "seconds": 76.795208,
+      "delta": 0.00714111,
+      "nearest_mark_seconds": 76.5,
+      "mark_distance_ms": 295.208,
+      "nearest_step": 430,
+      "movement": "Claim the Floor",
+      "events": [
+        "kick",
+        "brush-snare",
+        "bass",
+        "paper-brush",
+        "short-chord",
+        "identity-lead"
+      ]
+    },
+    {
+      "seconds": 86.794042,
+      "delta": 0.00704956,
+      "nearest_mark_seconds": 90.3,
+      "mark_distance_ms": 3505.958,
+      "nearest_step": 486,
+      "movement": "Claim the Floor",
+      "events": [
+        "kick",
+        "brush-snare",
+        "bass",
+        "short-chord",
+        "identity-lead"
+      ]
+    },
+    {
+      "seconds": 41.801375,
+      "delta": 0.00698853,
+      "nearest_mark_seconds": 47.1,
+      "mark_distance_ms": 5298.625,
+      "nearest_step": 234,
+      "movement": "Pressure Mounts",
+      "events": [
+        "brush-snare",
+        "identity-lead"
+      ]
+    },
+    {
+      "seconds": 42.15325,
+      "delta": 0.00698853,
+      "nearest_mark_seconds": 47.1,
+      "mark_distance_ms": 4946.75,
+      "nearest_step": 236,
+      "movement": "Pressure Mounts",
+      "events": [
+        "kick",
+        "bass",
+        "paper-brush",
+        "identity-lead"
+      ]
+    },
+    {
+      "seconds": 42.5215,
+      "delta": 0.00695801,
+      "nearest_mark_seconds": 47.1,
+      "mark_distance_ms": 4578.5,
+      "nearest_step": 238,
+      "movement": "Pressure Mounts",
+      "events": [
+        "kick",
+        "brush-snare",
+        "bass",
+        "short-chord",
+        "identity-lead"
+      ]
+    },
+    {
+      "seconds": 31.085708,
+      "delta": 0.00692749,
+      "nearest_mark_seconds": 33.4,
+      "mark_distance_ms": 2314.292,
+      "nearest_step": 174,
+      "movement": "Pressure Mounts",
+      "events": [
+        "kick",
+        "brush-snare",
+        "bass",
+        "short-chord",
+        "identity-lead"
+      ]
+    },
+    {
+      "seconds": 77.507542,
+      "delta": 0.00689697,
+      "nearest_mark_seconds": 77.7,
+      "mark_distance_ms": 192.458,
+      "nearest_step": 434,
+      "movement": "Claim the Floor",
+      "events": [
+        "brush-snare",
+        "identity-lead"
+      ]
+    },
+    {
+      "seconds": 29.117458,
+      "delta": 0.00686646,
+      "nearest_mark_seconds": 33.4,
+      "mark_distance_ms": 4282.542,
+      "nearest_step": 163,
+      "movement": "Pressure Mounts",
+      "events": [
+        "bass",
+        "paper-brush",
+        "identity-lead"
+      ]
+    },
+    {
+      "seconds": 43.227833,
+      "delta": 0.00683594,
+      "nearest_mark_seconds": 47.1,
+      "mark_distance_ms": 3872.167,
+      "nearest_step": 242,
+      "movement": "Pressure Mounts",
+      "events": [
+        "brush-snare",
+        "identity-lead"
+      ]
+    },
+    {
+      "seconds": 41.07775,
+      "delta": 0.00680542,
+      "nearest_mark_seconds": 47.1,
+      "mark_distance_ms": 6022.25,
+      "nearest_step": 230,
+      "movement": "Pressure Mounts",
+      "events": [
+        "kick",
+        "brush-snare",
+        "bass",
+        "paper-brush",
+        "short-chord",
+        "identity-lead"
+      ]
+    },
+    {
+      "seconds": 85.72475,
+      "delta": 0.00668335,
+      "nearest_mark_seconds": 82.7,
+      "mark_distance_ms": 3024.75,
+      "nearest_step": 480,
+      "movement": "Claim the Floor",
+      "events": [
+        "kick",
+        "bass",
+        "sustained-chord",
+        "undercurrent",
+        "identity-lead"
+      ]
+    },
+    {
+      "seconds": 90.007042,
+      "delta": 0.00668335,
+      "nearest_mark_seconds": 90.3,
+      "mark_distance_ms": 292.958,
+      "nearest_step": 504,
+      "movement": "Claim the Floor",
+      "events": [
+        "kick",
+        "bass",
+        "sustained-chord",
+        "undercurrent",
+        "identity-lead"
+      ]
+    },
+    {
+      "seconds": 40.722125,
+      "delta": 0.00665283,
+      "nearest_mark_seconds": 47.1,
+      "mark_distance_ms": 6377.875,
+      "nearest_step": 228,
+      "movement": "Pressure Mounts",
+      "events": [
+        "kick",
+        "bass",
+        "identity-lead"
+      ]
+    },
+    {
+      "seconds": 87.872917,
+      "delta": 0.00662231,
+      "nearest_mark_seconds": 90.3,
+      "mark_distance_ms": 2427.083,
+      "nearest_step": 492,
+      "movement": "Claim the Floor",
+      "events": [
+        "kick",
+        "bass",
+        "paper-brush",
+        "identity-lead"
+      ]
+    },
+    {
+      "seconds": 13.938875,
+      "delta": 0.00656128,
+      "nearest_mark_seconds": 10.3,
+      "mark_distance_ms": 3638.875,
+      "nearest_step": 78,
+      "movement": "Challenge Issued",
+      "events": [
+        "brush-snare",
+        "bass",
+        "short-chord",
+        "identity-lead"
+      ]
+    },
+    {
+      "seconds": 11.078083,
+      "delta": 0.00653076,
+      "nearest_mark_seconds": 10.3,
+      "mark_distance_ms": 778.083,
+      "nearest_step": 62,
+      "movement": "Challenge Issued",
+      "events": [
+        "brush-snare",
+        "bass",
+        "short-chord",
+        "identity-lead"
+      ]
+    },
+    {
+      "seconds": 18.588625,
+      "delta": 0.00653076,
+      "nearest_mark_seconds": 17.6,
+      "mark_distance_ms": 988.625,
+      "nearest_step": 104,
+      "movement": "Challenge Issued",
+      "events": [
+        "kick",
+        "bass",
+        "sustained-chord",
+        "undercurrent",
+        "identity-lead"
+      ]
+    },
+    {
+      "seconds": 29.657708,
+      "delta": 0.00653076,
+      "nearest_mark_seconds": 33.4,
+      "mark_distance_ms": 3742.292,
+      "nearest_step": 166,
+      "movement": "Pressure Mounts",
+      "events": [
+        "kick",
+        "brush-snare",
+        "bass",
+        "paper-brush",
+        "short-chord",
+        "identity-lead"
+      ]
+    },
+    {
+      "seconds": 19.64925,
+      "delta": 0.00650024,
+      "nearest_mark_seconds": 17.6,
+      "mark_distance_ms": 2049.25,
+      "nearest_step": 110,
+      "movement": "Challenge Issued",
+      "events": [
+        "kick",
+        "brush-snare",
+        "bass",
+        "short-chord",
+        "identity-lead"
+      ]
+    },
+    {
+      "seconds": 87.886083,
+      "delta": 0.00650024,
+      "nearest_mark_seconds": 90.3,
+      "mark_distance_ms": 2413.917,
+      "nearest_step": 492,
+      "movement": "Claim the Floor",
+      "events": [
+        "kick",
+        "bass",
+        "paper-brush",
+        "identity-lead"
+      ]
+    },
+    {
+      "seconds": 18.936667,
+      "delta": 0.00646973,
+      "nearest_mark_seconds": 17.6,
+      "mark_distance_ms": 1336.667,
+      "nearest_step": 106,
+      "movement": "Challenge Issued",
+      "events": [
+        "brush-snare",
+        "identity-lead"
+      ]
+    },
+    {
+      "seconds": 33.958833,
+      "delta": 0.00643921,
+      "nearest_mark_seconds": 33.4,
+      "mark_distance_ms": 558.833,
+      "nearest_step": 190,
+      "movement": "Pressure Mounts",
+      "events": [
+        "kick",
+        "brush-snare",
+        "bass",
+        "short-chord",
+        "identity-lead"
+      ]
+    },
+    {
+      "seconds": 42.867375,
+      "delta": 0.00643921,
+      "nearest_mark_seconds": 47.1,
+      "mark_distance_ms": 4232.625,
+      "nearest_step": 240,
+      "movement": "Pressure Mounts",
+      "events": [
+        "kick",
+        "bass",
+        "sustained-chord",
+        "undercurrent",
+        "identity-lead"
+      ]
+    },
+    {
+      "seconds": 19.291958,
+      "delta": 0.00640869,
+      "nearest_mark_seconds": 17.6,
+      "mark_distance_ms": 1691.958,
+      "nearest_step": 108,
+      "movement": "Challenge Issued",
+      "events": [
+        "kick",
+        "bass",
+        "paper-brush",
+        "identity-lead"
+      ]
+    },
+    {
+      "seconds": 40.015833,
+      "delta": 0.00637817,
+      "nearest_mark_seconds": 33.4,
+      "mark_distance_ms": 6615.833,
+      "nearest_step": 224,
+      "movement": "Pressure Mounts",
+      "events": [
+        "kick",
+        "bass",
+        "sustained-chord",
+        "undercurrent",
+        "identity-lead"
+      ]
+    },
+    {
+      "seconds": 89.656458,
+      "delta": 0.00634766,
+      "nearest_mark_seconds": 90.3,
+      "mark_distance_ms": 643.542,
+      "nearest_step": 502,
+      "movement": "Claim the Floor",
+      "events": [
+        "kick",
+        "brush-snare",
+        "bass",
+        "short-chord",
+        "identity-lead"
+      ]
+    },
+    {
+      "seconds": 30.007667,
+      "delta": 0.00631714,
+      "nearest_mark_seconds": 33.4,
+      "mark_distance_ms": 3392.333,
+      "nearest_step": 168,
+      "movement": "Pressure Mounts",
+      "events": [
+        "kick",
+        "bass",
+        "sustained-chord",
+        "undercurrent",
+        "identity-lead"
+      ]
+    },
+    {
+      "seconds": 17.869375,
+      "delta": 0.00628662,
+      "nearest_mark_seconds": 17.6,
+      "mark_distance_ms": 269.375,
+      "nearest_step": 100,
+      "movement": "Challenge Issued",
+      "events": [
+        "kick",
+        "bass",
+        "identity-lead"
+      ]
+    },
+    {
+      "seconds": 23.946833,
+      "delta": 0.00628662,
+      "nearest_mark_seconds": 17.6,
+      "mark_distance_ms": 6346.833,
+      "nearest_step": 134,
+      "movement": "Pressure Mounts",
+      "events": [
+        "brush-snare",
+        "bass",
+        "paper-brush",
+        "short-chord",
+        "identity-lead"
+      ]
+    },
+    {
+      "seconds": 45.012667,
+      "delta": 0.00628662,
+      "nearest_mark_seconds": 47.1,
+      "mark_distance_ms": 2087.333,
+      "nearest_step": 252,
+      "movement": "Pressure Mounts",
+      "events": [
+        "kick",
+        "bass",
+        "paper-brush",
+        "identity-lead"
+      ]
+    },
+    {
+      "seconds": 31.437833,
+      "delta": 0.00622559,
+      "nearest_mark_seconds": 33.4,
+      "mark_distance_ms": 1962.167,
+      "nearest_step": 176,
+      "movement": "Pressure Mounts",
+      "events": [
+        "kick",
+        "bass",
+        "sustained-chord",
+        "undercurrent",
+        "identity-lead"
+      ]
+    },
+    {
+      "seconds": 63.947042,
+      "delta": 0.00622559,
+      "nearest_mark_seconds": 64.0,
+      "mark_distance_ms": 52.958,
+      "nearest_step": 358,
+      "movement": "Open Floor",
+      "events": [
+        "brush-snare",
+        "bass",
+        "paper-brush",
+        "short-chord",
+        "identity-lead"
+      ]
+    },
+    {
+      "seconds": 87.863792,
+      "delta": 0.00622559,
+      "nearest_mark_seconds": 90.3,
+      "mark_distance_ms": 2436.208,
+      "nearest_step": 492,
+      "movement": "Claim the Floor",
+      "events": [
+        "kick",
+        "bass",
+        "paper-brush",
+        "identity-lead"
+      ]
+    },
+    {
+      "seconds": 43.5875,
+      "delta": 0.00619507,
+      "nearest_mark_seconds": 47.1,
+      "mark_distance_ms": 3512.5,
+      "nearest_step": 244,
+      "movement": "Pressure Mounts",
+      "events": [
+        "kick",
+        "bass",
+        "identity-lead"
+      ]
+    },
+    {
+      "seconds": 87.156542,
+      "delta": 0.00616455,
+      "nearest_mark_seconds": 90.3,
+      "mark_distance_ms": 3143.458,
+      "nearest_step": 488,
+      "movement": "Claim the Floor",
+      "events": [
+        "kick",
+        "bass",
+        "sustained-chord",
+        "undercurrent",
+        "identity-lead"
+      ]
+    },
+    {
+      "seconds": 43.23675,
+      "delta": 0.00613403,
+      "nearest_mark_seconds": 47.1,
+      "mark_distance_ms": 3863.25,
+      "nearest_step": 242,
+      "movement": "Pressure Mounts",
+      "events": [
+        "brush-snare",
+        "identity-lead"
+      ]
+    },
+    {
+      "seconds": 77.15525,
+      "delta": 0.00613403,
+      "nearest_mark_seconds": 77.7,
+      "mark_distance_ms": 544.75,
+      "nearest_step": 432,
+      "movement": "Claim the Floor",
+      "events": [
+        "kick",
+        "bass",
+        "sustained-chord",
+        "undercurrent",
+        "identity-lead"
+      ]
+    },
+    {
+      "seconds": 78.047833,
+      "delta": 0.00613403,
+      "nearest_mark_seconds": 77.7,
+      "mark_distance_ms": 347.833,
+      "nearest_step": 437,
+      "movement": "Claim the Floor",
+      "events": [
+        "paper-brush",
+        "identity-lead"
+      ]
+    },
+    {
+      "seconds": 18.246125,
+      "delta": 0.00610352,
+      "nearest_mark_seconds": 17.6,
+      "mark_distance_ms": 646.125,
+      "nearest_step": 102,
+      "movement": "Challenge Issued",
+      "events": [
+        "kick",
+        "brush-snare",
+        "bass",
+        "paper-brush",
+        "short-chord",
+        "identity-lead"
+      ]
+    },
+    {
+      "seconds": 40.731083,
+      "delta": 0.00610352,
+      "nearest_mark_seconds": 47.1,
+      "mark_distance_ms": 6368.917,
+      "nearest_step": 228,
+      "movement": "Pressure Mounts",
+      "events": [
+        "kick",
+        "bass",
+        "identity-lead"
+      ]
+    },
+    {
+      "seconds": 41.439125,
+      "delta": 0.006073,
+      "nearest_mark_seconds": 47.1,
+      "mark_distance_ms": 5660.875,
+      "nearest_step": 232,
+      "movement": "Pressure Mounts",
+      "events": [
+        "kick",
+        "bass",
+        "sustained-chord",
+        "undercurrent",
+        "identity-lead"
+      ]
+    },
+    {
+      "seconds": 76.2585,
+      "delta": 0.006073,
+      "nearest_mark_seconds": 76.5,
+      "mark_distance_ms": 241.5,
+      "nearest_step": 427,
+      "movement": "Claim the Floor",
+      "events": [
+        "bass",
+        "identity-lead"
+      ]
+    },
+    {
+      "seconds": 87.506667,
+      "delta": 0.006073,
+      "nearest_mark_seconds": 90.3,
+      "mark_distance_ms": 2793.333,
+      "nearest_step": 490,
+      "movement": "Claim the Floor",
+      "events": [
+        "brush-snare",
+        "identity-lead"
+      ]
+    },
+    {
+      "seconds": 87.528667,
+      "delta": 0.006073,
+      "nearest_mark_seconds": 90.3,
+      "mark_distance_ms": 2771.333,
+      "nearest_step": 490,
+      "movement": "Claim the Floor",
+      "events": [
+        "brush-snare",
+        "identity-lead"
+      ]
+    },
+    {
+      "seconds": 89.667958,
+      "delta": 0.006073,
+      "nearest_mark_seconds": 90.3,
+      "mark_distance_ms": 632.042,
+      "nearest_step": 502,
+      "movement": "Claim the Floor",
+      "events": [
+        "kick",
+        "brush-snare",
+        "bass",
+        "short-chord",
+        "identity-lead"
+      ]
+    },
+    {
+      "seconds": 90.017167,
+      "delta": 0.006073,
+      "nearest_mark_seconds": 90.3,
+      "mark_distance_ms": 282.833,
+      "nearest_step": 504,
+      "movement": "Claim the Floor",
+      "events": [
+        "kick",
+        "bass",
+        "sustained-chord",
+        "undercurrent",
+        "identity-lead"
+      ]
+    },
+    {
+      "seconds": 17.528917,
+      "delta": 0.00604248,
+      "nearest_mark_seconds": 17.6,
+      "mark_distance_ms": 71.083,
+      "nearest_step": 98,
+      "movement": "Challenge Issued",
+      "events": [
+        "brush-snare",
+        "identity-lead"
+      ]
+    },
+    {
+      "seconds": 18.578417,
+      "delta": 0.00604248,
+      "nearest_mark_seconds": 17.6,
+      "mark_distance_ms": 978.417,
+      "nearest_step": 104,
+      "movement": "Challenge Issued",
+      "events": [
+        "kick",
+        "bass",
+        "sustained-chord",
+        "undercurrent",
+        "identity-lead"
+      ]
+    },
+    {
+      "seconds": 42.166417,
+      "delta": 0.00604248,
+      "nearest_mark_seconds": 47.1,
+      "mark_distance_ms": 4933.583,
+      "nearest_step": 236,
+      "movement": "Pressure Mounts",
+      "events": [
+        "kick",
+        "bass",
+        "paper-brush",
+        "identity-lead"
+      ]
+    },
+    {
+      "seconds": 74.839167,
+      "delta": 0.00604248,
+      "nearest_mark_seconds": 75.2,
+      "mark_distance_ms": 360.833,
+      "nearest_step": 419,
+      "movement": "Claim the Floor",
+      "events": [
+        "bass",
+        "paper-brush",
+        "identity-lead"
+      ]
+    },
+    {
+      "seconds": 79.655958,
+      "delta": 0.00604248,
+      "nearest_mark_seconds": 80.2,
+      "mark_distance_ms": 544.042,
+      "nearest_step": 446,
+      "movement": "Claim the Floor",
+      "events": [
+        "kick",
+        "brush-snare",
+        "bass",
+        "paper-brush",
+        "short-chord",
+        "identity-lead"
+      ]
+    }
+  ]
+}

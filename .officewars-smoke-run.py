@@ -46,6 +46,14 @@ with sync_playwright() as playwright:
             title = page.title()
             print(title)
             if not title.startswith("PASS:"):
+                frame = page.frame(name="game")
+                if frame and title.startswith("FAIL:runtimeAccessibility"):
+                    print(
+                        "RUNTIME_ACCESSIBILITY_DETAIL:",
+                        frame.evaluate(
+                            "window.__runtimeAccessibilityDetail || null"
+                        ),
+                    )
                 raise SystemExit(1)
     finally:
         browser.close()

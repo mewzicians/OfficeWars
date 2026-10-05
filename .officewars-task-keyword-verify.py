@@ -13,8 +13,18 @@ from playwright.sync_api import sync_playwright
 
 ROOT = Path(__file__).resolve().parent
 URL = (ROOT / "officewarsautobattler.html").as_uri()
+
+# Interface captures are browsable reference material, so they land in the
+# private vault section when that section exists and in a gitignored local
+# folder otherwise. A public clone has no Wiki/ and takes the fallback. Names
+# carry no leading dot, because Obsidian hides dotfiles and a hidden reference
+# image cannot be browsed.
+CAPTURES = ROOT / "Wiki/Projects/OfficeWars/Visual Reference"
+if not CAPTURES.is_dir():
+    CAPTURES = ROOT / "artifacts/visual-reference"
+CAPTURES.mkdir(parents=True, exist_ok=True)
 META = {
-    "schema": 5,
+        "schema": 6,
     "tutorial": {
         "completed": True,
         "nextStep": 13,
@@ -192,7 +202,6 @@ def main():
                     "Clock Out",
                     "Flat Stress",
                     "Expense Credit",
-                    "Coworker Bonus",
                     "Task Reroll",
                     "Home Reroll",
                     "Positive Action",
@@ -362,7 +371,7 @@ def main():
                     "() => { hideOverlay(); R.phase='morning'; renderMorningUI(); }"
                 )
                 page.screenshot(
-                    path=ROOT / f".visual-{name}-task-keywords.png",
+                    path=CAPTURES / f"visual-{name}-task-keywords.png",
                     animations="disabled",
                 )
                 if page_errors or console_errors:

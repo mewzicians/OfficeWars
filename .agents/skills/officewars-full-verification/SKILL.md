@@ -93,7 +93,9 @@ when a requirement has no adequate evidence.
 
 ### Distribution And Release
 
-- Verify root, rollout, public-folder, and ZIP equality for every mapped file.
+- Verify root, rollout, and public-folder equality for every mapped file. The
+  public mirror folder is the distribution surface; a release ZIP is built on
+  demand only, so verify one only if the user asked for one to exist.
 - Check hidden files, launchers, repository metadata, local links, UTF-8,
   manifests, hashes, and standalone operation.
 - Confirm the packaged candidate is the exact tested HTML hash.

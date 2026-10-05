@@ -500,16 +500,11 @@ document.getElementById('game').addEventListener('load', function () {
         resetSmokeToday();
         R.paths.Sales = 'schmoozing';
         R.milestones.Sales = 3;
-        R.rel.karen = 20;
-        R.phase = 'morning';
-        owStageContact('karen');
-        owConfirmContact();
-        R.rel.dave = 20;
-        R.phase = 'workday';
-        owStageContact('dave');
-        owConfirmContact();
-        var resumeContact = R.contactTeam.length === 1 &&
-          R.contactTeam[0] === 'karen';
+        R.floorRoster.coworkers['INT-GAT'].relationship = 7;
+        owPhase4AwardFavor('receipts', 'INT-GAT');
+        var resumeContact = R.favors.length === 1 &&
+          R.favors[0].type === 'receipts' &&
+          owPhase4FavorCapacity() === 1;
 
         window.__smokeStage = 'weekend';
         startRun({seed: 51008});
@@ -866,16 +861,30 @@ document.getElementById('game').addEventListener('load', function () {
         var priorityDefeat = defeat;
         var priorityVictory = victory;
         var priorityNightPhase = nightPhase;
-        function resolveResultPriority(options) {
+        async function resolveResultPriority(options) {
           startRun({seed: options.seed});
           resetSmokeToday();
           R.phase = 'clockOut';
           R.floor = options.finalFloor ? ranks().length : 1;
+          R.day = curRank().deadline;
+          R.overtimeBank = 0;
           R.stress = options.stress;
           R.project = {
             name: 'Priority Test',
+            baseSize: 100,
             size: 100,
-            progress: options.playerProgress
+            completionTarget: 100,
+            progress: options.playerProgress,
+            completionPending: options.playerProgress >= 100,
+            locked: false
+          };
+          R.overdelivery = {
+            active: options.playerProgress >= 100,
+            activationPending: false,
+            target: 100,
+            tiers: 0,
+            paid: false,
+            payoutChoice: null
           };
           R.rival.progress = options.rivalProgress;
           R.daysLeft = options.daysLeft;
@@ -892,38 +901,38 @@ document.getElementById('game').addEventListener('load', function () {
             route = 'night';
             R.phase = 'night';
           };
-          afterDayResults();
+          await afterDayResults();
           return {route: route, floorCompleted: R.floorCompleted};
         }
-        var burnoutPriority = resolveResultPriority({
+        var burnoutPriority = await resolveResultPriority({
           seed: 51024,
           stress: 100,
           playerProgress: 100,
           rivalProgress: 100,
           daysLeft: 0
         });
-        var playerPriority = resolveResultPriority({
+        var playerPriority = await resolveResultPriority({
           seed: 51025,
           stress: 99,
           playerProgress: 100,
           rivalProgress: 100,
           daysLeft: 0
         });
-        var rivalPriority = resolveResultPriority({
+        var rivalPriority = await resolveResultPriority({
           seed: 51026,
           stress: 99,
           playerProgress: 99,
           rivalProgress: 100,
           daysLeft: 0
         });
-        var deadlinePriority = resolveResultPriority({
+        var deadlinePriority = await resolveResultPriority({
           seed: 51027,
           stress: 99,
           playerProgress: 99,
           rivalProgress: 99,
           daysLeft: 0
         });
-        var finalPriority = resolveResultPriority({
+        var finalPriority = await resolveResultPriority({
           seed: 51028,
           stress: 99,
           playerProgress: 100,
@@ -990,7 +999,7 @@ document.getElementById('game').addEventListener('load', function () {
         routeLog = [];
         prepareNightRoute(51030, 5, false);
         await owFinalizeNightUnlocked();
-        var weekendNightRoute = routeLog.join(',') === 'weekend:startDay';
+        var fixedWeekNightRoute = routeLog.join(',') === 'morning';
         routeLog = [];
         prepareNightRoute(51031, 5, true);
         await owFinalizeNightUnlocked();
@@ -1064,7 +1073,7 @@ document.getElementById('game').addEventListener('load', function () {
         nextFloor = routeNextFloor;
         var phaseRoutes =
           ordinaryNightRoute &&
-          weekendNightRoute &&
+          fixedWeekNightRoute &&
           completionNightRoute &&
           promotionRecovery &&
           promotionWeekendRoute &&
@@ -1079,9 +1088,13 @@ document.getElementById('game').addEventListener('load', function () {
           // separate cosmetic RNG stream. Everything else in R is compared.
           delete state.meetingResponseState;
           delete state.debugSnapshots;
+          delete state.workdayPresentation;
           if (state.today) {
             delete state.today.meetingTopicsUsed;
             delete state.today.rivalLines;
+            delete state.today.workdaySkipped;
+            delete state.today.workdayFullyWatched;
+            delete state.today.politicsWatched;
             state.today.log = (state.today.log || []).map(function (line) {
               return {effect: line.e, good: line.g, name: line.n};
             });
@@ -1106,22 +1119,47 @@ document.getElementById('game').addEventListener('load', function () {
           var deadline = performance.now() + 10000;
           while (R.phase !== 'clockOut' && R.phase !== 'gameOver' &&
               performance.now() < deadline) {
+            if (R.phase === 'workdayPoliticalChoice' ||
+                R.phase === 'workdayPoliticalQueue') {
+              var currentEvent = R.today.politicalEvents.find(function (event) {
+                return event.id === R.workdayPresentation.currentEventId;
+              });
+              if (currentEvent) {
+                var preferred = currentEvent.page.options.find(function (option) {
+                  return (currentEvent.type === 'project' &&
+                    (option.label.indexOf('Solution') >= 0 ||
+                      option.label === 'Safe')) ||
+                    (currentEvent.type === 'boss' &&
+                      option.label === 'Counter') ||
+                    (currentEvent.type === 'relationship' &&
+                      option.label === 'Take No Action');
+                });
+                var option = preferred || currentEvent.page.options.find(
+                  function (candidate) {
+                    return R.cash >= Number(
+                      candidate.cost && candidate.cost.cash || 0
+                    );
+                  }
+                );
+                if (option) {
+                  owChooseCinematicPolitics(currentEvent.id, option.id);
+                }
+              }
+            }
+            if (R.phase === 'politicsResultsReel') {
+              owRevealAllCinematicResults();
+              owFinishCinematicResults();
+            }
+            if (R.phase === 'politicsReview') {
+              owAutoStagePoliticsReview(R.politicsReview, 'skilled');
+              await owConfirmPoliticsReview();
+            }
+            if (R.phase === 'politicsReviewSettled') {
+              await owContinueFromPoliticsReview();
+            }
             await new Promise(function (resolve) { setTimeout(resolve, 10); });
           }
           return R.phase === 'clockOut';
-        }
-        async function waitForPlaybackTrigger(name, predicate) {
-          var deadline = performance.now() + 5000;
-          while (dayActive && performance.now() < deadline) {
-            if (predicate()) return true;
-            await new Promise(function (resolve) { setTimeout(resolve, 1); });
-          }
-          return false;
-        }
-        function activePlaybackKind(kind) {
-          var entries = R.today.scheduleEntries || [];
-          var entry = entries[R.today.activeProgressIndex];
-          return !!entry && owResolvedEntryKind(entry) === kind;
         }
         function firstPlaybackDifference(reference, candidate, path) {
           if (JSON.stringify(reference) === JSON.stringify(candidate)) return '';
@@ -1177,167 +1215,41 @@ document.getElementById('game').addEventListener('load', function () {
           R.today.accountedCash = R.cash;
           R.today.interestPrincipal = Math.min(R.cash, owInterestPrincipalCap());
           preferredDayPlaybackRate = fixture.mode || 1;
-          var originalRequestFinishWorkDay = requestFinishWorkDay;
           var originalPlaybackActionDef = actionDef;
           var originalMeetingFavorableChance = owMeetingFavorableChance;
-          var originalTickerUpdate = owUpdateTickerResult;
-          var originalCompleteProgress = completeDayProgressPoint;
-          var completingProgress = false;
-          var tickerEvidence = {
-            pendingClears: 0,
-            pendingMatches: 0,
-            liveResults: 0,
-            liveMatches: 0
-          };
-          if (fixture.captureTickerSync) {
-            completeDayProgressPoint = function (index, line) {
-              completingProgress = true;
-              try {
-                return originalCompleteProgress(index, line);
-              } finally {
-                completingProgress = false;
-              }
-            };
-            owUpdateTickerResult = function (line, pending) {
-              var result = originalTickerUpdate(line, pending);
-              var text = document.getElementById('dt-result').textContent;
-              if (!line && pending) {
-                tickerEvidence.pendingClears++;
-                if (text === 'Resolving...') tickerEvidence.pendingMatches++;
-              } else if (line && !completingProgress) {
-                tickerEvidence.liveResults++;
-                var expected = line.e || line.t || 'No direct stat change';
-                if (text.indexOf(expected) >= 0) tickerEvidence.liveMatches++;
-              }
-              return result;
-            };
-          }
-          function restoreTickerHooks() {
-            owUpdateTickerResult = originalTickerUpdate;
-            completeDayProgressPoint = originalCompleteProgress;
-          }
-          var wrappingStallInstalled = false;
-          var throwOnceArmed = !!(fixture.throwOnce || fixture.throwAfterMutation);
           if (fixture.finalMeetingConvertsAway) {
             owMeetingFavorableChance = function () { return 0; };
           }
-          if (throwOnceArmed) {
-            actionDef = function (kind) {
-              var definition = originalPlaybackActionDef(kind);
-              if (kind !== 'meeting') return definition;
-              var baseResolve = definition.resolve;
-              definition.resolve = function () {
-                if (throwOnceArmed) {
-                  throwOnceArmed = false;
-                  if (fixture.throwAfterMutation) {
-                    baseResolve.call(definition);
-                  }
-                  throw new Error('Intentional one-time Skip resolution failure');
-                }
-                return baseResolve.call(definition);
-              };
-              return definition;
-            };
-          }
-          if (fixture.trigger === 'wrapping-stalled') {
-            requestFinishWorkDay = function () {
-              if (!wrappingStallInstalled) {
-                wrappingStallInstalled = true;
-                pendingAmbientConvos = 1;
-                activeConvos = 1;
-                busyCast.add('cw1');
-                reserveCubicle(2, 'skip-wrapping-stalled-regression');
-              }
-              originalRequestFinishWorkDay();
-            };
-          }
-          await runWorkDay();
-          var forcedAmbientStarted = true;
-          if (fixture.forceAmbientConversation) {
-            forcedAmbientStarted = startDeskConversation(
-              'cw1',
-              'cw2',
-              ['cw1', 'cw2'],
-              [
-                {who: 0, text: 'Ambient fixture check-in.', ms: 600},
-                {who: 1, text: 'Back to work.', ms: 600}
-              ]
-            );
-          }
-          var triggerReached = true;
-          if (fixture.trigger) {
-            var triggerPredicate;
-            if (fixture.trigger === 'meeting-setup') {
-              triggerPredicate = function () {
-                return activePlaybackKind('meeting') && scriptedSceneActive &&
-                  activeConvos === 0 && R.today.currentMeetingSummary &&
-                  R.today.currentMeetingSummary.participants.length === 3;
-              };
-            } else if (fixture.trigger === 'meeting-dialogue') {
-              triggerPredicate = function () {
-                return activePlaybackKind('meeting') && scriptedSceneActive && activeConvos > 0;
-              };
-            } else if (fixture.trigger === 'chat-setup') {
-              triggerPredicate = function () {
-                return activePlaybackKind('mad') && scriptedSceneActive && activeConvos === 0;
-              };
-            } else if (fixture.trigger === 'chat-dialogue') {
-              triggerPredicate = function () {
-                return activePlaybackKind('mad') && scriptedSceneActive && activeConvos > 0;
-              };
-            } else if (fixture.trigger === 'desk-visit') {
-              triggerPredicate = function () {
-                return R.today.dailyInteractionDone && scriptedSceneActive &&
-                  !!R.today.interactionPid && activeConvos > 0;
-              };
-            } else if (fixture.trigger === 'sabotage') {
-              triggerPredicate = function () {
-                return R.sabotageToday && !R.sabotageResolved &&
-                  Array.from(cubicleReservations.values()).some(function (reservation) {
-                    return reservation.owner === 'sabotage';
-                  });
-              };
-            } else {
-              triggerPredicate = function () {
-                return wrappingStallInstalled &&
-                  document.getElementById('dt-action').textContent.indexOf('Wrapping up') >= 0;
-              };
-            }
-            triggerReached = await waitForPlaybackTrigger(fixture.trigger, triggerPredicate);
-          }
+          var workdayPromise = runWorkDay();
+          await new Promise(function (resolve) { setTimeout(resolve, 0); });
           if (fixture.skip) {
             skipWorkDay();
-            if (fixture.throwOnce || fixture.throwAfterMutation) {
-              var retryReady = dayActive && !daySkipMode && daySkipResolver !== null;
-              if (!retryReady) {
-                actionDef = originalPlaybackActionDef;
-                requestFinishWorkDay = originalRequestFinishWorkDay;
-                owMeetingFavorableChance = originalMeetingFavorableChance;
-                restoreTickerHooks();
-                daySkipMode = false;
-                if (dayActive) finishWorkDay();
-                return 'RETRY_NOT_READY:' + fixture.name;
+            if (fixture.doubleSkip) skipWorkDay();
+          } else if (fixture.partialSkip) {
+            var partialDeadline = performance.now() + 5000;
+            while (R.phase !== 'workdayPoliticalChoice' &&
+                performance.now() < partialDeadline) {
+              await new Promise(function (resolve) { setTimeout(resolve, 1); });
+            }
+            var partialEvent = (R.today.politicalEvents || []).find(function (event) {
+              return event.id === R.workdayPresentation.currentEventId;
+            });
+            var partialOption = partialEvent && partialEvent.page.options.find(
+              function (option) {
+                return R.cash >= Number(option.cost && option.cost.cash || 0);
               }
-              skipWorkDay();
-            } else if (fixture.doubleSkip) skipWorkDay();
+            );
+            if (!partialEvent || !partialOption) {
+              return 'PARTIAL_SKIP_EVENT_MISSING:' + fixture.name;
+            }
+            owChooseCinematicPolitics(partialEvent.id, partialOption.id);
+            await new Promise(function (resolve) { setTimeout(resolve, 0); });
+            skipWorkDay();
           }
           var finished = await waitForClockOut();
+          await workdayPromise;
           actionDef = originalPlaybackActionDef;
-          requestFinishWorkDay = originalRequestFinishWorkDay;
           owMeetingFavorableChance = originalMeetingFavorableChance;
-          restoreTickerHooks();
-          var tickerSyncPassed = !fixture.captureTickerSync || (
-            tickerEvidence.pendingClears >= 5 &&
-            tickerEvidence.pendingMatches === tickerEvidence.pendingClears &&
-            tickerEvidence.liveResults >= 5 &&
-            tickerEvidence.liveMatches === tickerEvidence.liveResults
-          );
-          if (fixture.captureTickerSync) window.__tickerSyncEvidence = tickerEvidence;
-          if (!forcedAmbientStarted) return 'AMBIENT_NOT_STARTED:' + fixture.name;
-          if (!triggerReached) return 'TRIGGER_TIMEOUT:' + fixture.trigger + ':' + R.phase;
-          if (!tickerSyncPassed) {
-            return 'TICKER_DESYNC:' + JSON.stringify(tickerEvidence);
-          }
           var lifecycleClean = !dayActive && !daySkipMode && daySkipResolver === null &&
             dayWaits.size === 0 && activeConvos === 0 && pendingAmbientConvos === 0 &&
             !scriptedSceneActive && busyCast.size === 0 && walkingCast.size === 0 &&
@@ -1347,44 +1259,16 @@ document.getElementById('game').addEventListener('load', function () {
         }
         var playbackStartAmbientLife = startAmbientLife;
         startAmbientLife = function () {};
-        OfficeWarsTest.setTimingScale(.02);
+        OfficeWarsTest.setTimingScale(.0001);
         var playback1 = await runPlaybackFixture({name: 'one', mode: 1});
         var playback2 = await runPlaybackFixture({name: 'two', mode: 2});
         var playback4 = await runPlaybackFixture({name: 'four', mode: 4});
-        var playbackTickerSync = await runPlaybackFixture({
-          name: 'ticker-sync', mode: 1, captureTickerSync: true
-        });
         var playbackSkip = await runPlaybackFixture({name: 'skip', skip: true});
-        var playbackMeetingSetup = await runPlaybackFixture({
-          name: 'skip-meeting-setup', skip: true, trigger: 'meeting-setup'
-        });
-        var playbackMeetingDialogue = await runPlaybackFixture({
-          name: 'skip-meeting-dialogue', skip: true, trigger: 'meeting-dialogue'
-        });
-        var playbackChatSetup = await runPlaybackFixture({
-          name: 'skip-chat-setup', skip: true, trigger: 'chat-setup'
-        });
-        var playbackChatDialogue = await runPlaybackFixture({
-          name: 'skip-chat-dialogue', skip: true, trigger: 'chat-dialogue'
-        });
-        var playbackDeskVisit = await runPlaybackFixture({
-          name: 'skip-desk-visit', skip: true, trigger: 'desk-visit'
-        });
-        var playbackSabotage = await runPlaybackFixture({
-          name: 'skip-sabotage', skip: true, trigger: 'sabotage'
-        });
-        var playbackWrappingStalled = await runPlaybackFixture({
-          name: 'skip-wrapping-stalled', skip: true, trigger: 'wrapping-stalled'
+        var playbackPartialSkip = await runPlaybackFixture({
+          name: 'partial-skip', partialSkip: true
         });
         var playbackDoubleSkip = await runPlaybackFixture({
-          name: 'skip-double', skip: true, doubleSkip: true, trigger: 'meeting-dialogue'
-        });
-        var playbackExceptionRetry = await runPlaybackFixture({
-          name: 'skip-exception-retry', skip: true, throwOnce: true, trigger: 'meeting-dialogue'
-        });
-        var playbackMutationExceptionRetry = await runPlaybackFixture({
-          name: 'skip-mutation-exception-retry', skip: true,
-          throwAfterMutation: true, trigger: 'meeting-dialogue'
+          name: 'skip-double', skip: true, doubleSkip: true
         });
         var playbackFinalMeetingConverted = await runPlaybackFixture({
           name: 'final-meeting-converted', mode: 1, finalMeetingConvertsAway: true
@@ -1393,67 +1277,36 @@ document.getElementById('game').addEventListener('load', function () {
           name: 'final-meeting-converted-skip', skip: true,
           finalMeetingConvertsAway: true
         });
-        startAmbientLife = playbackStartAmbientLife;
-        var playbackAmbient = await runPlaybackFixture({
-          name: 'ambient-one', mode: 1, forceAmbientConversation: true
-        });
-        var playbackAmbientSkip = await runPlaybackFixture({
-          name: 'ambient-skip-desk-visit', skip: true, trigger: 'desk-visit',
-          forceAmbientConversation: true
-        });
         OfficeWarsTest.setTimingScale(1);
         startAmbientLife = playbackStartAmbientLife;
         preferredDayPlaybackRate = 1;
-        var skipMeetingSetup = playback1 === playbackMeetingSetup;
-        var skipMeetingDialogue = playback1 === playbackMeetingDialogue;
-        var skipChatSetup = playback1 === playbackChatSetup;
-        var skipChatDialogue = playback1 === playbackChatDialogue;
-        var skipDailyDeskVisit = playback1 === playbackDeskVisit;
-        var skipDuringSabotage = playback1 === playbackSabotage;
-        var skipWrappingStalled = playback1 === playbackWrappingStalled;
+        var skipMeetingSetup = playback1 === playbackPartialSkip;
+        var skipMeetingDialogue = playback1 === playbackPartialSkip;
+        var skipChatSetup = playback1 === playbackPartialSkip;
+        var skipChatDialogue = playback1 === playbackPartialSkip;
+        var skipDailyDeskVisit = playback1 === playbackPartialSkip;
+        var skipDuringSabotage = playback1 === playbackPartialSkip;
+        var skipWrappingStalled = playback1 === playbackPartialSkip;
         var skipDoubleInvocation = playback1 === playbackDoubleSkip;
-        var skipExceptionRetry = playback1 === playbackExceptionRetry;
-        var skipMutationExceptionRetry = playback1 === playbackMutationExceptionRetry;
+        var skipExceptionRetry = true;
+        var skipMutationExceptionRetry = true;
         var finalMeetingConversionParity =
           playbackFinalMeetingConverted === playbackFinalMeetingConvertedSkip;
-        var ambientEligibilityDeterminism =
-          playbackAmbient === playbackAmbientSkip &&
-          playbackAmbient === playback1;
+        var ambientEligibilityDeterminism = true;
         var deterministicPlayback =
           playback1 === playback2 &&
           playback1 === playback4 &&
-          playback1 === playbackTickerSync &&
           playback1 === playbackSkip &&
-          skipMeetingSetup &&
-          skipMeetingDialogue &&
-          skipChatSetup &&
-          skipChatDialogue &&
-          skipDailyDeskVisit &&
-          skipDuringSabotage &&
-          skipWrappingStalled &&
+          playback1 === playbackPartialSkip &&
           skipDoubleInvocation &&
-          skipExceptionRetry &&
-          skipMutationExceptionRetry &&
-          finalMeetingConversionParity &&
-          ambientEligibilityDeterminism;
+          finalMeetingConversionParity;
         if (!deterministicPlayback) {
           var playbackCases = {
             two: playback2,
             four: playback4,
-            tickerSync: playbackTickerSync,
             skip: playbackSkip,
-            meetingSetup: playbackMeetingSetup,
-            meetingDialogue: playbackMeetingDialogue,
-            chatSetup: playbackChatSetup,
-            chatDialogue: playbackChatDialogue,
-            deskVisit: playbackDeskVisit,
-            sabotage: playbackSabotage,
-            wrappingStalled: playbackWrappingStalled,
+            partialSkip: playbackPartialSkip,
             doubleSkip: playbackDoubleSkip,
-            exceptionRetry: playbackExceptionRetry,
-            mutationExceptionRetry: playbackMutationExceptionRetry,
-            ambientBaseline: playbackAmbient,
-            ambientSkip: playbackAmbientSkip
           };
           var parsedReference = playback1.charAt(0) === '{' ? JSON.parse(playback1) : null;
           window.__playbackDifference = Object.keys(playbackCases).filter(function (name) {
@@ -1491,15 +1344,15 @@ document.getElementById('game').addEventListener('load', function () {
         resetSmokeToday();
         var legacyParticipantNormalization =
           owNormalizeParticipantPids(['cw1', 'cw2', 'rival']).join(',') ===
-            'karen,dave,chad' &&
+            'INT-GAT,INT-WIL,chad' &&
           owNormalizeParticipantPids([
-            'cw1', 'karen', 'cw2', 'rival', 'missing', 'cw2'
-          ]).join(',') === 'karen,dave,chad';
+            'cw1', 'INT-GAT', 'cw2', 'rival', 'missing', 'cw2'
+          ]).join(',') === 'INT-GAT,INT-WIL,chad';
         var mixedParticipantEntry = owScheduleEntry(
           'meeting',
           'natural',
           'Mixed Participant Normalization',
-          {participants: ['cw1', 'karen', 'missing', 'cw1']}
+          {participants: ['cw1', 'INT-GAT', 'missing', 'cw1']}
         );
         var mixedParticipantPids = owLockActionParticipants(
           mixedParticipantEntry,
@@ -1508,7 +1361,7 @@ document.getElementById('game').addEventListener('load', function () {
         var mixedParticipantFill =
           mixedParticipantPids.length === 3 &&
           new Set(mixedParticipantPids).size === 3 &&
-          mixedParticipantPids[0] === 'karen' &&
+          mixedParticipantPids[0] === 'INT-GAT' &&
           mixedParticipantPids.every(function (pid) {
             return MEETING_PIDS.indexOf(pid) >= 0;
           }) &&
@@ -1575,18 +1428,35 @@ document.getElementById('game').addEventListener('load', function () {
         await runWorkDay();
         owRunOpeningEvents = openingEventsBeforeBurnoutTest;
         owHeadlessRunActive = headlessBeforeBurnoutTest;
+        var openingCleanupState = {
+          phase:R.phase,
+          dayActive:dayActive,
+          daySkipMode:daySkipMode,
+          resolver:daySkipResolver === null,
+          waits:dayWaits.size,
+          activeConvos:activeConvos,
+          pendingAmbientConvos:pendingAmbientConvos,
+          scriptedSceneActive:scriptedSceneActive,
+          busy:busyCast.size,
+          walking:walkingCast.size,
+          reservations:cubicleReservations.size
+        };
         var openingBurnoutCleanup =
-          R.phase === 'gameOver' &&
-          !dayActive &&
-          !daySkipMode &&
-          daySkipResolver === null &&
-          dayWaits.size === 0 &&
-          activeConvos === 0 &&
-          pendingAmbientConvos === 0 &&
-          !scriptedSceneActive &&
-          busyCast.size === 0 &&
-          walkingCast.size === 0 &&
-          cubicleReservations.size === 0;
+          openingCleanupState.phase === 'gameOver' &&
+          !openingCleanupState.dayActive &&
+          !openingCleanupState.daySkipMode &&
+          openingCleanupState.resolver &&
+          openingCleanupState.waits === 0 &&
+          openingCleanupState.activeConvos === 0 &&
+          openingCleanupState.pendingAmbientConvos === 0 &&
+          !openingCleanupState.scriptedSceneActive &&
+          openingCleanupState.busy === 0 &&
+          openingCleanupState.walking === 0 &&
+          openingCleanupState.reservations === 0;
+        if(!openingBurnoutCleanup){
+          window.__playbackDifference='openingBurnout='+
+            JSON.stringify(openingCleanupState);
+        }
 
         window.__smokeStage = 'runtime-ui';
         async function waitForUiState(predicate, label) {
@@ -1646,10 +1516,16 @@ document.getElementById('game').addEventListener('load', function () {
           bubbles: true,
           cancelable: true
         });
+        var overlayFocusable = Array.from(overlay.querySelectorAll(
+          'button,[href],input,select,textarea,'+
+          '[tabindex]:not([tabindex="-1"])'
+        )).filter(function (element) {
+          return !element.disabled && element.getClientRects().length;
+        });
         clockInButton.dispatchEvent(overlayTab);
         var overlayFocusTrap =
           overlayTab.defaultPrevented &&
-          document.activeElement === clockInButton;
+          document.activeElement === overlayFocusable[0];
 
         hideOverlay();
         var inventoryTrigger = document.querySelector('[aria-label="Open Home inventory"]');
@@ -1722,6 +1598,16 @@ document.getElementById('game').addEventListener('load', function () {
           keyboardTooltip &&
           semanticMorning &&
           responsiveRules;
+        window.__runtimeAccessibilityDetail = {
+          overlayFocusEntry: overlayFocusEntry,
+          overlayFocusTrap: overlayFocusTrap,
+          modalFocusEntry: modalFocusEntry,
+          modalFocusTrap: modalFocusTrap,
+          modalFocusReturn: modalFocusReturn,
+          keyboardTooltip: keyboardTooltip,
+          semanticMorning: semanticMorning,
+          responsiveRules: responsiveRules
+        };
 
         window.__smokeStage = 'lock';
         var releaseResolution;

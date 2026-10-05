@@ -73,7 +73,7 @@ instrumentation or a minimal test and report the missing evidence.
 ## Synchronize The Repair
 
 Update affected documentation, handoff, patch notes, verification evidence,
-rollout mirror, public mirror, manifests, and ZIP. Keep the HTML and active
+public mirror, and manifests. Keep the HTML and active
 documents aligned. Invoke `$officewars-qa-cleanup` when drift extends beyond
 the defect and `$officewars-full-verification` when the fix is release-wide or
 the user requests ship readiness.

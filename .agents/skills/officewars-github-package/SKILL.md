@@ -1,9 +1,17 @@
 ---
 name: officewars-github-package
-description: Synchronize, rebuild, and verify the GitHub-ready OfficeWars public repository ZIP. Use when the user asks to update, refresh, prepare, validate, or hand off the public GitHub package, public-repository mirror, release ZIP, or upload bundle.
+description: Synchronize and verify the GitHub-ready OfficeWars public repository mirror, and build a release ZIP only when one is explicitly asked for. Use when the user asks to update, refresh, prepare, validate, or hand off the public GitHub package, public-repository mirror, or upload bundle.
 ---
 
 # OfficeWars GitHub Package
+
+The public-repository mirror folder is the deliverable. The repository is
+synchronized from that folder directly, so the folder is what must be correct,
+complete, and free of private material. A checked-in release ZIP was retired on
+2026-08-26 because it was a strictly derived copy that drifted on every
+documentation edit while every assertion it carried already held against the
+folder. Build a ZIP only when the user asks for a single-file handoff, and never
+leave standing checks that require one to exist.
 
 ## Establish Release Truth
 
@@ -12,8 +20,7 @@ description: Synchronize, rebuild, and verify the GitHub-ready OfficeWars public
    `docs/BALANCE_LEDGER.md`, `docs/PROJECT_STATUS.md`, and
    `docs/HANDOFF.md`.
 2. Read those files and identify the active `officewars-public-repo-*`
-   mirror and its sibling ZIP. Treat the root as source and the public folder
-   as a mirror.
+   mirror. Treat the root as source and the public folder as a mirror.
 3. Record the root game SHA-256 before changing package files.
 4. Inspect current workspace changes. Preserve unrelated user work and do not
    package an unexplained implementation or documentation mismatch.
@@ -22,7 +29,7 @@ description: Synchronize, rebuild, and verify the GitHub-ready OfficeWars public
 
 ## Build The Public Inventory
 
-Keep the upload usable as a repository root rather than wrapping it in another
+Keep the mirror usable as a repository root rather than wrapping it in another
 directory. Include every current public artifact:
 
 - the standalone game, GitHub Pages launcher, README, contribution guidance,
@@ -42,7 +49,7 @@ active root file only when current public guidance or the release change
 requires it. Never delete historical verification evidence merely because it
 is old.
 
-## Synchronize Before Packaging
+## Synchronize
 
 1. Copy mapped root files byte-for-byte into the public mirror.
 2. Update public status, handoff, patch notes, skill lists, and current hashes
@@ -60,9 +67,25 @@ Stop and report rather than packaging when active sources contradict one
 another, a required test fails, or the public folder contains unexplained
 files.
 
-## Build The ZIP
+## Verify The Mirror
 
-Run the bundled deterministic builder:
+Confirm all of the following against the public folder:
+
+- every mapped file is byte-identical to its root source;
+- the packaged game hash equals the root game hash;
+- `.github/`, `.agents/skills/`, `.gitignore`, and `.nojekyll` are present;
+- the public README links to existing packaged paths;
+- intentionally divergent public files, such as a play-only README or
+  contribution guidance, are left divergent rather than overwritten from root;
+- no private path is present: `.obsidian/`, `Home.md`, `Inbox/`, `Wiki/`, raw
+  research and captures, private source attachments, and continuity ledgers;
+- no excluded temporary artifact entered the mirror; and
+- the mirror file count and the root game hash are recorded.
+
+## Build A ZIP Only On Demand
+
+Skip this section unless the user asked for a ZIP. When they do, run the
+bundled deterministic builder:
 
 ```powershell
 python "<skill-dir>\scripts\build_public_zip.py" `
@@ -75,23 +98,17 @@ after the replacement is complete, and verifies every archived byte against
 the public folder. Do not use a wildcard-only `Compress-Archive` command
 because it can omit hidden repository files.
 
-## Verify The Upload Bundle
-
-Confirm all of the following:
-
-- the ZIP opens and has no duplicate or unsafe paths;
-- archive paths begin at repository-root contents, not an outer folder;
-- ZIP inventory exactly equals the public-folder inventory;
-- every archived file is byte-identical to its public source;
-- `.github/`, `.agents/skills/`, `.gitignore`, and `.nojekyll` are present;
-- the packaged game hash equals the root game hash;
-- the public README links to existing packaged paths;
-- no excluded private or temporary artifacts entered the ZIP; and
-- the final ZIP SHA-256, file count, filename, and size are recorded.
+Then confirm the ZIP opens with no duplicate or unsafe paths, that its paths
+begin at repository-root contents rather than an outer folder, that its
+inventory exactly equals the verified mirror inventory, and record its SHA-256,
+file count, filename, and size. Treat the result as a one-off handoff artifact:
+say when it was built and from which mirror bytes, and do not add a check
+elsewhere that requires it to keep existing.
 
 ## Report
 
-State the public mirror and ZIP paths, synchronized files, tests and package
-checks as Pass, Fail, Not Run, or Blocked, root and packaged game hashes, ZIP
-hash and size, and any remaining release blocker. Never say the ZIP is ready
+State the public mirror path, the synchronized files, the tests and mirror
+checks as Pass, Fail, Not Run, or Blocked, the root and packaged game hashes,
+and any remaining release blocker. If a ZIP was built, add its path, hash, and
+size, and state that it is a point-in-time copy. Never say the package is ready
 for GitHub when a required check failed or was not performed.

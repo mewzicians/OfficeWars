@@ -29,7 +29,7 @@ Inventory every active:
 - project and user-facing OfficeWars skill;
 - verification runner, checklist, screenshot, and evidence report;
 - rollout handoff and public-repository mirror;
-- manifest, hash table, launcher, repository metadata file, and ZIP package.
+- manifest, hash table, launcher, and repository metadata file.
 
 Read archives only when needed to classify useful history. Do not reactivate an
 archived rule merely because it exists.
@@ -65,14 +65,14 @@ archived rule merely because it exists.
 
 ## Synchronize Mirrors And Packages
 
-1. Synchronize every mapped root file to
-   `officewars-rollout-handoff-2026-07-31/` when present.
-2. Synchronize mapped game, guidance, documentation, verification, skill, and
-   repository files to the current public-repository mirror when present.
-3. Refresh manifest and documented hashes after all content changes.
-4. Rebuild the public ZIP from the public folder, including hidden repository
-   files, and compare every archived file byte-for-byte.
-5. Preserve historical snapshot files unless they contain an active broken
+1. Synchronize mapped game, guidance, documentation, verification, skill, and
+   repository files to the current public-repository mirror when present. The
+   portable rollout package was retired on 2026-08-26; do not recreate it.
+2. Refresh manifest and documented hashes after all content changes.
+3. Confirm the public folder still carries every hidden repository file, and
+   that no private path entered it. Do not build a release ZIP; the repository
+   is synchronized from the folder directly.
+4. Preserve historical snapshot files unless they contain an active broken
    reference or falsely claim to be current.
 
 ## Validate The Cleanup
@@ -86,7 +86,7 @@ Check and report:
 - root-to-rollout and root-to-public mapped-file equality;
 - skill metadata, skill-copy equality, and picker prompts;
 - manifest completeness and hash accuracy;
-- ZIP inventory and byte equality.
+- public-folder inventory, hidden-file presence, and absence of private paths.
 
 Treat an unexpected game-hash change as a failure. Do not run broad gameplay or
 balance suites unless needed to resolve a documentation claim; exhaustive

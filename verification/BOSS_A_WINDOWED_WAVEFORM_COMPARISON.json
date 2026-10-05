@@ -1,0 +1,524 @@
+{
+  "sample_rate": 24000,
+  "old": {
+    "frames": 2194286,
+    "channels": 2,
+    "duration_seconds": 91.428583,
+    "delta": {
+      "median": 0.00012207,
+      "p99_9": 0.00415039,
+      "p99_99": 0.00558472,
+      "max": 0.19897461,
+      "count_over_0_02": 76,
+      "count_over_0_05": 76,
+      "count_over_0_10": 56
+    },
+    "isolated_impulses": [
+      {
+        "residual": 0.19894409,
+        "seconds": 90.183042,
+        "channel": 1
+      },
+      {
+        "residual": 0.19894409,
+        "seconds": 82.683042,
+        "channel": 1
+      },
+      {
+        "residual": 0.18855286,
+        "seconds": 70.183042,
+        "channel": 1
+      },
+      {
+        "residual": 0.18530273,
+        "seconds": 76.433042,
+        "channel": 0
+      },
+      {
+        "residual": 0.18504333,
+        "seconds": 77.683042,
+        "channel": 0
+      },
+      {
+        "residual": 0.18504333,
+        "seconds": 75.183042,
+        "channel": 0
+      },
+      {
+        "residual": 0.18504333,
+        "seconds": 72.683042,
+        "channel": 0
+      },
+      {
+        "residual": 0.18502808,
+        "seconds": 80.183042,
+        "channel": 0
+      },
+      {
+        "residual": 0.1849823,
+        "seconds": 73.933042,
+        "channel": 0
+      },
+      {
+        "residual": 0.16992188,
+        "seconds": 90.183042,
+        "channel": 0
+      },
+      {
+        "residual": 0.16990662,
+        "seconds": 82.683042,
+        "channel": 0
+      },
+      {
+        "residual": 0.16104126,
+        "seconds": 70.183042,
+        "channel": 0
+      },
+      {
+        "residual": 0.15763855,
+        "seconds": 10.183042,
+        "channel": 0
+      },
+      {
+        "residual": 0.15740967,
+        "seconds": 3.933042,
+        "channel": 0
+      },
+      {
+        "residual": 0.15338135,
+        "seconds": 76.433042,
+        "channel": 1
+      },
+      {
+        "residual": 0.15309143,
+        "seconds": 80.183042,
+        "channel": 1
+      },
+      {
+        "residual": 0.15307617,
+        "seconds": 72.683042,
+        "channel": 1
+      },
+      {
+        "residual": 0.15306091,
+        "seconds": 77.683042,
+        "channel": 1
+      },
+      {
+        "residual": 0.15306091,
+        "seconds": 75.183042,
+        "channel": 1
+      },
+      {
+        "residual": 0.1530304,
+        "seconds": 73.933042,
+        "channel": 1
+      },
+      {
+        "residual": 0.14161682,
+        "seconds": 73.216292,
+        "channel": 0
+      },
+      {
+        "residual": 0.14161682,
+        "seconds": 33.216292,
+        "channel": 0
+      },
+      {
+        "residual": 0.13302612,
+        "seconds": 73.216292,
+        "channel": 1
+      },
+      {
+        "residual": 0.13299561,
+        "seconds": 33.216292,
+        "channel": 1
+      },
+      {
+        "residual": 0.13041687,
+        "seconds": 10.183042,
+        "channel": 1
+      },
+      {
+        "residual": 0.13024902,
+        "seconds": 3.933042,
+        "channel": 1
+      },
+      {
+        "residual": 0.10720825,
+        "seconds": 68.216292,
+        "channel": 1
+      },
+      {
+        "residual": 0.10067749,
+        "seconds": 68.216292,
+        "channel": 0
+      },
+      {
+        "residual": 0.08656311,
+        "seconds": 60.183042,
+        "channel": 1
+      },
+      {
+        "residual": 0.0849762,
+        "seconds": 63.933042,
+        "channel": 0
+      },
+      {
+        "residual": 0.08496094,
+        "seconds": 62.683042,
+        "channel": 0
+      },
+      {
+        "residual": 0.08477783,
+        "seconds": 67.683042,
+        "channel": 0
+      },
+      {
+        "residual": 0.08122253,
+        "seconds": 78.216292,
+        "channel": 1
+      },
+      {
+        "residual": 0.07637024,
+        "seconds": 78.216292,
+        "channel": 0
+      },
+      {
+        "residual": 0.07389832,
+        "seconds": 60.183042,
+        "channel": 0
+      },
+      {
+        "residual": 0.07032776,
+        "seconds": 63.933042,
+        "channel": 1
+      },
+      {
+        "residual": 0.07029724,
+        "seconds": 62.683042,
+        "channel": 1
+      },
+      {
+        "residual": 0.07006836,
+        "seconds": 67.683042,
+        "channel": 1
+      }
+    ],
+    "isolated_impulse_count": 38,
+    "mark_windows": [
+      {
+        "mark_seconds": 4.0,
+        "peak_seconds": 3.933042,
+        "offset_ms": -66.958,
+        "peak_delta": 0.15765381,
+        "channel": 0
+      },
+      {
+        "mark_seconds": 10.3,
+        "peak_seconds": 10.183042,
+        "offset_ms": -116.958,
+        "peak_delta": 0.1602478,
+        "channel": 0
+      },
+      {
+        "mark_seconds": 17.6,
+        "peak_seconds": 17.528917,
+        "offset_ms": -71.083,
+        "peak_delta": 0.00604248,
+        "channel": 0
+      },
+      {
+        "mark_seconds": 33.4,
+        "peak_seconds": 33.410958,
+        "offset_ms": 10.958,
+        "peak_delta": 0.00588989,
+        "channel": 0
+      },
+      {
+        "mark_seconds": 47.1,
+        "peak_seconds": 47.155083,
+        "offset_ms": 55.083,
+        "peak_delta": 0.00418091,
+        "channel": 0
+      },
+      {
+        "mark_seconds": 60.3,
+        "peak_seconds": 60.183083,
+        "offset_ms": -116.917,
+        "peak_delta": 0.08657837,
+        "channel": 1
+      },
+      {
+        "mark_seconds": 62.8,
+        "peak_seconds": 62.683042,
+        "offset_ms": -116.958,
+        "peak_delta": 0.08496094,
+        "channel": 0
+      },
+      {
+        "mark_seconds": 64.0,
+        "peak_seconds": 63.933042,
+        "offset_ms": -66.958,
+        "peak_delta": 0.08526611,
+        "channel": 0
+      },
+      {
+        "mark_seconds": 67.8,
+        "peak_seconds": 67.683042,
+        "offset_ms": -116.958,
+        "peak_delta": 0.08486938,
+        "channel": 0
+      },
+      {
+        "mark_seconds": 68.5,
+        "peak_seconds": 68.593792,
+        "offset_ms": 93.792,
+        "peak_delta": 0.00494385,
+        "channel": 1
+      },
+      {
+        "mark_seconds": 70.2,
+        "peak_seconds": 70.183083,
+        "offset_ms": -16.917,
+        "peak_delta": 0.18856812,
+        "channel": 1
+      },
+      {
+        "mark_seconds": 72.8,
+        "peak_seconds": 72.683042,
+        "offset_ms": -116.958,
+        "peak_delta": 0.18515015,
+        "channel": 0
+      },
+      {
+        "mark_seconds": 73.4,
+        "peak_seconds": 73.251208,
+        "offset_ms": -148.792,
+        "peak_delta": 0.0038147,
+        "channel": 0
+      },
+      {
+        "mark_seconds": 74.1,
+        "peak_seconds": 73.9535,
+        "offset_ms": -146.5,
+        "peak_delta": 0.00506592,
+        "channel": 1
+      },
+      {
+        "mark_seconds": 75.2,
+        "peak_seconds": 75.183042,
+        "offset_ms": -16.958,
+        "peak_delta": 0.18508911,
+        "channel": 0
+      },
+      {
+        "mark_seconds": 76.5,
+        "peak_seconds": 76.433042,
+        "offset_ms": -66.958,
+        "peak_delta": 0.18566895,
+        "channel": 0
+      },
+      {
+        "mark_seconds": 77.7,
+        "peak_seconds": 77.683042,
+        "offset_ms": -16.958,
+        "peak_delta": 0.18515015,
+        "channel": 0
+      },
+      {
+        "mark_seconds": 78.4,
+        "peak_seconds": 78.2875,
+        "offset_ms": -112.5,
+        "peak_delta": 0.00424194,
+        "channel": 0
+      },
+      {
+        "mark_seconds": 80.2,
+        "peak_seconds": 80.183042,
+        "offset_ms": -16.958,
+        "peak_delta": 0.18508911,
+        "channel": 0
+      },
+      {
+        "mark_seconds": 82.7,
+        "peak_seconds": 82.683042,
+        "offset_ms": -16.958,
+        "peak_delta": 0.19897461,
+        "channel": 1
+      },
+      {
+        "mark_seconds": 90.3,
+        "peak_seconds": 90.183083,
+        "offset_ms": -116.917,
+        "peak_delta": 0.19897461,
+        "channel": 1
+      }
+    ]
+  },
+  "windowed": {
+    "frames": 2194286,
+    "channels": 2,
+    "duration_seconds": 91.428583,
+    "delta": {
+      "median": 0.00012207,
+      "p99_9": 0.00415039,
+      "p99_99": 0.00549316,
+      "max": 0.00808716,
+      "count_over_0_02": 0,
+      "count_over_0_05": 0,
+      "count_over_0_10": 0
+    },
+    "isolated_impulses": [],
+    "isolated_impulse_count": 0,
+    "mark_windows": [
+      {
+        "mark_seconds": 4.0,
+        "peak_seconds": 3.9505,
+        "offset_ms": -49.5,
+        "peak_delta": 0.00497437,
+        "channel": 1
+      },
+      {
+        "mark_seconds": 10.3,
+        "peak_seconds": 10.189833,
+        "offset_ms": -110.167,
+        "peak_delta": 0.00384521,
+        "channel": 0
+      },
+      {
+        "mark_seconds": 17.6,
+        "peak_seconds": 17.528917,
+        "offset_ms": -71.083,
+        "peak_delta": 0.00604248,
+        "channel": 0
+      },
+      {
+        "mark_seconds": 33.4,
+        "peak_seconds": 33.410958,
+        "offset_ms": 10.958,
+        "peak_delta": 0.00588989,
+        "channel": 0
+      },
+      {
+        "mark_seconds": 47.1,
+        "peak_seconds": 47.155083,
+        "offset_ms": 55.083,
+        "peak_delta": 0.00418091,
+        "channel": 0
+      },
+      {
+        "mark_seconds": 60.3,
+        "peak_seconds": 60.193125,
+        "offset_ms": -106.875,
+        "peak_delta": 0.00341797,
+        "channel": 1
+      },
+      {
+        "mark_seconds": 62.8,
+        "peak_seconds": 62.890292,
+        "offset_ms": 90.292,
+        "peak_delta": 0.00549316,
+        "channel": 0
+      },
+      {
+        "mark_seconds": 64.0,
+        "peak_seconds": 63.937917,
+        "offset_ms": -62.083,
+        "peak_delta": 0.00665283,
+        "channel": 1
+      },
+      {
+        "mark_seconds": 67.8,
+        "peak_seconds": 67.864292,
+        "offset_ms": 64.292,
+        "peak_delta": 0.00515747,
+        "channel": 1
+      },
+      {
+        "mark_seconds": 68.5,
+        "peak_seconds": 68.593792,
+        "offset_ms": 93.792,
+        "peak_delta": 0.00494385,
+        "channel": 1
+      },
+      {
+        "mark_seconds": 70.2,
+        "peak_seconds": 70.055958,
+        "offset_ms": -144.042,
+        "peak_delta": 0.00311279,
+        "channel": 0
+      },
+      {
+        "mark_seconds": 72.8,
+        "peak_seconds": 72.867708,
+        "offset_ms": 67.708,
+        "peak_delta": 0.00518799,
+        "channel": 0
+      },
+      {
+        "mark_seconds": 73.4,
+        "peak_seconds": 73.251208,
+        "offset_ms": -148.792,
+        "peak_delta": 0.0038147,
+        "channel": 0
+      },
+      {
+        "mark_seconds": 74.1,
+        "peak_seconds": 73.9535,
+        "offset_ms": -146.5,
+        "peak_delta": 0.00506592,
+        "channel": 1
+      },
+      {
+        "mark_seconds": 75.2,
+        "peak_seconds": 75.057042,
+        "offset_ms": -142.958,
+        "peak_delta": 0.00375366,
+        "channel": 0
+      },
+      {
+        "mark_seconds": 76.5,
+        "peak_seconds": 76.440292,
+        "offset_ms": -59.708,
+        "peak_delta": 0.00567627,
+        "channel": 0
+      },
+      {
+        "mark_seconds": 77.7,
+        "peak_seconds": 77.715125,
+        "offset_ms": 15.125,
+        "peak_delta": 0.00439453,
+        "channel": 1
+      },
+      {
+        "mark_seconds": 78.4,
+        "peak_seconds": 78.2875,
+        "offset_ms": -112.5,
+        "peak_delta": 0.00424194,
+        "channel": 0
+      },
+      {
+        "mark_seconds": 80.2,
+        "peak_seconds": 80.189583,
+        "offset_ms": -10.417,
+        "peak_delta": 0.00259399,
+        "channel": 0
+      },
+      {
+        "mark_seconds": 82.7,
+        "peak_seconds": 82.693833,
+        "offset_ms": -6.167,
+        "peak_delta": 0.00344849,
+        "channel": 1
+      },
+      {
+        "mark_seconds": 90.3,
+        "peak_seconds": 90.371958,
+        "offset_ms": 71.958,
+        "peak_delta": 0.00408936,
+        "channel": 0
+      }
+    ]
+  }
+}

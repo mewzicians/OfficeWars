@@ -65,41 +65,28 @@ description: Continue OfficeWars game-design and balance planning from the repos
 
 ## Current Repository Phase
 
-- The active HTML contains the approved rollout, readability candidate,
-  cycling playback speed, versioned active-run persistence, thirteen-step
-  contextual orientation, grounded Home redesign, opposing celestial
-  transition arcs, conditional Night Planner tabs, and responsive three- or
-  four-column Home Shop offers. Its SHA-256 is
-  `D2E44F34D21CF9A9303311ED5377A9910BB7D2D5C9FEE36BC0F98FCA5647498A`.
-- Do not restart or reimplement the overhaul from the rollout plan unless a
-  verified finding requires a fix.
-- The first full bidirectional verification ran on 2026-08-06 and failed ship
-  signoff. Read `verification/FULL_VERIFICATION_2026-08-06.md` before fixing
-  or tuning the candidate.
-- Findings F1-F4 are resolved and passed the focused retest in
-  `verification/BLOCKERS_1_4_RETEST_2026-08-06.md`.
-- All eight targeted high-risk interaction groups passed the deterministic
-  suite recorded in
-  `verification/ADVANCED_INTERACTION_VERIFICATION_2026-08-06.md`.
-- The deterministic Skip repair and expanded browser suite passed local
-  validation on 2026-08-07. Read
-  `verification/SKIP_FIX_LOCAL_VALIDATION_2026-08-07.md` for that snapshot's
-  evidence and cross-version simulation comparison.
-- The current hash passes focused task-keyword/celestial, Night Planner,
-  Home/schedule, smoke, persistence/tutorial, advanced interaction, visual,
-  and full no-simulation verification. Read
-  `verification/HOME_SHOP_RESPONSIVE_GRID_2026-08-11.md` for current-hash
-  evidence. `verification/FULL_VERIFICATION_2026-08-11_F51F2F7C.md` is the
-  preceding exhaustive snapshot and remains evidence only for its named hash.
-- Fresh structural simulation under the corrected Night policy remains Not
-  Run. The prior 58.4 percent scripted-skilled result is historical snapshot
-  telemetry, not current balance evidence.
-- Balance finding F5, structural tuning, explicitly unverified rows, human
-  evidence, and the incomplete Home set design remain unfinished.
-- Options already persists a master-volume preference, but the game has no
-  implemented music or sound system yet.
-- Read `docs/HANDOFF.md` for current implementation status and
-  `docs/BALANCE_LEDGER.md` for exact mechanics and decision status.
+- The active HTML implements Workday and Office Politics Phases 1-5 at
+  SHA-256
+  `4BBE884285DF98DB6F7D0C98FC92B9A44464280C86D5A7BBECFE56F2316F2EA9`.
+- Implemented systems include the fixed calendar, Overdelivery, transparent
+  Chad, deterministic manager packages, cinematic chronological politics,
+  dynamic rosters, Relationship, standing, invitations, loyalty, Alumni,
+  campaigns, Favors, path-aware progression, fifty cards, rewards, Deals,
+  Closing, Brand Strategy, Weekends, and deterministic restoration.
+- The seven-Home, 29-item, nine-set, and 24-cell Cash Jar redesign is Locked
+  and canonically recorded but unimplemented.
+- The deterministic twelve-event Galactic Weekend replacement table is
+  Locked and canonically recorded. Galactic Investment and Galactic Gambler
+  exact values remain Draft; Galactic Property Rights is Locked and uses a
+  frozen active-item morning snapshot.
+- Guided Intern is Locked and unimplemented. It follows the Home gate so it
+  teaches the final catalog and Night model.
+- House deposits, deposit caps, rarity odds, and floor salary remain Draft
+  simulation inputs.
+- Home, Cash Jar, Guided Intern, accessibility, simulation, tuning, and human
+  evidence are Not Run.
+- Read `docs/HANDOFF.md` for current phase and
+  `docs/BALANCE_LEDGER.md` for exact mechanics and status.
 
 ## Useful Invocations
 

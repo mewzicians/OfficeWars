@@ -12,15 +12,31 @@ from playwright.sync_api import sync_playwright
 
 ROOT = Path(__file__).resolve().parent
 GAME_URL = (ROOT / "officewarsautobattler.html").as_uri()
+
+# Interface captures are browsable reference material, so they land in the
+# private vault section when that section exists and in a gitignored local
+# folder otherwise. A public clone has no Wiki/ and takes the fallback. Names
+# carry no leading dot, because Obsidian hides dotfiles and a hidden reference
+# image cannot be browsed.
+CAPTURES = ROOT / "Wiki/Projects/OfficeWars/Visual Reference"
+if not CAPTURES.is_dir():
+    CAPTURES = ROOT / "artifacts/visual-reference"
+CAPTURES.mkdir(parents=True, exist_ok=True)
 READY = "document.documentElement.dataset.officewarsReady === 'true'"
 META_COMPLETE = json.dumps(
     {
-        "schema": 5,
+        "schema": 6,
         "tutorial": {
             "completed": True,
-            "nextStep": 13,
+            "nextStep": 0,
             "skipped": False,
             "replayRequested": False,
+        },
+        "guidedIntern": {
+            "required": True,
+            "completed": True,
+            "replayRequested": False,
+            "version": 1,
         },
         "settings": {"volume": 70},
     }
@@ -193,6 +209,22 @@ def main():
                 load(page)
                 start_night(page)
 
+                overview = page.evaluate(
+                    """() => ({
+                      overview:!!document.querySelector('.home-overview-grid'),
+                      subtabs:[...document.querySelectorAll('.home-subtab')]
+                        .map(button => button.textContent.trim()),
+                      active:document.querySelector('.home-subtab.active')
+                        ?.textContent.trim()
+                    })"""
+                )
+                if overview != {
+                    "overview": True,
+                    "subtabs": ["OVERVIEW", "SHOP", "INVENTORY & SETS"],
+                    "active": "OVERVIEW",
+                }:
+                    failures.append(f"{name}:home-overview:{overview}")
+                page.click(".home-subtab:has-text('SHOP')")
                 planner = planner_state(page)
                 rect = planner["shellRect"]
                 within_viewport = bool(
@@ -230,7 +262,7 @@ def main():
                     failures.append(f"{name}:planner:{planner}")
 
                 page.screenshot(
-                    path=ROOT / f".visual-night-planner-{name}.png",
+                    path=CAPTURES / f"visual-night-planner-{name}.png",
                     animations="disabled",
                 )
 
@@ -257,7 +289,7 @@ def main():
                 ):
                     failures.append(f"{name}:four-home-offers:{four_offer}")
                 page.screenshot(
-                    path=ROOT / f".visual-night-home-four-{name}.png",
+                    path=CAPTURES / f"visual-night-home-four-{name}.png",
                     animations="disabled",
                 )
 
@@ -364,7 +396,7 @@ def main():
                         f"{name}:social-relationships:{social_relationships}"
                     )
                 page.screenshot(
-                    path=ROOT / f".visual-night-social-{name}.png",
+                    path=CAPTURES / f"visual-night-social-{name}.png",
                     animations="disabled",
                 )
                 page.click(".night-panel-header .btn")
@@ -392,7 +424,7 @@ def main():
                 if not (
                     unlocked["tabs"] == 4
                     and unlocked["dealTab"]
-                    and unlocked["pickerCentered"]
+                    and page.locator(".home-overview-grid").count() == 1
                 ):
                     failures.append(f"{name}:unlocked:{unlocked}")
                 page.click('.night-planner-tab[data-night-tab="deals"]')
@@ -410,6 +442,7 @@ def main():
                         f"{name}:browser-errors:{page_errors}:{console_errors}"
                     )
                 evidence[name] = {
+                    "overview": overview,
                     "planner": planner,
                     "fourOffer": four_offer,
                     "room": room,
@@ -467,145 +500,61 @@ def main():
             context = browser.new_context(viewport={"width": 1440, "height": 900})
             page = context.new_page()
             load(page)
-            migrations = page.evaluate(
+            guided_compatibility = page.evaluate(
                 """() => {
-                  const migrate = (schema, nextStep) => owMigrateMeta({
-                    schema,
+                  const legacyIncomplete = owMigrateMeta({
+                    schema:3,
                     tutorial:{
-                      completed:false,
-                      nextStep,
-                      skipped:false,
-                      replayRequested:false
+                      completed:false,nextStep:7,
+                      skipped:false,replayRequested:false
                     },
                     settings:{volume:70}
-                  }).tutorial.nextStep;
+                  });
+                  const legacyComplete = owMigrateMeta({
+                    schema:4,
+                    tutorial:{
+                      completed:true,nextStep:10,
+                      skipped:false,replayRequested:false
+                    },
+                    settings:{volume:70}
+                  });
                   return {
-                    schema3:{
-                      beforeNight:migrate(3,4),
-                      nightHome:migrate(3,5),
-                      nightMiddle:migrate(3,7),
-                      promotion:migrate(3,9),
-                      capstone:migrate(3,12)
+                    incomplete:{
+                      legacy:legacyIncomplete.tutorial,
+                      guided:legacyIncomplete.guidedIntern
                     },
-                    schema4:{
-                      beforeNight:migrate(4,4),
-                      night:migrate(4,5),
-                      promotion:migrate(4,6),
-                      capstone:migrate(4,9)
+                    complete:{
+                      legacy:legacyComplete.tutorial,
+                      guided:legacyComplete.guidedIntern
                     },
-                    complete3:owMigrateMeta({
-                      schema:3,
-                      tutorial:{completed:true,nextStep:13},
-                      settings:{volume:70}
-                    }).tutorial.nextStep,
-                    complete4:owMigrateMeta({
-                      schema:4,
-                      tutorial:{completed:true,nextStep:10},
-                      settings:{volume:70}
-                    }).tutorial.nextStep,
-                    total:OW_ORIENTATION_STEPS.length
+                    lessons:OfficeWarsTest.guidedInternLessons().map(
+                      lesson=>lesson.id
+                    ),
+                    oldUi:{
+                      callout:!!document.getElementById('tutorial-callout'),
+                      backdrop:!!document.getElementById('tutorial-backdrop'),
+                      focusRing:!!document.getElementById('tutorial-focus-ring')
+                    }
                   };
                 }"""
             )
-            if migrations != {
-                "schema3": {
-                    "beforeNight": 4,
-                    "nightHome": 5,
-                    "nightMiddle": 5,
-                    "promotion": 9,
-                    "capstone": 12,
-                },
-                "schema4": {
-                    "beforeNight": 4,
-                    "night": 5,
-                    "promotion": 9,
-                    "capstone": 12,
-                },
-                "complete3": 13,
-                "complete4": 13,
-                "total": 13,
-            }:
-                failures.append(f"migration:{migrations}")
-
-            page.evaluate(
-                """() => {
-                  const meta = owReadMeta();
-                  meta.tutorial = {
-                    completed:false,
-                    nextStep:5,
-                    skipped:false,
-                    replayRequested:false
-                  };
-                  owWriteMeta(meta);
-                  startRun({seed:87003});
-                  R.today = {additionalNightPurchases:0,log:[]};
-                  nightPhase({animate:false});
-                  void owMaybeShowOrientationForPhase('night');
-                }"""
-            )
-            page.wait_for_function(
-                "document.getElementById('tutorial-callout').classList.contains('active')"
-            )
-            tutorial = []
-            for title, tab, target, copy_fragment in [
-                (
-                    "SHOP FOR YOUR HOME",
-                    "home",
-                    ".night-home-desk",
-                    "permanent upgrades",
-                ),
-                (
-                    "MAKE AN OUTING",
-                    "outings",
-                    ".night-outings-desk",
-                    "does not use your Home purchase",
-                ),
-                (
-                    "CHECK RELATIONSHIPS",
-                    "relationships",
-                    ".night-relationships-desk",
-                    "meet them during the Workday",
-                ),
-                (
-                    "RECOVER AND FINISH",
-                    "home",
-                    ".night-footer",
-                    "Hide Planner",
-                ),
-            ]:
-                page.wait_for_function(
-                    "(title) => document.getElementById('tutorial-title').textContent === title",
-                    arg=title,
+            if not (
+                guided_compatibility["incomplete"]["legacy"]["nextStep"] == 5
+                and not guided_compatibility["incomplete"]["legacy"]["completed"]
+                and guided_compatibility["incomplete"]["guided"]["required"]
+                and not guided_compatibility["incomplete"]["guided"]["completed"]
+                and guided_compatibility["complete"]["legacy"]["nextStep"] == 13
+                and guided_compatibility["complete"]["legacy"]["completed"]
+                and guided_compatibility["complete"]["guided"]["required"]
+                and not guided_compatibility["complete"]["guided"]["completed"]
+                and len(guided_compatibility["lessons"]) == 18
+                and len(set(guided_compatibility["lessons"])) == 18
+                and not any(guided_compatibility["oldUi"].values())
+            ):
+                failures.append(
+                    f"guided-compatibility:{guided_compatibility}"
                 )
-                state = page.evaluate(
-                    """({tab,target}) => ({
-                      title:document.getElementById('tutorial-title').textContent,
-                      copy:document.getElementById('tutorial-copy').textContent,
-                      tab:nightState.tab,
-                      planner:!!document.querySelector('.night-planner-shell'),
-                      focus:document.getElementById(
-                        'tutorial-focus-ring'
-                      ).classList.contains('active'),
-                      target:owOrientationTarget?.matches(target),
-                      step:owOrientationStepIndex
-                    })""",
-                    {"tab": tab, "target": target},
-                )
-                tutorial.append(state)
-                expected_step = 5 + len(tutorial) - 1
-                if not (
-                    state["title"] == title
-                    and copy_fragment in state["copy"]
-                    and state["tab"] == tab
-                    and state["planner"]
-                    and state["focus"]
-                    and state["target"]
-                    and state["step"] == expected_step
-                ):
-                    failures.append(f"tutorial:{state}")
-                page.click("#tutorial-next")
-            evidence["migration"] = migrations
-            evidence["tutorial"] = tutorial
+            evidence["guidedCompatibility"] = guided_compatibility
             context.close()
         finally:
             browser.close()

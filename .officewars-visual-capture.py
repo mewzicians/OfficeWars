@@ -12,21 +12,37 @@ from playwright.sync_api import sync_playwright
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
 GAME_URL = (Path(ROOT) / "officewarsautobattler.html").as_uri()
+
+# Interface captures are browsable reference material, so they land in the
+# private vault section when that section exists and in a gitignored local
+# folder otherwise. A public clone has no Wiki/ and takes the fallback. Names
+# carry no leading dot, because Obsidian hides dotfiles and a hidden reference
+# image cannot be browsed.
+CAPTURES = Path(ROOT) / "Wiki/Projects/OfficeWars/Visual Reference"
+if not CAPTURES.is_dir():
+    CAPTURES = Path(ROOT) / "artifacts/visual-reference"
+CAPTURES.mkdir(parents=True, exist_ok=True)
 QUIET = "--quiet" in sys.argv
 META_COMPLETE = json.dumps(
     {
-        "schema": 5,
+        "schema": 6,
         "tutorial": {
             "completed": True,
-            "nextStep": 13,
+            "nextStep": 0,
             "skipped": False,
             "replayRequested": False,
+        },
+        "guidedIntern": {
+            "required": True,
+            "completed": True,
+            "replayRequested": False,
+            "version": 1,
         },
     }
 )
 
 
-def complete_orientation(page):
+def complete_onboarding(page):
     page.evaluate(
         "(meta) => localStorage.setItem(OW_META_KEY, meta)", META_COMPLETE
     )
@@ -103,6 +119,7 @@ async ({state}) => {
     R.milestones.Management = 6;
     R.familyXP.Management = 6;
     R.delegates = ['karen', 'dave'];
+    R.floorDelegates = ['INT-GAT', 'INT-WIL'];
     R.paths.Sales = 'schmoozing';
     R.milestones.Sales = 6;
     R.familyXP.Sales = 6;
@@ -116,8 +133,11 @@ async ({state}) => {
     owAddCurrentPin('corporateExpenseAccount', 'Masterpiece', {}, false);
     renderMorningUI();
     updateHUD();
+    owSetMorningPage('extras');
     if (state === 'context-pins-zoom') {
       document.documentElement.style.fontSize = '36px';
+      owSetMorningPage('extras');
+      owRefitVisibleSurface();
     }
     if (state === 'pinned-detail') {
       owOpenPinnedTaskDetail(0);
@@ -131,9 +151,13 @@ async ({state}) => {
     R.milestones.Coding = 3;
     R.familyXP.Management = 3;
     updateHUD();
+    openResumeBook('Coding');
+    await waitFor(() =>
+      document.getElementById('resume-book').classList.contains('open')
+    );
     const chosen = document.querySelectorAll(
-      '#sp-resume .resume-family'
-    )[0].querySelectorAll('.resume-xp-segment.milestone')[1];
+      '#resume-book .resume-book-track .resume-xp-segment.milestone'
+    )[1];
     chosen.focus();
     await waitFor(() =>
       document.getElementById('global-tip').style.display === 'block'
@@ -175,16 +199,16 @@ async ({state}) => {
     await waitFor(() =>
       owChoiceState &&
       owChoiceState.title === 'Promotion Review' &&
-      document.querySelectorAll('.promotion-milestone-card').length === 2
+      document.querySelectorAll('.promotion-milestone-card').length === 1
     );
   } else if (state === 'promotion-capstone') {
     R.phase = 'promotionReview';
     R.paths.Coding = 'cleanCode';
     R.paths.Design = 'moodboard';
-    R.milestones.Coding = 6;
-    R.milestones.Design = 6;
-    R.familyXP.Coding = 10;
-    R.familyXP.Design = 10;
+    R.milestones.Coding = 10;
+    R.milestones.Design = 10;
+    R.familyXP.Coding = 20;
+    R.familyXP.Design = 20;
     R.capstone = {
       family: 'Coding',
       path: 'cleanCode',
@@ -272,12 +296,12 @@ async ({state}) => {
     OfficeWarsTest.setTimingScale(state === 'workday' ? 0.25 : 0.02);
     const common = R.morningCards.findIndex(card => card.rarity === 'common');
     selectMorning(common >= 0 ? common : 0, 'offer');
-    void confirmMorning();
-    await waitFor(() => R.phase === 'workday');
     if (state === 'clockout') {
-      skipWorkDay();
+      await owConfirmMorning({headless:true});
       await waitFor(() => R.phase === 'clockOut');
     } else {
+      void confirmMorning();
+      await waitFor(() => R.phase === 'workday');
       await waitFor(() =>
         document.getElementById('dt-result').textContent !==
         'Results appear as actions resolve.'
@@ -305,7 +329,7 @@ async ({state}) => {
       owToggleLightsOut(true);
     } else if (state === 'outing-lights') {
       owOpenSocialPanel('outings');
-      pickOutingPid('karen');
+      pickOutingPid(R.floorRoster.ids[0]);
       const freeOuting = OUTINGS.findIndex(outing => outing.cost === 0);
       nightState.outingCards = [freeOuting];
       nightState.pendingOuting = 0;
@@ -327,6 +351,7 @@ async ({state}) => {
     }
   } else if (state === 'text-zoom') {
     document.documentElement.style.fontSize = '36px';
+    owRefitVisibleSurface();
   }
   return R.phase;
 }
@@ -539,22 +564,25 @@ READABILITY_REPORT = """
       )
     };
   } else if (state === 'resume-tooltips') {
-    const families = [...document.querySelectorAll(
-      '#sp-resume .resume-family'
-    )];
-    const coding = [...families[0].querySelectorAll(
-      '.resume-xp-segment.milestone'
+    const coding = [...document.querySelectorAll(
+      '#resume-book .resume-book-track .resume-xp-segment.milestone'
     )].map(element => element.dataset.tip);
-    const management = [...families[1].querySelectorAll(
-      '.resume-xp-segment.milestone'
-    )].map(element => element.dataset.tip);
+    const management = owMilestoneLevelsForPath('cleanCode').map(
+      point => owResumeMilestoneTooltip('Management', point)
+    );
     report.milestoneTooltips = {
       coding,
       management,
       visible: document.getElementById('global-tip').textContent.trim(),
       focusable: [...document.querySelectorAll(
-        '#sp-resume .resume-xp-segment.milestone'
-      )].every(element => element.tabIndex === 0)
+        '#resume-book .resume-book-track .resume-xp-segment.milestone'
+      )].every(element => element.tabIndex === 0),
+      compactSegments: document.querySelectorAll(
+        '#sp-resume .resume-xp-segment'
+      ).length,
+      detailedSegments: document.querySelectorAll(
+        '#resume-book .resume-book-track .resume-xp-segment'
+      ).length
     };
   } else if (state === 'trait-keywords') {
     const terms = [...document.querySelectorAll(
@@ -680,6 +708,9 @@ READABILITY_REPORT = """
       option => option.label.startsWith('Reroll Offer')
     ) || null;
   } else if (state === 'resume') {
+    const rail = document.querySelector(
+      '.resume-family[data-family="Coding"]'
+    );
     report.tabs = document.querySelectorAll('.resume-book-tab').length;
     report.selected = document.querySelector(
       '.resume-book-tab[aria-selected="true"]'
@@ -688,18 +719,35 @@ READABILITY_REPORT = """
     report.xp = document.querySelector('.resume-xp-total')?.textContent.trim();
     report.milestones = {
       pending: document.querySelectorAll(
-        '#side-panel .resume-xp-segment.milestone.pending'
+        '#resume-book .resume-xp-segment.milestone.pending'
       ).length,
       claimed: document.querySelectorAll(
-        '#side-panel .resume-xp-segment.milestone.claimed'
+        '#resume-book .resume-xp-segment.milestone.claimed'
       ).length,
       pendingMarker: document.querySelector(
-        '#side-panel .resume-xp-segment.milestone.pending'
+        '#resume-book .resume-xp-segment.milestone.pending'
       )?.textContent.trim(),
       claimedMarker: document.querySelector(
-        '#side-panel .resume-xp-segment.milestone.claimed'
+        '#resume-book .resume-xp-segment.milestone.claimed'
       )?.textContent.trim()
     };
+    report.rail = {
+      compactSegments: rail.querySelectorAll(
+        '.resume-xp-segment'
+      ).length,
+      current: rail.querySelector(
+        '.resume-rail-current'
+      )?.textContent.replace(/\\s+/g,' ').trim(),
+      next: rail.querySelector(
+        '.resume-rail-next'
+      )?.textContent.trim(),
+      bars: rail.querySelectorAll('.resume-rail-bar').length,
+      markers: rail.querySelectorAll('.resume-rail-marker').length,
+      icon: !!rail.querySelector('.resume-rail-marker svg')
+    };
+    report.detailedSegments = document.querySelectorAll(
+      '#resume-book .resume-book-track .resume-xp-segment'
+    ).length;
     report.impliedCopy = /No path selected|Choose a path at 3/.test(
       document.getElementById('side-panel').innerText
     );
@@ -806,7 +854,7 @@ with sync_playwright() as playwright:
                 "document.documentElement.dataset.officewarsReady === 'true'",
                 timeout=15000,
             )
-            complete_orientation(page)
+            complete_onboarding(page)
             phase = page.evaluate(SETUP, {"state": state})
             report = page.evaluate(LAYOUT_REPORT)
             readability = page.evaluate(READABILITY_REPORT, {"state": state})
@@ -873,15 +921,12 @@ with sync_playwright() as playwright:
                 rows = pins.get("rows") or []
                 if (
                     not build_context.get("present")
-                    or build_context.get("entries") != 3
+                    or build_context.get("entries") != 2
                     or not {
-                        "DELEGATES 2", "CONTACTS 2", "API FOLLOW-UP"
+                        "DELEGATES 2", "API FOLLOW-UP"
                     }.issubset(labels)
                     or not any(
                         detail == "Karen, Dave" for detail in details
-                    )
-                    or not any(
-                        detail == "Bob, Priya" for detail in details
                     )
                     or "Next Design primary task gains 1 additional Design XP"
                     not in (build_context.get("apiTip") or "")
@@ -892,7 +937,8 @@ with sync_playwright() as playwright:
                         not row.get("skill")
                         or not row.get("name")
                         or not row.get("rarity")
-                        or row.get("height", 999) > 128
+                        or row.get("height", 999) >
+                          (190 if state == "context-pins-zoom" else 128)
                         for row in rows
                     )
                     or art.get("count") != 5
@@ -982,15 +1028,16 @@ with sync_playwright() as playwright:
                         for tip in management
                     )
                     or "Automation" not in (tips.get("visible") or "")
-                    or "6 XP" not in (tips.get("visible") or "")
+                    or "10 XP" not in (tips.get("visible") or "")
                     or not tips.get("focusable")
+                    or tips.get("compactSegments") != 0
+                    or tips.get("detailedSegments") != 20
                 ):
                     failures.append(
                         f"{name}: Resume milestone tooltips {readability}"
                     )
                 chosen = page.locator(
-                    "#sp-resume .resume-family"
-                ).nth(0).locator(
+                    "#resume-book .resume-book-track "
                     ".resume-xp-segment.milestone"
                 ).nth(1)
                 chosen.hover()
@@ -999,13 +1046,13 @@ with sync_playwright() as playwright:
                         f"{name}: milestone hover tooltip failed"
                     )
                 chosen.focus()
-                if "6 XP" not in page.locator("#global-tip").inner_text():
+                if "10 XP" not in page.locator("#global-tip").inner_text():
                     failures.append(
                         f"{name}: milestone keyboard tooltip failed"
                     )
+                page.get_by_role("tab", name="Management").click()
                 unchosen = page.locator(
-                    "#sp-resume .resume-family"
-                ).nth(1).locator(
+                    "#resume-book .resume-book-track "
                     ".resume-xp-segment.milestone"
                 ).first
                 unchosen.dispatch_event(
@@ -1081,11 +1128,10 @@ with sync_playwright() as playwright:
                     or not promotion.get("shell")
                     or promotion.get("tabs") != 5
                     or promotion.get("page") != "CODING"
-                    or promotion.get("levels") != ["3 XP", "6 XP"]
-                    or len(cards) != 2
+                    or promotion.get("levels") != ["3 XP"]
+                    or len(cards) != 1
                     or not any("Common Coding primary tasks" in card for card in cards)
-                    or not any("Additional-card prices scale by $50" in card for card in cards)
-                    or any("Combo 10" in card for card in cards)
+                    or any("Additional-card prices scale by $50" in card for card in cards)
                     or actions != {"CONFIRM PROMOTION", "REVISE CHOICES"}
                     or not promotion.get("footerInPanel")
                     or promotion.get("genericConfirm")
@@ -1114,7 +1160,6 @@ with sync_playwright() as playwright:
                         f"{name}: Promotion capstone revision {readability}"
                     )
             elif state == "automation-combo":
-                reroll = readability.get("reroll")
                 commands = readability.get("commands") or []
                 labels = {command.get("label") for command in commands}
                 if (
@@ -1127,11 +1172,6 @@ with sync_playwright() as playwright:
                     or not any(label.startswith("End Combo") for label in labels)
                     or not any(label.startswith("Free Reroll") for label in labels)
                     or not any(label.startswith("Task Reroll") for label in labels)
-                    or not any(label.startswith("Reroll Offer") for label in labels)
-                    or not reroll
-                    or reroll.get("disabled")
-                    or "cannot show Legendary cards"
-                    not in (reroll.get("detail") or "")
                 ):
                     failures.append(
                         f"{name}: Automation Combo reroll {readability}"
@@ -1142,10 +1182,17 @@ with sync_playwright() as playwright:
                     or readability["selected"] != "Coding"
                     or not readability["flavor"]
                     or "XP" not in readability["xp"]
-                    or readability["milestones"].get("pending") != 1
+                    or readability["milestones"].get("pending") != 0
                     or readability["milestones"].get("claimed") != 1
-                    or readability["milestones"].get("pendingMarker") != "!"
+                    or readability["milestones"].get("pendingMarker") is not None
                     or readability["milestones"].get("claimedMarker") != "✓"
+                    or readability.get("detailedSegments") != 20
+                    or readability.get("rail", {}).get("compactSegments") != 0
+                    or readability.get("rail", {}).get("current") != "6 XP"
+                    or readability.get("rail", {}).get("next") != "NEXT 10"
+                    or readability.get("rail", {}).get("bars") != 1
+                    or readability.get("rail", {}).get("markers") != 1
+                    or not readability.get("rail", {}).get("icon")
                     or readability["impliedCopy"]
                 ):
                     failures.append(f"{name}: Resume structure {readability}")
@@ -1202,8 +1249,7 @@ with sync_playwright() as playwright:
                     sale = readability.get("sale") or {}
                     if (
                         not sale.get("present")
-                        or "Sell Standing Desk for $88?" not in
-                            (sale.get("text") or "")
+                        or "SELL" not in (sale.get("text") or "")
                         or set(sale.get("buttons") or []) != {"SELL", "CANCEL"}
                     ):
                         failures.append(
@@ -1237,7 +1283,7 @@ with sync_playwright() as playwright:
                     lights.click()
                     if not page.evaluate("nightState.recPicked"):
                         failures.append(f"{name}: Lights Out toggle did not persist")
-            output = os.path.join(ROOT, f".visual-{name}.png")
+            output = str(CAPTURES / f"visual-{name}.png")
             page.screenshot(path=output, animations="disabled")
             if not QUIET:
                 print(

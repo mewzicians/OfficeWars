@@ -68,11 +68,26 @@ async () => {
     R.floor = opts.floor || 1;
     R.stats.days = opts.day || 1;
     R.day = opts.floorDay || 1;
-    R.daysLeft = opts.daysLeft || 20;
+    R.overtimeBank = opts.overtimeBank || 0;
+    R.daysLeft = opts.daysLeft || Math.max(0, curRank().deadline - R.day);
     R.project = {
       name: 'Advanced Verification',
+      baseSize: opts.projectSize || 100000,
       size: opts.projectSize || 100000,
-      progress: opts.projectProgress || 0
+      completionTarget: opts.projectSize || 100000,
+      progress: opts.projectProgress || 0,
+      completionPending: false,
+      locked: false,
+      completionDay: null,
+      lockDay: null
+    };
+    R.overdelivery = {
+      active: false,
+      activationPending: false,
+      target: R.project.size,
+      tiers: 0,
+      paid: false,
+      payoutChoice: null
     };
     R.rival.progress = opts.rivalProgress || 0;
     R.rival.today = {gain: opts.rivalGain || 0, workSlots: 1};
@@ -147,15 +162,14 @@ async () => {
 
   await record('schedule_conflicts_and_ordering', async () => {
     const configure = seed => {
-      const hostile = 'hostile:' + HOSTILE_ACTIONS[0].id;
       resetToday(seed, {
-        naturalSlots: ['slump', 'cooler', 'lunch', 'mad', hostile],
+        naturalSlots: ['slump', 'cooler', 'lunch', 'mad', 'meeting'],
         projectSize: 100000
       });
       R.paths.Management = 'leadership';
-      R.milestones.Management = 10;
+      R.milestones.Management = 20;
       R.paths.Operations = 'efficiency';
-      R.milestones.Operations = 10;
+      R.milestones.Operations = 20;
       R.standardProcedures = ['work', 'meeting', 'work'];
       R.capstone = {family: 'Operations', path: 'efficiency', status: 'active'};
       R.closingRewards = ['executiveAirCover'];
@@ -275,8 +289,6 @@ async () => {
       !!briefingTarget &&
       briefingTarget.origin === 'natural' &&
       briefingTarget.repeats === 6 &&
-      entries.filter(entry => entry.kind.startsWith('hostile:'))
-        .every(entry => entry.repeats === 0) &&
       procedures.length === 3 &&
       procedures.every(entry => entry.repeats === 1);
     const capacityUsesEntries = nearly(
@@ -300,7 +312,8 @@ async () => {
     );
     const runtimeOrdering =
       R.phase === 'clockOut' &&
-      scheduledHistory.length === runtimeResolutions &&
+      scheduledHistory.length <= runtimeResolutions &&
+      history.length === scheduledHistory.length + triggered &&
       scheduledHistory.slice(0, 4).every(item => item.origin === 'opening') &&
       scheduledHistory.slice(-6).every(item =>
         item.source === 'Standard Procedure'
@@ -347,10 +360,9 @@ async () => {
       rivalGain: 20
     });
     R.paths.Sales = 'negotiation';
-    R.milestones.Sales = 10;
+    R.milestones.Sales = 20;
     R.paths.Operations = 'compoundInterest';
-    R.milestones.Operations = 10;
-    R.house = ['houseplant', 'savings'];
+    R.milestones.Operations = 20;
     R.closingRewards = ['burnoutInsurance', 'jointVenture'];
     R.focus = 5;
     R.today.pts = 20;
@@ -358,7 +370,7 @@ async () => {
     R.today.stressRelief = 2;
     R.today.pay = 125;
     R.today.positiveActionTypes = ['work', 'meeting', 'cooler', 'mad'];
-    R.today.activatedCoworkers = ['karen', 'dave', 'bob'];
+    R.today.phase4ShiftedTowardPlayer = owCurrentRosterIds().slice(0, 3);
     R.today.lastNaturalPositive = 'cooler';
     R.today.cardFlags = {
       campaignDesignClockOutRecovery: 10,
@@ -389,11 +401,15 @@ async () => {
     ];
     R.today.accountedCash = 5000;
     R.today.interestPrincipal = 4500;
+    const morningSalary = dailyPay();
+    R.cash += morningSalary;
+    R.today.salary = morningSalary;
+    R.today.salarySettled = true;
     const expectedInterest = owInterestAtClockOut();
     const expectedPerformance = 300 + 75 + 100;
-    const expectedPay = dailyPay() + 125 + expectedPerformance;
+    const expectedPay = 125 + expectedPerformance;
     const expectedBeforeDebt =
-      250 + 500 + expectedPay + expectedInterest;
+      250 + morningSalary + 500 + expectedPay + expectedInterest;
     const debtTotal = expectedBeforeDebt - 600;
     R.debts = [
       {source: 'Net 30 A', amount: Math.floor(debtTotal / 2), dueDay: R.stats.days},
@@ -406,7 +422,7 @@ async () => {
     ];
 
     dayResults();
-    const progressExpected = 173;
+    const progressExpected = 171;
     const economyEvidence = {
       expectedInterest,
       expectedPay,
@@ -445,8 +461,8 @@ async () => {
       effectsOf('creativeBreakthrough').length === 2 &&
       effectsOf('creativeBreakthrough').every(effect => effect.workdays === 1) &&
       effectsOf('shiftHandoffAction').length === 1 &&
-      R.daysLeft === 19;
-    const focusAndFlatStress = nearly(R.stress, 42.6) && nearly(R.focus, 0);
+      R.daysLeft === 4;
+    const focusAndFlatStress = nearly(R.stress, 43.6) && nearly(R.focus, 0);
 
     resetToday(72002, {
       floor: 1,
@@ -496,224 +512,200 @@ async () => {
     };
   });
 
-  await record('coworker_standard_and_forced_ordering', async () => {
+  await record('political_event_and_social_ordering', async () => {
     resetToday(73001);
-    R.rel.karen = 40;
-    R.today.cardFlags.oneOnOne = 1;
-    const standardFirst = owActivateCoworker('karen', {forced: false});
-    const forcedAfter = owActivateCoworker('karen', {forced: true});
-    const blockedAfter = owActivateCoworker('karen', {forced: false});
-    const orderA = {
-      standardUsed: R.today.standardBonusUsed.karen,
-      activated: R.today.activatedCoworkers.slice(),
-      pts: R.today.pts,
-      stressRelief: R.today.stressRelief,
-      standardFirst,
-      forcedAfter,
-      blockedAfter
-    };
-    const standardThenForced =
-      R.today.standardBonusUsed.karen &&
-      R.today.activatedCoworkers.filter(pid => pid === 'karen').length === 1 &&
-      R.today.cardFlags.oneOnOneSpent === true &&
-      blockedAfter.good === false &&
-      blockedAfter.text.includes('already used') &&
-      R.today.stressRelief === 8 &&
-      R.today.pts === 2;
-
-    resetToday(73002);
-    R.rel.dave = 40;
-    const forcedFirst = owActivateCoworker('dave', {forced: true});
-    const standardAfter = owActivateCoworker('dave', {forced: false});
-    const orderB = {
-      standardUsed: R.today.standardBonusUsed.dave,
-      pts: R.today.pts,
-      forcedFirst,
-      standardAfter
-    };
-    const forcedThenStandard =
-      R.today.standardBonusUsed.dave &&
-      R.today.pts === 8 &&
-      forcedFirst.good &&
-      standardAfter.good;
-
-    resetToday(73003);
-    R.rel.karen = 40;
-    R.rel.dave = 40;
-    R.rel.priya = 40;
-    addEffect('referralNetwork', {
-      nextWorkday: true,
-      expiresDay: R.stats.days,
-      coworkers: ['karen', 'dave', 'priya']
-    });
-    addEffect('referralNetwork', {
-      nextWorkday: true,
-      expiresDay: R.stats.days,
-      coworkers: ['bob', 'janet', 'raj']
-    });
-    const networkResult = owActivateCoworker('karen', {forced: false});
-    const afterNetworkDave = owActivateCoworker('dave', {forced: false});
-    const networkEvidence = {
-      result: networkResult,
-      blockedDave: afterNetworkDave,
-      standardBonusUsed: Object.assign({}, R.today.standardBonusUsed),
-      remainingNetworks: effectsOf('referralNetwork').map(effect =>
-        effect.coworkers.join(',')
-      ),
-      activated: R.today.activatedCoworkers.slice(),
-      pay: R.today.pay,
-      pts: R.today.pts,
-      stressGain: R.today.stressGain,
-      stressRelief: R.today.stressRelief
-    };
-    const referralReplacement =
-      effectsOf('referralNetwork').length === 1 &&
-      effectsOf('referralNetwork')[0].coworkers[0] === 'bob' &&
-      ['karen', 'dave', 'priya'].every(pid => R.today.standardBonusUsed[pid]) &&
-      afterNetworkDave.good === false &&
-      R.today.activatedCoworkers.includes('karen') &&
-      R.today.activatedCoworkers.includes('dave') &&
-      R.today.activatedCoworkers.includes('priya');
-
-    resetToday(73004);
-    R.paths.Management = 'delegation';
-    R.milestones.Management = 10;
-    R.capstone = {family: 'Management', path: 'delegation', status: 'active'};
-    R.delegates = ['karen', 'dave'];
-    R.rel.karen = 40;
-    R.rel.dave = 40;
-    R.today.cardFlags.staffCheckIns = ['priya', 'raj'];
-    addEffect('executiveSponsor', {
-      workdays: 2,
-      coworker: 'bob',
-      chain: 3
-    });
-    addEffect('executiveSponsor', {
-      workdays: 2,
-      coworker: 'janet',
-      chain: 4
-    });
-    owRunOpeningEvents();
-    const openingNames = R.today.log
-      .filter(line =>
-        ['All Hands', 'Executive Sponsor', 'Staff Check-In'].includes(line.n)
-      )
-      .map(line => line.n + ':' + line.t);
-    const openingOrder =
-      openingNames.length === 5 &&
-      openingNames[0].startsWith('All Hands:') &&
-      openingNames[1].includes('Bob') &&
-      openingNames[2].includes('Janet') &&
-      openingNames[3].includes('Priya') &&
-      openingNames[4].includes('Raj') &&
-      Object.values(R.today.standardBonusUsed).every(value => value === false);
-
-    return {
-      checks: {
-        standard_then_forced: standardThenForced,
-        forced_then_standard: forcedThenStandard,
-        referral_network_replaces_one_standard: referralReplacement,
-        opening_events_use_locked_order: openingOrder
+    const ids=owCurrentRosterIds();
+    const oneTarget=ids[0];
+    R.today.cardFlags.oneOnOne=1;
+    R.today.politicalEvents=[];
+    R.today.cinematicResults=[];
+    R.today.phase4ShiftedTowardPlayer=[];
+    const event={
+      id:'advanced-one-on-one',
+      type:'relationship',
+      page:{
+        targetIds:[oneTarget],
+        options:[{
+          id:'safe',
+          label:'Safe',
+          successEffects:[],
+          failureEffects:[],
+          cost:{cash:0}
+        }]
       },
-      evidence: {
-        standardThenForced: orderA,
-        forcedThenStandard: orderB,
-        referralNetwork: networkEvidence,
-        openingOrder: openingNames
+      choice:{optionId:'safe'},
+      rolledSuccess:true,
+      finalOdds:100,
+      reservedCash:0,
+      participants:ids.slice(0,3),
+      applied:false,
+      discarded:false,
+      order:0,
+      exactlyOnce:{}
+    };
+    const progressBefore=R.project.progress;
+    owApplyCinematicPoliticalEvent(event);
+    const progressAfterFirst=R.project.progress;
+    owApplyCinematicPoliticalEvent(event);
+    const oneOnOneExactlyOnce=
+      progressAfterFirst-progressBefore===2 &&
+      R.project.progress===progressAfterFirst &&
+      R.today.cardFlags.phase4OneOnOneSpent &&
+      event.applied;
+
+    const loyal=ids[1];
+    const loyalState=owCoworkerState(loyal);
+    loyalState.relationship=10;
+    loyalState.loyal=true;
+    const loyalStanding=loyalState.playerStanding;
+    const blocked=owShiftStanding(loyal,'chad',10,'Advanced fixture');
+    const loyaltyPreventsMovement=
+      blocked===0 && loyalState.playerStanding===loyalStanding;
+
+    resetToday(73002,{phase:'night',cash:5000});
+    nightPhase();
+    const inviteIds=owCurrentRosterIds().slice(0,3);
+    inviteIds.forEach(id=>{
+      const state=owCoworkerState(id);
+      state.relationship=7;
+      state.playerStanding=50;
+      state.chadStanding=50;
+    });
+    R.nightInvitations={
+      id:'advanced-referral-network',
+      day:R.stats.days,
+      entries:inviteIds.map((id,index)=>({
+        id:'advanced-invite-'+id,
+        coworkerId:id,
+        reason:index<2?'Referral Network':'Relationship-weighted invitation',
+        price:0,
+        order:index,
+        choice:null,odds:null,roll:null,success:null,
+        applied:false,result:null
+      })),
+      rerolled:false,
+      completed:false
+    };
+    addEffect('referralNetwork',{
+      nextWorkday:true,
+      availableDay:R.stats.days,
+      expiresDay:R.stats.days,
+      coworkers:inviteIds.slice(0,2),
+      coworkerArchetypes:inviteIds.slice(0,2).map(
+        owPhase4ArchetypeForAnyId
+      ),
+      targetLifetime:'archetype'
+    });
+    const standingBefore=Object.fromEntries(inviteIds.map(id=>[
+      id,owCoworkerState(id).playerStanding
+    ]));
+    await owChooseInvitationApproach(
+      R.nightInvitations.entries[0].id,
+      'rapport'
+    );
+    const standingAfter=Object.fromEntries(inviteIds.map(id=>[
+      id,owCoworkerState(id).playerStanding
+    ]));
+    const referralNetworkExactlyOnce=
+      inviteIds.every(id=>standingAfter[id]===standingBefore[id]+3) &&
+      effectsOf('referralNetwork').length===0 &&
+      nightState.outingUsed;
+
+    return{
+      checks:{
+        one_on_one_applies_exactly_once:oneOnOneExactlyOnce,
+        loyalty_blocks_chad_movement:loyaltyPreventsMovement,
+        referral_network_uses_invitation_success:referralNetworkExactlyOnce
+      },
+      evidence:{
+        oneOnOne:{event,progressBefore,progressAfterFirst},
+        loyalty:{id:loyal,blocked,state:loyalState},
+        referralNetwork:{
+          inviteIds,standingBefore,standingAfter,
+          invitations:R.nightInvitations
+        }
       }
     };
   });
 
-  await record('repeated_meetings_and_strength', async () => {
+  await record('repeated_meetings_and_executive_support', async () => {
     resetToday(74001);
-    R.paths.Management = 'delegation';
-    R.milestones.Management = 10;
-    R.delegates = ['priya'];
-    R.rel.priya = 0;
-    R.rel.dave = 0;
-    R.rel.karen = 0;
-    const entry = owScheduleEntry(
+    const participants=owCurrentRosterIds().slice(0,3);
+    participants.forEach(id=>{
+      const state=owCoworkerState(id);
+      state.playerStanding=50;
+      state.chadStanding=50;
+    });
+    const entry=owScheduleEntry(
       'meeting',
       'natural',
       'Repeated Meeting Fixture',
-      {
-        repeats: 1,
-        participants: ['priya', 'dave', 'karen'],
-        forceFavorable: true
-      }
+      {repeats:1,participants:participants.slice(),forceFavorable:true}
     );
-    const summaries = [];
-    for (let resolution = 0; resolution < 2; resolution++) {
-      R.today.currentMeetingSummary = null;
-      OW_currentEntry = entry;
-      const line = actionDef('meeting').resolve();
+    const summaries=[];
+    for(let resolution=0;resolution<2;resolution++){
+      OW_currentEntry=entry;
+      owResolveMeetingParticipants(false,participants);
+      const line=actionDef('meeting').resolve();
       summaries.push({
         line,
-        participants: R.today.currentMeetingSummary.participants.map(person => ({
-          pid: person.pid,
-          bonus: person.bonus
-        }))
+        participants:R.today.currentMeetingSummary.participants.map(
+          person=>person.pid
+        )
       });
     }
-    const repeatedEvidence = {
-      participants: entry.participants.slice(),
-      summaries,
-      pay: R.today.pay,
-      pts: R.today.pts,
-      stressGain: R.today.stressGain,
-      stressRelief: R.today.stressRelief,
-      standardBonusUsed: Object.assign({}, R.today.standardBonusUsed),
-      meetingsToday: R.today.meetingsToday
-    };
-    const repeatedMeetings =
-      summaries.every(summary =>
-        summary.participants.map(person => person.pid).join(',') ===
-          'priya,dave,karen'
+    const repeatedMeetings=
+      summaries.every(summary=>
+        summary.participants.join('|')===participants.join('|')
       ) &&
-      R.today.pay === 300 &&
-      R.today.pts === 2 &&
-      R.today.stressGain === 8 &&
-      R.today.stressRelief === 12 &&
-      R.today.standardBonusUsed.priya === false &&
-      R.today.standardBonusUsed.dave === true &&
-      R.today.standardBonusUsed.karen === true &&
-      R.today.meetingsToday === 2;
+      participants.every(id=>owCoworkerState(id).playerStanding===56) &&
+      R.today.meetingsToday===2;
 
-    resetToday(74002, {floor: 7, stress: 0});
-    R.rel.priya = 0;
-    const before = owAccumulatorSnapshot();
-    const multiplied = owActivateCoworker('priya', {
-      forced: true,
-      strength: 4
+    resetToday(74002,{floor:7,stress:50});
+    const originalPick=pick;
+    pick=items=>items.includes('strategicPush')
+      ?'strategicPush'
+      :originalPick(items);
+    const progressBefore=R.today.pts;
+    const strategic=owExecutiveSupportOutcomeLine();
+    const strategicCorrect=R.today.pts-progressBefore===24;
+    pick=items=>items.includes('wellnessIntervention')
+      ?'wellnessIntervention'
+      :originalPick(items);
+    const reliefBefore=R.today.stressRelief;
+    const wellness=owExecutiveSupportOutcomeLine();
+    const wellnessCorrect=R.today.stressRelief-reliefBefore===26;
+    const rosterBefore=Object.fromEntries(owCurrentRosterIds().map(id=>[
+      id,{
+        relationship:owCoworkerState(id).relationship,
+        standing:owCoworkerState(id).playerStanding
+      }
+    ]));
+    pick=items=>items.includes('seniorSponsor')
+      ?'seniorSponsor'
+      :originalPick(items);
+    const senior=owExecutiveSupportOutcomeLine();
+    pick=originalPick;
+    const changed=owCurrentRosterIds().filter(id=>{
+      const state=owCoworkerState(id);
+      return state.relationship===rosterBefore[id].relationship+1 &&
+        state.playerStanding===rosterBefore[id].standing+3;
     });
-    const raw = {
-      pay: R.today.pay,
-      stressGain: R.today.stressGain,
-      activated: R.today.activatedCoworkers.slice(),
-      result: multiplied
-    };
-    const survived = owSettleAccumulatorDelta(before, 'Strength Fixture');
-    const strengthEvidence = {
-      raw,
-      finalStress: R.stress,
-      cashPending: R.today.pay,
-      survived
-    };
-    const strengthIncludesDrawback =
-      raw.pay === 300 &&
-      raw.stressGain === 8 &&
-      raw.activated.filter(pid => pid === 'priya').length === 1 &&
-      nearly(R.stress, 17.6) &&
-      survived;
 
-    return {
-      checks: {
-        repeated_meeting_activation_counts: repeatedMeetings,
-        strength_multiplies_complete_package: strengthIncludesDrawback
+    return{
+      checks:{
+        repeated_meetings_move_same_participants:repeatedMeetings,
+        strategic_push_formula:strategicCorrect,
+        wellness_intervention_formula:wellnessCorrect,
+        senior_sponsor_targets_exactly_two:changed.length===2
       },
-      evidence: {
-        repeated: repeatedEvidence,
-        strength: strengthEvidence
+      evidence:{
+        meetings:{participants,summaries,states:participants.map(
+          id=>owCoworkerState(id)
+        )},
+        strategic,
+        wellness,
+        senior:{changed,line:senior}
       }
     };
   });
@@ -721,11 +713,11 @@ async () => {
   await record('promotion_batches_and_capstones', async () => {
     resetToday(75001, {phase: 'promotionReview'});
     R.familyXP = {
-      Coding: 10,
-      Management: 10,
-      Design: 10,
-      Sales: 10,
-      Operations: 10
+      Coding: 20,
+      Management: 20,
+      Design: 20,
+      Sales: 20,
+      Operations: 20
     };
     const pathChoices = {
       Coding: 'Clean Code',
@@ -764,7 +756,7 @@ async () => {
       Object.keys(beforeApply.milestones).length === 0 &&
       beforeApply.capstone === null &&
       Object.keys(stage.paths).length === 5 &&
-      Object.values(stage.milestones).every(level => level === 10) &&
+      Object.values(stage.milestones).every(level => level === 20) &&
       stage.capstone.path === 'moodboard' &&
       stage.capstone.status === 'active';
     owApplyPromotionStage(stage);
@@ -775,15 +767,15 @@ async () => {
     };
     const appliedOnce =
       Object.keys(R.paths).length === 5 &&
-      Object.values(R.milestones).every(level => level === 10) &&
+      Object.values(R.milestones).every(level => level === 20) &&
       R.capstone.path === 'moodboard' &&
       R.capstone.status === 'active';
 
     resetToday(75002);
     R.paths.Coding = 'cleanCode';
     R.paths.Design = 'moodboard';
-    R.familyXP.Coding = 9;
-    R.familyXP.Design = 9;
+    R.familyXP.Coding = 19;
+    R.familyXP.Design = 19;
     R.capstoneBatch = [];
     owGrantFamilyXP('Coding', 1, 'Atomic Fixture');
     owGrantFamilyXP('Design', 1, 'Atomic Fixture');
@@ -797,8 +789,8 @@ async () => {
       capstone: Object.assign({}, R.capstone)
     };
     const atomicComparison =
-      R.familyXP.Coding === 10 &&
-      R.familyXP.Design === 10 &&
+      R.familyXP.Coding === 20 &&
+      R.familyXP.Design === 20 &&
       R.capstone.path === 'moodboard' &&
       R.capstone.status === 'reserved';
 
@@ -815,8 +807,8 @@ async () => {
       stepRewardsUnlocked: true
     };
     R.paths.Sales = 'negotiation';
-    R.milestones.Sales = 6;
-    R.familyXP.Sales = 9;
+    R.milestones.Sales = 10;
+    R.familyXP.Sales = 19;
     owAutomatedChoiceResolver = request => {
       if (request.title === 'Capstone Decision') {
         return chooseLabel(request, 'Global Brand');
@@ -844,8 +836,8 @@ async () => {
       brand: Object.assign({}, R.brandStrategy)
     };
     const brandTie =
-      R.familyXP.Sales === 10 &&
-      R.milestones.Sales === 6 &&
+      R.familyXP.Sales === 20 &&
+      R.milestones.Sales === 10 &&
       R.capstone.path === 'brandStrategy' &&
       R.capstone.status === 'active' &&
       R.brandStrategy.finalRewardActive;
@@ -878,7 +870,7 @@ async () => {
     const cleanCommon = owCardPreview(card('readmeUpdate'), {primary: true});
     const cleanRare = owCardPreview(card('parallelProcessing'), {primary: true});
     R.capstone = {family: 'Coding', path: 'cleanCode', status: 'active'};
-    R.milestones.Coding = 10;
+    R.milestones.Coding = 20;
     const cleanCap = owCardPreview(card('readmeUpdate'), {primary: true});
     pathChecks.cleanCode =
       cleanCommon.progress === 14 &&
@@ -898,7 +890,7 @@ async () => {
     const runAutomationReroll = async (seed, wanted) => {
       resetToday(seed);
       R.paths.Coding = 'automation';
-      R.milestones.Coding = 6;
+      R.milestones.Coding = 10;
       R.cash = 1000;
       R.dailyTaskRerolls = 1;
       R.rerollsMorning = 2;
@@ -993,8 +985,8 @@ async () => {
       paidOffer.every(option => option.rarity !== 'legendary') &&
       paidOfferSamples.every(offered => offered.rarity !== 'legendary') &&
       additionalComboPlay.codingXp === 0 &&
-      additionalComboPlay.codebase === 1 &&
-      additionalComboPlay.completions === 1 &&
+      additionalComboPlay.codebase === 0 &&
+      additionalComboPlay.completions === 0 &&
       additionalComboPlay.taskPlays === 1 &&
       additionalComboPlay.cash === 900 &&
       additionalComboPlay.combo === 2;
@@ -1010,7 +1002,7 @@ async () => {
 
     resetToday(76003);
     R.paths.Coding = 'debugging';
-    R.milestones.Coding = 6;
+    R.milestones.Coding = 10;
     R.yesterdayPrimaryFamily = 'Coding';
     const debugCard = card('actionPlan');
     await owCompletePlay(debugCard, {
@@ -1020,7 +1012,7 @@ async () => {
       sourceAncestors: [debugCard.task.id]
     });
     const xpAtSix = R.familyXP.Management;
-    R.milestones.Coding = 10;
+    R.milestones.Coding = 20;
     R.familyXP = {
       Coding: 10,
       Management: 3,
@@ -1040,27 +1032,52 @@ async () => {
 
     resetToday(76004);
     R.paths.Management = 'delegation';
-    R.milestones.Management = 6;
-    R.delegates = ['karen', 'dave'];
-    R.rel.karen = 10;
-    const relationshipGain = owGainRelationship('karen', 5);
-    R.today.standardBonusUsed.karen = true;
-    R.today.standardBonusUsed.dave = false;
-    const visitor = owChooseDailyVisitor(OW_COWORKER_PIDS);
+    R.milestones.Management = 10;
+    R.floorDelegates=[];
+    R.floorBriefingState=null;
+    owAutomatedChoiceResolver=firstLegal;
+    await owPhase4RunFloorBriefing();
+    owAutomatedChoiceResolver=null;
+    const delegates=R.floorDelegates.slice();
+    R.phase='morningResolution';
+    R.milestones.Management=20;
+    const target=delegates[0];
+    const targetState=owCoworkerState(target);
+    const standingBefore=targetState.playerStanding;
+    const realConversationTarget=owPhase4ConversationTarget;
+    const realConversationSentiment=owPhase4ConversationSentiment;
+    const realWeightedIntensity=owPhase4WeightedIntensity;
+    owPhase4ConversationTarget=()=>target;
+    owPhase4ConversationSentiment=()=>'warm';
+    owPhase4WeightedIntensity=()=>5;
+    R.today.phase4ChadConversation=null;
+    R.today.phase4DelegateCounterUsed=false;
+    const conversation=owPhase4PrepareChadConversation();
+    owPhase4ApplyChadConversation({order:0});
+    owPhase4ConversationTarget=realConversationTarget;
+    owPhase4ConversationSentiment=realConversationSentiment;
+    owPhase4WeightedIntensity=realWeightedIntensity;
     pathChecks.delegation =
-      relationshipGain === 10 &&
-      R.rel.karen === 20 &&
-      visitor === 'dave';
-    evidence.delegation = {relationshipGain, visitor, rel: R.rel.karen};
+      delegates.length===2 &&
+      new Set(delegates).size===2 &&
+      conversation.countered &&
+      conversation.side==='player' &&
+      targetState.playerStanding===standingBefore+5;
+    evidence.delegation = {
+      delegates,
+      conversation,
+      standingBefore,
+      standingAfter:targetState.playerStanding
+    };
 
     resetToday(76005);
     R.paths.Management = 'agile';
     R.milestones.Management = 3;
     const chance3 = owMeetingFavorableChance();
-    R.milestones.Management = 6;
+    R.milestones.Management = 10;
     const chance6 = owMeetingFavorableChance();
     const standupEntries = owPrepareSchedule(R.today.naturalSlots);
-    R.milestones.Management = 10;
+    R.milestones.Management = 20;
     const chance10 = owMeetingFavorableChance();
     R.capstone = {family: 'Management', path: 'agile', status: 'active'};
     const chanceCap = owMeetingFavorableChance();
@@ -1080,7 +1097,7 @@ async () => {
 
     resetToday(76006);
     R.paths.Management = 'leadership';
-    R.milestones.Management = 10;
+    R.milestones.Management = 20;
     owAutomatedChoiceResolver = request =>
       request.title.startsWith('Leadership:')
         ? chooseLabel(request, 'Replace')
@@ -1106,9 +1123,9 @@ async () => {
     R.polish.iterationPass = 4;
     R.milestones.Design = 3;
     const eye3 = owPolishProfile(card('iterationPass'));
-    R.milestones.Design = 6;
-    const eye6 = owPolishProfile(card('iterationPass'));
     R.milestones.Design = 10;
+    const eye6 = owPolishProfile(card('iterationPass'));
+    R.milestones.Design = 20;
     R.capstone = {family: 'Design', path: 'eyeForDetail', status: 'active'};
     R.masterpieceTaskId = 'iterationPass';
     const eyeCap = owPolishProfile(card('iterationPass'));
@@ -1128,11 +1145,11 @@ async () => {
     const focus3 = R.focus;
     R.stress = 20;
     R.focus = 20;
-    R.milestones.Design = 6;
+    R.milestones.Design = 10;
     const moodProgress = R.project.progress;
     owApplyStressPackage(10, 0, {flat: true, source: 'Moodboard 6'});
     const spentProgress = R.project.progress - moodProgress;
-    R.milestones.Design = 10;
+    R.milestones.Design = 20;
     const focusCap10 = owFocusCap();
     R.capstone = {family: 'Design', path: 'moodboard', status: 'active'};
     R.phase = 'workday';
@@ -1151,11 +1168,11 @@ async () => {
     R.paths.Sales = 'negotiation';
     R.milestones.Sales = 3;
     const pay3 = dailyPay();
-    R.milestones.Sales = 6;
+    R.milestones.Sales = 10;
     const pay6 = dailyPay();
     R.today.interestPrincipal = 1000;
     const interest6 = owInterestAtClockOut();
-    R.milestones.Sales = 10;
+    R.milestones.Sales = 20;
     const pay10 = dailyPay();
     const interest10 = owInterestAtClockOut();
     R.capstone = {family: 'Sales', path: 'negotiation', status: 'active'};
@@ -1180,19 +1197,33 @@ async () => {
     resetToday(76010);
     R.paths.Sales = 'schmoozing';
     R.milestones.Sales = 3;
-    const slots3 = owContactSlotCount();
-    R.milestones.Sales = 6;
-    const slots6 = owContactSlotCount();
+    const capacity3 = owPhase4FavorCapacity();
     R.milestones.Sales = 10;
-    const slots10 = owContactSlotCount();
+    const capacity10 = owPhase4FavorCapacity();
+    R.milestones.Sales = 20;
+    const capacity20 = owPhase4FavorCapacity();
+    R.favors=[];
+    R.sponsorFavors=[];
+    R.rewardFavors=[];
+    const quiet=owPhase4AwardFavor('quietFix','advanced');
+    const raise=owPhase4AwardFavor('raiseBar','advanced');
+    R.capstone={family:'Sales',path:'schmoozing',status:'active'};
+    const candidates=owPhase4ManagerFavorCandidates({
+      cost:50,
+      successEffects:[{type:'project',amount:5}]
+    });
     pathChecks.schmoozing =
-      slots3 === 1 && slots6 === 2 && slots10 === 3 &&
-      owSchmoozingAssistCap() === Number.POSITIVE_INFINITY;
+      capacity3===1 &&
+      capacity10===2 &&
+      capacity20===3 &&
+      !!quiet && !!raise &&
+      candidates.map(item=>item.type).sort().join('|')===
+        'quietFix|raiseBar';
     evidence.schmoozing = {
-      slots3,
-      slots6,
-      slots10,
-      cap: owSchmoozingAssistCap()
+      capacity3,
+      capacity10,
+      capacity20,
+      candidates:candidates.map(item=>item.type)
     };
 
     resetToday(76011);
@@ -1216,7 +1247,7 @@ async () => {
 
     resetToday(76012);
     R.paths.Operations = 'efficiency';
-    R.milestones.Operations = 10;
+    R.milestones.Operations = 20;
     R.standardProcedures = ['work', 'meeting', 'work'];
     R.capstone = {family: 'Operations', path: 'efficiency', status: 'active'};
     const efficiencyEntries = owPrepareSchedule(R.today.naturalSlots);
@@ -1237,9 +1268,9 @@ async () => {
       source: 'stored'
     });
     const storedPreview = owCardPreview(storedCard, {primary: true});
-    R.milestones.Operations = 6;
-    const canDeliver6 = R.storedTask.turnsHeld >= 3;
     R.milestones.Operations = 10;
+    const canDeliver6 = R.storedTask.turnsHeld >= 3;
+    R.milestones.Operations = 20;
     const extra10 = Math.floor(R.storedTask.turnsHeld / 5);
     pathChecks.logistics =
       storedPreview.progress === 13 &&
@@ -1256,12 +1287,12 @@ async () => {
     const reserve3 = R.project.progress - reserve3Before;
     R.project.progress = 0;
     R.stress = 20;
-    R.milestones.Operations = 6;
+    R.milestones.Operations = 10;
     owApplyReserveLevels();
     const reserve6 = {progress: R.project.progress, stress: R.stress};
     R.project.progress = 0;
     R.stress = 20;
-    R.milestones.Operations = 10;
+    R.milestones.Operations = 20;
     owApplyReserveLevels();
     const reserve10 = {progress: R.project.progress, stress: R.stress};
     pathChecks.compoundInterest =
@@ -1293,12 +1324,12 @@ async () => {
     const pathDetail = owPromotionPathOption('Coding', 'automation').detail;
     R.paths.Coding = 'automation';
     R.milestones.Coding = 0;
-    R.familyXP.Coding = 6;
+    R.familyXP.Coding = 10;
     const milestoneStage = owClonePromotionState();
     await owStageMilestones(milestoneStage);
-    const milestoneText = OW_TRAITS.Coding.automation.milestones[6];
+    const milestoneText = OW_TRAITS.Coding.automation.milestones[10];
     const milestoneRevealed = milestoneStage.changes.some(change =>
-      change.includes('Automation 6 XP:') && change.includes(milestoneText)
+      change.includes('Automation 10 XP:') && change.includes(milestoneText)
     );
     const milestoneLevels = owPromotionLevelsGained(milestoneStage, 'Coding');
     const promotionReviewPromise = owChoosePromotionReview(milestoneStage);
@@ -1318,10 +1349,10 @@ async () => {
     resetToday(76502, {phase: 'promotionReview'});
     R.paths.Coding = 'cleanCode';
     R.paths.Design = 'moodboard';
-    R.milestones.Coding = 6;
-    R.milestones.Design = 6;
-    R.familyXP.Coding = 10;
-    R.familyXP.Design = 10;
+    R.milestones.Coding = 10;
+    R.milestones.Design = 10;
+    R.familyXP.Coding = 20;
+    R.familyXP.Design = 20;
     R.capstone = {family: 'Coding', path: 'cleanCode', status: 'reserved'};
     const originalReservation = Object.assign({}, R.capstone);
     owAutomatedChoiceResolver = request =>
@@ -1377,37 +1408,25 @@ async () => {
     R.today.additionalNightPurchases = 0;
     R.cash = 5000;
     nightPhase();
-    owOpenNightPanel('outings');
-    pickOutingPid('karen');
-    const freeOuting = OUTINGS.findIndex(outing => outing.cost === 0);
-    nightState.outingCards = [freeOuting];
-    nightState.pendingOuting = 0;
-    const realReducedMotion = owReducedMotion;
-    owReducedMotion = () => true;
-    confirmOuting();
-    const stateAfterOuting = {
-      used: nightState.outingUsed,
-      pid: nightState.outingPid,
-      pending: nightState.pendingOuting,
-      storyVisible:
-        document.getElementById('overlay').classList.contains('active') &&
-        document.getElementById('overlay-panel').textContent.includes('HEAD HOME')
-    };
-    owReturnFromOuting();
-    await new Promise(resolve => setTimeout(resolve, 10));
-    owToggleLightsOut(true);
-    const nightText = document.getElementById('home-scene').textContent;
-    const staleOutingClosed =
-      nightState.recPicked &&
+    const invitations=owPhase4PrepareInvitations();
+    const invitation=invitations.entries[0];
+    owCoworkerState(invitation.coworkerId).relationship=7;
+    invitation.price=0;
+    const firstInvitation=await owChooseInvitationApproach(
+      invitation.id,
+      'rapport'
+    );
+    const resultAfterFirst=invitation.result;
+    const secondInvitation=await owChooseInvitationApproach(
+      invitation.id,
+      'rapport'
+    );
+    const completedInvitationLocked=
+      firstInvitation===true &&
+      secondInvitation===false &&
       nightState.outingUsed &&
-      nightState.outingPid === null &&
-      nightState.pendingOuting === null &&
-      stateAfterOuting.storyVisible &&
-      document.getElementById('home-scene').classList.contains('active') &&
-      !document.getElementById('overlay').classList.contains('active') &&
-      !nightText.includes('What are you doing with') &&
-      nightText.includes('OUTING DONE');
-    owReducedMotion = realReducedMotion;
+      invitation.applied &&
+      invitation.result===resultAfterFirst;
 
     const realStartDay = startDay;
     const realWeekendEvent = weekendEvent;
@@ -1440,6 +1459,7 @@ async () => {
       nightPhase();
       nightState.outingUsed = true;
       nightState.homeUsed = 1;
+      nightState.homeBlockingPurchases = 1;
       nightState.homeLimit = 1;
       nightState.dealLimit = 0;
       await owFinalizeNightUnlocked();
@@ -1495,21 +1515,21 @@ async () => {
       checks: {
         path_choice_shows_only_first_breakpoint:
           pathDetail.includes('3 XP:') &&
-          !pathDetail.includes('6 XP:') &&
           !pathDetail.includes('10 XP:') &&
+          !pathDetail.includes('20 XP:') &&
           !pathDetail.includes('Capstone:'),
         reached_milestone_reveals_exact_description: milestoneRevealed,
         promotion_review_shows_only_new_milestones:
-          milestoneLevels.join(',') === '3,6' &&
+          milestoneLevels.join(',') === '3,10' &&
           promotionReviewUi.cards.length === 2 &&
           promotionReviewUi.cards.some(card =>
             card.includes(OW_TRAITS.Coding.automation.milestones[3])
           ) &&
           promotionReviewUi.cards.some(card =>
-            card.includes(OW_TRAITS.Coding.automation.milestones[6])
+            card.includes(OW_TRAITS.Coding.automation.milestones[10])
           ) &&
           !promotionReviewUi.cards.some(card =>
-            card.includes(OW_TRAITS.Coding.automation.milestones[10])
+            card.includes(OW_TRAITS.Coding.automation.milestones[20])
           ),
         promotion_review_uses_structured_direct_actions:
           promotionReviewUi.structured &&
@@ -1530,14 +1550,14 @@ async () => {
           revisedPromotion.nextFloorCalled &&
           revisedPromotion.capstone.path === 'cleanCode' &&
           revisedPromotion.capstone.status === 'active',
-        completed_outing_cannot_reopen_picker: staleOutingClosed,
+        completed_invitation_cannot_reopen_picker: completedInvitationLocked,
         finalize_auto_applies_lights_out_when_legal:
           automaticLightsOut.picked &&
-          nearly(automaticLightsOut.stress, 41) &&
+          nearly(automaticLightsOut.stress, 45) &&
           automaticLightsOut.phase === 'morning',
         purchase_blocks_automatic_lights_out:
           !purchasedNight.picked &&
-          nearly(purchasedNight.stress, 46) &&
+          nearly(purchasedNight.stress, 50) &&
           purchasedNight.phase === 'morning',
         return_to_night_does_not_apply_lights_out:
           !returnedNight.picked &&
@@ -1572,14 +1592,10 @@ async () => {
           runtime: runtimeCapstoneAfterStaging,
           revisedPromotion
         },
-        outing: {
-          stateAfterOuting,
-          finalState: {
-            used: nightState.outingUsed,
-            pid: nightState.outingPid,
-            recPicked: nightState.recPicked
-          },
-          text: nightText.slice(0, 300)
+        invitation:{
+          firstInvitation,
+          secondInvitation,
+          invitation
         },
         automaticLightsOut,
         purchasedNight,
@@ -1654,10 +1670,12 @@ async () => {
     const optionButton = optionHost.querySelector('button');
     const optionTerms = [...optionHost.querySelectorAll('.rules-keyword')];
 
-    const tutorialSteps = OfficeWarsTest.orientationSteps();
-    const workdayStep = tutorialSteps.find(step => step.id === 'workday');
-    const relationshipStep = tutorialSteps.find(step =>
-      step.id === 'nightRelationships'
+    const guidedLessons = OfficeWarsTest.guidedInternLessons();
+    const relationshipLesson = guidedLessons.find(step =>
+      step.id === 'GI-WED-ROLE'
+    );
+    const pathLesson = guidedLessons.find(step =>
+      step.id === 'GI-FRI-PATH'
     );
 
     return {
@@ -1688,23 +1706,30 @@ async () => {
           !!optionButton.dataset.tip &&
           optionTerms.length === 2 &&
           optionTerms.every(term => term.tabIndex === -1),
-        tutorial_splits_night_without_deals_lesson:
-          tutorialSteps.length === 13 &&
-          !tutorialSteps.some(step => step.id === 'nightDeals') &&
-          [
-            'nightHome', 'nightOutings',
-            'nightRelationships', 'nightFinish'
-          ].every(id => tutorialSteps.some(step => step.id === id)) &&
-          tutorialSteps.some(step => step.id === 'capstone'),
-        workday_tutorial_covers_every_ordinary_action:
-          !!workdayStep &&
-          [
-            'Work', 'Lunch', 'Water Cooler',
-            'Office Chat', 'Slump', 'Team Meeting'
-          ].every(label => workdayStep.copy.includes(label)),
-        relationship_tutorial_explains_bonus_trigger:
-          !!relationshipStep &&
-          relationshipStep.copy.includes('meet them during the Workday')
+        guided_intern_has_eighteen_high_trust_checkpoints:
+          guidedLessons.length === 18 &&
+          new Set(guidedLessons.map(step => step.id)).size === 18 &&
+          guidedLessons.filter(step => step.why).length === 4 &&
+          !guidedLessons.some(step =>
+            /nothing is timed|take your time|no pressure/i.test(
+              `${step.instruction || ''} ${step.why || ''}`
+            )
+          ),
+        guided_intern_excludes_unrelated_systems:
+          !guidedLessons.some(step =>
+            /cash jar|casino|deal/i.test(
+              `${step.instruction || ''} ${step.why || ''}`
+            )
+          ),
+        relationship_guidance_distinguishes_standing:
+          !!relationshipLesson &&
+          relationshipLesson.instruction.includes('Intern Role') &&
+          relationshipLesson.why ===
+            'Relationship measures personal trust. Standing determines which side a coworker supports.',
+        coding_path_guidance_requires_comparison:
+          !!pathLesson &&
+          pathLesson.instruction.includes('all three Coding paths') &&
+          pathLesson.instruction.includes('choose one')
       },
       evidence: {
         trackedPinnedSource,
@@ -1718,7 +1743,7 @@ async () => {
           tip: optionButton && optionButton.dataset.tip,
           termTabIndexes: optionTerms.map(term => term.tabIndex)
         },
-        tutorialSteps
+        guidedLessons
       }
     };
   });
@@ -1818,7 +1843,7 @@ async () => {
 
     resetToday(77003, {phase: 'night', cash: 5000});
     R.paths.Sales = 'negotiation';
-    R.milestones.Sales = 10;
+    R.milestones.Sales = 20;
     R.capstone = {family: 'Sales', path: 'negotiation', status: 'active'};
     nightPhase();
     R.dealCards = [
@@ -1856,34 +1881,43 @@ async () => {
 
     resetToday(77004);
     R.paths.Sales = 'schmoozing';
-    R.milestones.Sales = 10;
+    R.milestones.Sales = 20;
     R.capstone = {family: 'Sales', path: 'schmoozing', status: 'active'};
-    R.contactTeam = ['karen', 'dave', 'priya'];
-    R.rel.karen = 50;
-    R.rel.dave = 50;
-    R.rel.priya = 50;
-    const assistPrimary = card('readmeUpdate');
-    const assistTargets = [card('regressionTests'), card('expenseAllowance')];
-    const assistBefore = R.project.progress;
-    owResolveSchmoozingAssists({
-      setup: {assistTargets, rajAssistBoost: false}
-    }, assistPrimary);
-    const assistsEvidence = {
-      progress: R.project.progress - assistBefore,
-      familyXP: Object.assign({}, R.familyXP),
-      taskPlays: R.today.taskPlays.length,
-      contacts: R.contactTeam.slice()
+    R.favors=[];
+    R.sponsorFavors=[];
+    R.rewardFavors=[];
+    const progressBeforeFavors=R.project.progress;
+    const xpBeforeFavors=Object.assign({},R.familyXP);
+    const quiet=owPhase4AwardFavor('quietFix','advanced-lifecycle');
+    const raise=owPhase4AwardFavor('raiseBar','advanced-lifecycle');
+    const managerCandidates=owPhase4ManagerFavorCandidates({
+      cost:50,
+      successEffects:[{type:'project',amount:5}]
+    });
+    const favorsEvidence = {
+      capacity:owPhase4FavorCapacity(),
+      favors:R.favors.map(favor=>favor.type),
+      managerCandidates:managerCandidates.map(favor=>favor.type),
+      progress:R.project.progress-progressBeforeFavors,
+      familyXP:Object.assign({},R.familyXP),
+      taskPlays:R.today.taskPlays.length
     };
     const schmoozingLifecycle =
-      nearly(R.project.progress - assistBefore, 38) &&
-      R.familyXP.Coding === 1 &&
-      R.familyXP.Sales === 1 &&
+      favorsEvidence.capacity===3 &&
+      !!quiet && !!raise &&
+      favorsEvidence.favors.sort().join('|')==='quietFix|raiseBar' &&
+      favorsEvidence.managerCandidates.sort().join('|')===
+        'quietFix|raiseBar' &&
+      R.project.progress===progressBeforeFavors &&
+      Object.keys(xpBeforeFavors).every(
+        family=>R.familyXP[family]===xpBeforeFavors[family]
+      ) &&
       R.today.taskPlays.length === 0 &&
-      R.contactTeam.join(',') === 'karen,dave,priya';
+      R.contactTeam.length===0;
 
     resetToday(77005);
     R.paths.Operations = 'logistics';
-    R.milestones.Operations = 10;
+    R.milestones.Operations = 20;
     R.storedTask = {
       taskId: 'expenseAllowance',
       modifiers: {},
@@ -1911,7 +1945,7 @@ async () => {
 
     resetToday(77006);
     R.paths.Operations = 'logistics';
-    R.milestones.Operations = 10;
+    R.milestones.Operations = 20;
     R.capstone = {family: 'Operations', path: 'logistics', status: 'active'};
     R.storedTask = {
       taskId: 'expenseAllowance',
@@ -1943,7 +1977,7 @@ async () => {
         closing_full_cycle_and_cashout: closingLifecycle,
         brand_strategy_full_questline: brandLifecycle,
         deal_purchase_and_carryover: dealLifecycle,
-        schmoozing_assists_are_not_plays: schmoozingLifecycle,
+        schmoozing_favors_are_not_plays: schmoozingLifecycle,
         logistics_bulk_fulfillment: bulkFulfillment,
         logistics_global_distribution: globalDistribution
       },
@@ -1951,7 +1985,7 @@ async () => {
         closing: closingEvidence,
         brand: brandMilestones,
         deals: dealsEvidence,
-        schmoozing: assistsEvidence,
+        schmoozing: favorsEvidence,
         bulk: bulkEvidence,
         globalDistribution: distributionEvidence
       }
@@ -1961,7 +1995,7 @@ async () => {
   await record('worst_case_resolution_chains', async () => {
     resetToday(78001, {phase: 'morning', projectSize: 100000});
     R.paths.Coding = 'debugging';
-    R.milestones.Coding = 10;
+    R.milestones.Coding = 20;
     R.capstone = {family: 'Coding', path: 'debugging', status: 'active'};
     R.yesterdayPrimaryFamily = 'Coding';
     R.focus = 200;
@@ -2024,7 +2058,7 @@ async () => {
 
     resetToday(78002, {projectSize: 100000});
     R.paths.Operations = 'logistics';
-    R.milestones.Operations = 10;
+    R.milestones.Operations = 20;
     R.capstone = {family: 'Operations', path: 'logistics', status: 'active'};
     R.focus = 500;
     R.morningCards = [
@@ -2073,10 +2107,10 @@ async () => {
       naturalSlots: ['meeting', 'cooler', 'lunch', 'mad', 'meeting']
     });
     R.paths.Management = 'agile';
-    R.milestones.Management = 10;
+    R.milestones.Management = 20;
     R.capstone = {family: 'Management', path: 'agile', status: 'active'};
     R.paths.Operations = 'efficiency';
-    R.milestones.Operations = 10;
+    R.milestones.Operations = 20;
     R.standardProcedures = ['meeting', 'cooler', 'meeting'];
     R.focus = 500;
     R.today.cardFlags = {

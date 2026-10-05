@@ -13,8 +13,18 @@ from playwright.sync_api import sync_playwright
 
 ROOT = Path(__file__).resolve().parent
 URL = (ROOT / "officewarsautobattler.html").as_uri()
+
+# Interface captures are browsable reference material, so they land in the
+# private vault section when that section exists and in a gitignored local
+# folder otherwise. A public clone has no Wiki/ and takes the fallback. Names
+# carry no leading dot, because Obsidian hides dotfiles and a hidden reference
+# image cannot be browsed.
+CAPTURES = ROOT / "Wiki/Projects/OfficeWars/Visual Reference"
+if not CAPTURES.is_dir():
+    CAPTURES = ROOT / "artifacts/visual-reference"
+CAPTURES.mkdir(parents=True, exist_ok=True)
 META = {
-    "schema": 5,
+        "schema": 6,
     "tutorial": {
         "completed": True,
         "nextStep": 13,
@@ -100,9 +110,12 @@ def main():
     evidence = {}
     homes = [
         ("apartment", "APARTMENT", 3),
-        ("townhouse", "TOWNHOUSE", 6),
-        ("house", "HOUSE", 9),
-        ("penthouse", "PENTHOUSE", 12),
+        ("condo", "CONDO", 5),
+        ("townhouse", "TOWNHOUSE", 7),
+        ("duplex", "DUPLEX", 9),
+        ("house", "HOUSE", 11),
+        ("estate", "ESTATE", 13),
+        ("penthouse", "PENTHOUSE", 15),
     ]
     with sync_playwright() as playwright:
         browser = playwright.chromium.launch(
@@ -296,6 +309,10 @@ def main():
                         )
 
                     page.click(".home-hotspot-shop")
+                    page.evaluate("owSetHomePanel('shop')")
+                    page.wait_for_function(
+                        "document.querySelectorAll('.night-home-desk .card').length === 3"
+                    )
                     shop = page.evaluate(
                         """() => ({
                           overlay: document.getElementById('overlay').classList.contains('active'),
@@ -354,7 +371,7 @@ def main():
 
                     page.evaluate("owToggleLightsOut(false)")
                     page.screenshot(
-                        path=ROOT / f".visual-home-{home_id}-{name}.png",
+                        path=CAPTURES / f"visual-home-{home_id}-{name}.png",
                         animations="disabled",
                     )
                     evidence[name]["homes"][home_id] = {
@@ -388,7 +405,7 @@ def main():
                     }"""
                 )
                 page.screenshot(
-                    path=ROOT / f".visual-manager-static-v2-{name}.png",
+                    path=CAPTURES / f"visual-manager-static-v2-{name}.png",
                     animations="disabled",
                 )
                 manager_variants = page.evaluate(
@@ -453,7 +470,7 @@ def main():
                     and boss_manager["roamer"]
                     and boss_manager["roamerVisible"]
                     and boss_manager["animationName"] == "manager-office-patrol"
-                    and boss_manager["label"] == "PENNY-PINCHER"
+                    and boss_manager["label"] == "PENNY PINCHER"
                     and boss_manager["gameplayManagerAbsent"]
                 ):
                     failures.append(
@@ -579,7 +596,7 @@ def main():
                         f"{name}:transition-phasing:{transition_phasing}"
                     )
                 page.screenshot(
-                    path=ROOT / f".visual-manager-boss-v2-{name}.png",
+                    path=CAPTURES / f"visual-manager-boss-v2-{name}.png",
                     animations="disabled",
                 )
 
@@ -641,7 +658,7 @@ def main():
                 ):
                     failures.append(f"{name}:schedule-comparison:{schedule}")
                 page.screenshot(
-                    path=ROOT / f".visual-schedule-tracker-{name}.png",
+                    path=CAPTURES / f"visual-schedule-tracker-{name}.png",
                     animations="disabled",
                 )
 

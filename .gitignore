@@ -8,4 +8,12 @@ Thumbs.db
 .chrome-check/
 .chrome-check-*.txt
 .visual-*.png
+.officewars-screenshots/
 artifacts/
+
+# Private Obsidian workspace and second-brain material
+.obsidian/
+Home.md
+Inbox/
+Wiki/
+CONTEXT_CONTINUITY*.md

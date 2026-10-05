@@ -15,18 +15,24 @@ GAME_URL = (ROOT / "officewarsautobattler.html").as_uri()
 RUNS_PER_POLICY = int(sys.argv[1]) if len(sys.argv) > 1 else 250
 META_COMPLETE = json.dumps(
     {
-        "schema": 5,
+        "schema": 6,
         "tutorial": {
             "completed": True,
-            "nextStep": 13,
+            "nextStep": 0,
             "skipped": False,
             "replayRequested": False,
+        },
+        "guidedIntern": {
+            "required": True,
+            "completed": True,
+            "replayRequested": False,
+            "version": 1,
         },
     }
 )
 
 
-def complete_orientation(page):
+def complete_onboarding(page):
     page.evaluate(
         "(meta) => localStorage.setItem(OW_META_KEY, meta)", META_COMPLETE
     )
@@ -63,11 +69,13 @@ CORE_AUDIT = r"""
     }
   );
 
-  const rankPairs = RANKS.map(rank => [rank.size, rank.deadline]);
+  const rankPairs = RANKS.map(rank => [
+    rank.size, rank.deadline, rank.chadTargetDay
+  ]);
   expect('rank-curve',
     JSON.stringify(rankPairs) === JSON.stringify([
-      [110, 10], [130, 8], [165, 7], [210, 6],
-      [250, 6], [285, 6], [300, 5]
+      [45, 3, 3], [80, 5, 4], [115, 5, 4], [155, 5, 4],
+      [205, 5, 4], [265, 5, 4], [330, 5, 4]
     ]),
     rankPairs
   );
@@ -130,29 +138,32 @@ CORE_AUDIT = r"""
   );
 
   expect('home-registry',
-    UPGRADES.length === 15 &&
-    Object.keys(HOME_EFFECTS).length === 15 &&
-    UPGRADES.every(upgrade =>
-      JSON.stringify(upgrade.effects) ===
-      JSON.stringify(HOME_EFFECTS[upgrade.id] || {})
-    ),
+    UPGRADES.length === 29 &&
+    new Set(UPGRADES.map(upgrade => upgrade.id)).size === 29 &&
+    UPGRADES.filter(upgrade => !upgrade.gated).length === 28 &&
+    UPGRADES.find(upgrade => upgrade.id === 'cashJar')?.gated === true,
     {
       upgrades: UPGRADES.length,
-      registryEntries: Object.keys(HOME_EFFECTS).length
+      available: UPGRADES.filter(upgrade => !upgrade.gated).length
     }
   );
-  expect('home-sets-inert',
-    Object.keys(HOME_SETS).length === 0 &&
-    UPGRADES.every(upgrade => upgrade.setId === null),
+  expect('home-sets-active',
+    Object.keys(HOME_SETS).length === 9 &&
+    UPGRADES.filter(upgrade => !upgrade.gated).every(upgrade =>
+      Array.isArray(upgrade.tags) && upgrade.tags.length > 0
+    ),
     {
       activeSets: Object.keys(HOME_SETS),
-      taggedUpgrades: UPGRADES.filter(upgrade => upgrade.setId).map(upgrade => upgrade.id)
+      taggedUpgrades: UPGRADES.filter(upgrade => upgrade.tags?.length).map(upgrade => upgrade.id)
     }
   );
 
   startRun({seed: 88001});
-  R.house = ['mattress'];
-  expect('mattress-total', autoSleepAmt() === 6, autoSleepAmt());
+  R.house = ['blackoutCurtains', 'comfyMattress'];
+  expect('home-recovery-authority',
+    autoSleepAmt() === 1 && owHomeEffectValue('comfyMattress', 5, 10) === 5,
+    {automatic:autoSleepAmt(),wellRested:owHomeEffectValue('comfyMattress', 5, 10)}
+  );
   R.floor = 7;
   R.stress = 50;
   owGrantRecovery(5, 'verification', false);
@@ -179,25 +190,25 @@ CORE_AUDIT = r"""
     first: managerRuns[0]
   });
 
-  const chad = CONFIG.RIVAL_AI;
+  startRun({seed: 88300});
+  const chad = owChadPaceBreakdown();
   expect('chad-baseline',
-    chad.STACK_RATE === .5 &&
-    chad.UPG_EVERY === 3 &&
-    chad.UPG_BONUS === 1.2 &&
-    chad.BOSS_MULT === 1.15 &&
-    JSON.stringify(chad.WORKSLOT_FLOORS) === JSON.stringify([1, 1, 2, 2, 2, 3, 3]),
+    !Object.prototype.hasOwnProperty.call(CONFIG, 'RIVAL_AI') &&
+    chad.base === 15 &&
+    chad.gain === 15 &&
+    chad.expectationPct === 0 &&
+    owChadExpectedFinish() === 'FRI',
     chad
   );
 
-  startRun({seed: 88300});
-  for (let day = 0; day < 60; day++) simulateRivalDay();
   updateHUD();
-  expect('chad-upgrade-cap',
-    R.rival.upgrades === 10 &&
-    TIP_TEXTS['sp-rival-tip'].includes('Accumulated upgrades: 10/10'),
+  expect('chad-transparent-forecast',
+    !Object.prototype.hasOwnProperty.call(R.rival, 'stacks') &&
+    !Object.prototype.hasOwnProperty.call(R.rival, 'upgrades') &&
+    TIP_TEXTS['sp-rival-tip'].includes('Neutral pace: 15') &&
+    TIP_TEXTS['sp-rival-tip'].includes('Expected finish: FRI'),
     {
-      upgrades: R.rival.upgrades,
-      stacks: R.rival.stacks,
+      rival: R.rival,
       tooltip: TIP_TEXTS['sp-rival-tip']
     }
   );
@@ -536,7 +547,9 @@ async () => {
   owUpdateTickerResult(null, true);
   const pendingTickerResult = tickerResult.textContent;
   owUpdateTickerResult(null);
-  const workdayRunnerSource = runWorkDay.toString();
+  const workdayRunnerSource =
+    owRenderCinematicAction.toString()+
+    owResolveCinematicAction.toString();
   expect('workday-ticker-live-sync',
     settledTickerResult === 'POSITIVE · +5 project progress' &&
     pendingTickerResult === 'Resolving...' &&
@@ -564,41 +577,54 @@ async () => {
 
   localStorage.setItem(OW_META_KEY, JSON.stringify({
     schema: OW_META_SCHEMA,
-    tutorial: {completed: true, nextStep: 13, skipped: false, replayRequested: false}
+    tutorial: {completed: true, nextStep: 0, skipped: false, replayRequested: false},
+    guidedIntern: {
+      required: true, completed: true,
+      replayRequested: false, version: 1
+    }
   }));
   const legacyVolumeDefault = owReadMeta().settings.volume;
   showOptions();
   const optionsVisible =
     document.getElementById('options-volume')?.value === '70' &&
-    document.getElementById('options-tutorial-reset') &&
-    document.getElementById('options-tutorial-status')?.textContent === 'Completed';
+    document.getElementById('options-guided-replay') &&
+    document.getElementById('options-guided-status')?.textContent === 'Completed';
   const testAudio = document.createElement('audio');
   document.body.appendChild(testAudio);
   owSetMasterVolume(35);
   const storedVolume = owReadMeta().settings.volume;
   const appliedAudioVolume = testAudio.volume;
   testAudio.remove();
-  owResetTutorialFromOptions();
+  const originalRequestNewRun = owRequestNewRun;
+  const originalCloseMenuOverlay = owCloseMenuOverlay;
+  let requestedFreshRun = false;
+  owRequestNewRun = () => { requestedFreshRun = true; };
+  owCloseMenuOverlay = () => {};
+  owRequestGuidedInternReplay();
+  owRequestNewRun = originalRequestNewRun;
+  owCloseMenuOverlay = originalCloseMenuOverlay;
   const resetMeta = owReadMeta();
   showHowToPlay();
   const replayRemovedFromHowToPlay =
-    !document.getElementById('orientation-replay-button');
+    !document.getElementById('orientation-replay-button') &&
+    !document.getElementById('options-guided-replay');
   owCloseMenuOverlay();
-  expect('options-volume-and-tutorial-reset',
+  expect('options-volume-and-guided-replay',
     legacyVolumeDefault === 70 &&
     optionsVisible &&
     storedVolume === 35 &&
     Math.abs(appliedAudioVolume - .35) < .0001 &&
-    !resetMeta.tutorial.completed &&
-    resetMeta.tutorial.nextStep === 0 &&
-    resetMeta.tutorial.replayRequested &&
+    resetMeta.guidedIntern.completed &&
+    resetMeta.guidedIntern.replayRequested &&
+    requestedFreshRun &&
     replayRemovedFromHowToPlay,
     {
       legacyVolumeDefault,
       optionsVisible,
       storedVolume,
       appliedAudioVolume,
-      tutorial: resetMeta.tutorial,
+      guidedIntern: resetMeta.guidedIntern,
+      requestedFreshRun,
       replayRemovedFromHowToPlay
     }
   );
@@ -615,14 +641,13 @@ async () => {
   expect('relationship-copy',
     !relationshipBonus.includes('improves with relationship') &&
     !relationshipTooltip.includes('Day bonus:') &&
-    outingPanelText.includes(
-      'Coworkers give you their bonus when you meet with them during the workday.'
-    ),
+    !outingPanelText.includes('Coworkers give you their bonus') &&
+    outingPanelText.includes('Choose one invitation and one approach'),
     {
       relationshipBonus,
       relationshipTooltip,
-      footerPresent: outingPanelText.includes(
-        'Coworkers give you their bonus when you meet with them during the workday.'
+      invitationCopy: outingPanelText.includes(
+        'Choose one invitation and one approach'
       )
     }
   );
@@ -732,6 +757,7 @@ async () => {
       ?.textContent.includes('SHOP LOCKED');
   owToggleLightsOut(false);
   nightState.homeUsed = 1;
+  nightState.homeBlockingPurchases = 1;
   renderNightTabs();
   const purchaseBlocksLightsOutControl =
     document.querySelector('.home-hotspot-lights')
@@ -851,11 +877,11 @@ async () => {
 
   const requiredCardDisclosure = {
     repositoryFork: ['Coding XP'],
-    crossFunctionalSync: ['already'],
+    crossFunctionalSync: ['three coworkers', 'group political event'],
     creativeBreakthrough: ['Excess'],
     designSystem: ['no rerolls'],
-    clientEntertainment: ['instead'],
-    comparisonShopping: ['same catalog'],
+    clientEntertainment: ['for free', 'suppress its trap', 'Build Rapport'],
+    comparisonShopping: ['3 Home items', '3 Deals', '50% less'],
     corporateExpenseAccount: ['expires'],
     net30Contract: ['$25'],
     workingCapital: ["tomorrow's Clock Out", 'each $500']
@@ -882,9 +908,9 @@ async () => {
     'Complete Play',
     'Replay',
     'Printed-Effect Resolution',
-    'Assist',
+    'Favor Attachment',
     'Schedule Entry',
-    'Workday Event'
+    'Political Event'
   ];
   expect('help-resolution-glossary',
     glossaryTerms.every(term => helpSource.includes(term)),
@@ -895,7 +921,8 @@ async () => {
   );
   expect('home-scene-help-and-transition-contract',
     helpSource.includes('use the Night Planner') &&
-    helpSource.includes('Night Planner or the room door') &&
+    helpSource.includes('Night invitations') &&
+    helpSource.includes('Office Politics') &&
     !helpSource.includes('footer previews recovery') &&
     !helpSource.includes('night tabs to see it') &&
     owBeginHomeTransition.toString().includes('sunset') &&
@@ -903,7 +930,8 @@ async () => {
     owBeginOutingStory.toString().includes('outing-fade'),
     {
       nightPlanner: helpSource.includes('use the Night Planner'),
-      socialDoor: helpSource.includes('Night Planner or the room door'),
+      socialNight: helpSource.includes('Night invitations'),
+      officePolitics: helpSource.includes('Office Politics'),
       staleFooter: helpSource.includes('footer previews recovery'),
       staleNightTabs: helpSource.includes('night tabs to see it'),
       sunset: owBeginHomeTransition.toString().includes('sunset'),
@@ -1237,7 +1265,7 @@ with sync_playwright() as playwright:
             "document.documentElement.dataset.officewarsReady === 'true'",
             timeout=15_000,
         )
-        complete_orientation(page)
+        complete_onboarding(page)
         page.set_default_timeout(120_000)
 
         audit = {"checks": {}, "detail": {}}
@@ -1284,7 +1312,7 @@ with sync_playwright() as playwright:
                 "document.documentElement.dataset.officewarsReady === 'true'",
                 timeout=15_000,
             )
-            complete_orientation(layout_page)
+            complete_onboarding(layout_page)
             phase = layout_page.evaluate(LAYOUT_SETUP, {"state": state})
             layout[name] = {"requestedState": state, "phase": phase}
             layout[name].update(layout_page.evaluate(LAYOUT_INSPECT))

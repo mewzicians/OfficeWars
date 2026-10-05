@@ -13,6 +13,10 @@ or other asset contributions. Do not submit pull requests or publish modified
 versions. Opening an Issue or sharing feedback does not grant permission to
 modify, redistribute, host, or create derivative works from OfficeWars.
 
+Authorized maintainers using automated agents follow `AUTOMATION_POLICY.md`.
+That visible collaboration convention does not grant contributors or players
+additional permission under `LICENSE`.
+
 ## Before Reporting
 
 Read `docs/PROJECT_STATUS.md` and search existing Issues before opening a new

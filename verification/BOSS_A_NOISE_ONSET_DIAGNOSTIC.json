@@ -1,0 +1,244 @@
+{
+  "sample_rate": 24000,
+  "question": "Does pre-initializing the noise GainNode to silence remove the one-sample onset impulse?",
+  "summary": {
+    "paper": {
+      "current_max_onset_delta": 0.004269325,
+      "repaired_max_onset_delta": 0.004269325,
+      "current_max_first_sample": 2.582e-06,
+      "repaired_max_first_sample": 2.582e-06
+    },
+    "snare": {
+      "current_max_onset_delta": 0.003629552,
+      "repaired_max_onset_delta": 0.003629552,
+      "current_max_first_sample": 2.001e-06,
+      "repaired_max_first_sample": 2.001e-06
+    }
+  },
+  "rows": [
+    {
+      "kind": "paper",
+      "offset": 0,
+      "initializeGain": false,
+      "firstSample": -1.947e-06,
+      "onsetPeak": 0.00393408,
+      "onsetMaxDelta": 0.003532663
+    },
+    {
+      "kind": "paper",
+      "offset": 0,
+      "initializeGain": true,
+      "firstSample": -1.947e-06,
+      "onsetPeak": 0.00393408,
+      "onsetMaxDelta": 0.003532663
+    },
+    {
+      "kind": "paper",
+      "offset": 0.008,
+      "initializeGain": false,
+      "firstSample": -2.196e-06,
+      "onsetPeak": 0.003611305,
+      "onsetMaxDelta": 0.003202702
+    },
+    {
+      "kind": "paper",
+      "offset": 0.008,
+      "initializeGain": true,
+      "firstSample": -2.196e-06,
+      "onsetPeak": 0.003611305,
+      "onsetMaxDelta": 0.003202702
+    },
+    {
+      "kind": "paper",
+      "offset": 0.016,
+      "initializeGain": false,
+      "firstSample": 2.188e-06,
+      "onsetPeak": 0.003360982,
+      "onsetMaxDelta": 0.003530863
+    },
+    {
+      "kind": "paper",
+      "offset": 0.016,
+      "initializeGain": true,
+      "firstSample": 2.188e-06,
+      "onsetPeak": 0.003360982,
+      "onsetMaxDelta": 0.003530863
+    },
+    {
+      "kind": "paper",
+      "offset": 0.024,
+      "initializeGain": false,
+      "firstSample": -1.186e-06,
+      "onsetPeak": 0.004011972,
+      "onsetMaxDelta": 0.003676077
+    },
+    {
+      "kind": "paper",
+      "offset": 0.024,
+      "initializeGain": true,
+      "firstSample": -1.186e-06,
+      "onsetPeak": 0.004011972,
+      "onsetMaxDelta": 0.003676077
+    },
+    {
+      "kind": "paper",
+      "offset": 0.032,
+      "initializeGain": false,
+      "firstSample": 2.582e-06,
+      "onsetPeak": 0.003176926,
+      "onsetMaxDelta": 0.00340702
+    },
+    {
+      "kind": "paper",
+      "offset": 0.032,
+      "initializeGain": true,
+      "firstSample": 2.582e-06,
+      "onsetPeak": 0.003176926,
+      "onsetMaxDelta": 0.00340702
+    },
+    {
+      "kind": "paper",
+      "offset": 0.04,
+      "initializeGain": false,
+      "firstSample": -1.499e-06,
+      "onsetPeak": 0.003817686,
+      "onsetMaxDelta": 0.004269325
+    },
+    {
+      "kind": "paper",
+      "offset": 0.04,
+      "initializeGain": true,
+      "firstSample": -1.499e-06,
+      "onsetPeak": 0.003817686,
+      "onsetMaxDelta": 0.004269325
+    },
+    {
+      "kind": "paper",
+      "offset": 0.048,
+      "initializeGain": false,
+      "firstSample": -1.129e-06,
+      "onsetPeak": 0.003519465,
+      "onsetMaxDelta": 0.003478211
+    },
+    {
+      "kind": "paper",
+      "offset": 0.048,
+      "initializeGain": true,
+      "firstSample": -1.129e-06,
+      "onsetPeak": 0.003519465,
+      "onsetMaxDelta": 0.003478211
+    },
+    {
+      "kind": "snare",
+      "offset": 0,
+      "initializeGain": false,
+      "firstSample": -1.508e-06,
+      "onsetPeak": 0.004178555,
+      "onsetMaxDelta": 0.003048096
+    },
+    {
+      "kind": "snare",
+      "offset": 0,
+      "initializeGain": true,
+      "firstSample": -1.508e-06,
+      "onsetPeak": 0.004178555,
+      "onsetMaxDelta": 0.003048096
+    },
+    {
+      "kind": "snare",
+      "offset": 0.008,
+      "initializeGain": false,
+      "firstSample": -1.702e-06,
+      "onsetPeak": 0.003813948,
+      "onsetMaxDelta": 0.002864426
+    },
+    {
+      "kind": "snare",
+      "offset": 0.008,
+      "initializeGain": true,
+      "firstSample": -1.702e-06,
+      "onsetPeak": 0.003813948,
+      "onsetMaxDelta": 0.002864426
+    },
+    {
+      "kind": "snare",
+      "offset": 0.016,
+      "initializeGain": false,
+      "firstSample": 1.696e-06,
+      "onsetPeak": 0.004827291,
+      "onsetMaxDelta": 0.003629552
+    },
+    {
+      "kind": "snare",
+      "offset": 0.016,
+      "initializeGain": true,
+      "firstSample": 1.696e-06,
+      "onsetPeak": 0.004827291,
+      "onsetMaxDelta": 0.003629552
+    },
+    {
+      "kind": "snare",
+      "offset": 0.024,
+      "initializeGain": false,
+      "firstSample": -9.19e-07,
+      "onsetPeak": 0.004268357,
+      "onsetMaxDelta": 0.002789714
+    },
+    {
+      "kind": "snare",
+      "offset": 0.024,
+      "initializeGain": true,
+      "firstSample": -9.19e-07,
+      "onsetPeak": 0.004268357,
+      "onsetMaxDelta": 0.002789714
+    },
+    {
+      "kind": "snare",
+      "offset": 0.032,
+      "initializeGain": false,
+      "firstSample": 2.001e-06,
+      "onsetPeak": 0.003612529,
+      "onsetMaxDelta": 0.002570231
+    },
+    {
+      "kind": "snare",
+      "offset": 0.032,
+      "initializeGain": true,
+      "firstSample": 2.001e-06,
+      "onsetPeak": 0.003612529,
+      "onsetMaxDelta": 0.002570231
+    },
+    {
+      "kind": "snare",
+      "offset": 0.04,
+      "initializeGain": false,
+      "firstSample": -1.162e-06,
+      "onsetPeak": 0.003612101,
+      "onsetMaxDelta": 0.002852587
+    },
+    {
+      "kind": "snare",
+      "offset": 0.04,
+      "initializeGain": true,
+      "firstSample": -1.162e-06,
+      "onsetPeak": 0.003612101,
+      "onsetMaxDelta": 0.002852587
+    },
+    {
+      "kind": "snare",
+      "offset": 0.048,
+      "initializeGain": false,
+      "firstSample": -8.75e-07,
+      "onsetPeak": 0.003043115,
+      "onsetMaxDelta": 0.002833881
+    },
+    {
+      "kind": "snare",
+      "offset": 0.048,
+      "initializeGain": true,
+      "firstSample": -8.75e-07,
+      "onsetPeak": 0.003043115,
+      "onsetMaxDelta": 0.002833881
+    }
+  ]
+}

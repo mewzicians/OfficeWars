@@ -1,462 +1,411 @@
 # OfficeWars Game Design
 
+Last updated: 2026-09-23
+
 ## Purpose
 
-OfficeWars is a single-file office-themed autobattler about climbing seven
-corporate floors before stress, deadlines, or a rival end the run.
-
-This document describes the stable game model. Current numeric implementation
-lives in `officewarsautobattler.html`; approved and proposed balance changes live
-in `BALANCE_LEDGER.md`.
-
-## Design Goals
-
-- Support short bursts of player attention in an office environment.
-- Put meaningful decisions at the morning, night, weekend, and promotion.
-- Let the workday play autonomously with one cycling 1x, 2x, and 4x speed
-  button plus Skip.
-- Make builds legible through task Skills, permanent progression, homes, and
-  relationships.
-- Create varied runs without allowing a single unlucky roll to decide one.
-- Target an approximately 25-35 percent win rate for a skilled player.
-- Keep the complete game usable as one standalone HTML file.
-
-## Run Continuity And Onboarding
-
-OfficeWars keeps one versioned active-run save in browser storage. The main
-menu offers Continue Run when that save is valid and requires confirmation
-before a new run replaces it. Committed choices and stable phase transitions
-autosave without allowing a refresh to reroll an offer or undo a cost.
-
-A first-play contextual orientation teaches the basic journey through thirteen
-short callouts. It covers the project race and stress, morning task anatomy,
-the Resume, autonomous Workday controls, Clock Out, four focused Night Planner
-lessons, the first three-path Promotion choice, the 6 and 10 XP milestones,
-the first boss floor, and the first claimed Capstone. The Night sequence
-separately teaches Home Shop, Outings, Relationships and coworker bonus timing,
-then recovery, finalization, and the optional room interface. Conditional
-Deals remain a discovery. Each callout spotlights its relevant existing
-interface while darkening the rest of the screen. The first Workday pauses
-once before playback and opens the live Action Guide, which explains Work on
-Task, Lunch, Water Cooler, Office Chat, Slumped at Desk, and Team Meeting using
-current values. Playback is not interrupted after it begins. Players can skip
-the orientation at any step or reset it through Options for the next New Run.
-The tutorial does not rig cards or outcomes, and advanced traits and card
-interactions remain discoveries.
-
-Options stores meta preferences separately from the active run. The current
-screen provides a persistent master-volume setting for future audio and the
-tutorial reset command.
-
-If the page closes during a prepared Workday, continuing the run restores its
-deterministic checkpoint and automatically skips the remaining playback to
-Clock Out. Victory and defeat summaries persist across refreshes and return
-cleanly to the main menu. Casino checkpoints preserve chips and active game
-state; a pending Slots result settles exactly once after restoration. Sleep
-settles before the sunrise presentation and writes a `nightResolved`
-checkpoint, so refreshing during the transition advances the run without
-applying recovery twice.
-
-## Run Structure
-
-The player climbs from Intern through the CEO's Office. Each floor assigns a
-project with a required size and deadline. The player loses by:
-
-- reaching 100 percent stress;
-- missing the project deadline; or
-- allowing the rival to complete the project first.
-
-Completing a project promotes the player to the next floor. Beating the final
-floor wins the run.
-
-## Daily Loop
-
-1. Morning: choose one task card from a generated set. Apply that task's
-   immediate gains and losses when the selection is confirmed.
-2. Workday: watch scheduled actions resolve automatically.
-3. Clock Out: settle workday-triggered effects, ordinary pay, interest, and
-   effects explicitly assigned to Clock Out.
-4. Night: use available Outing, Home, and Deal actions in any legal order.
-   Unless an effect explicitly provides an exception, manually selecting
-   Lights Out forfeits Home and Deal purchases, while making either purchase
-   makes manual Lights Out unavailable. Then explicitly finalize the night.
-   If Lights Out is still legal and was not selected manually, finalization
-   selects it automatically before applying sleep.
-5. Weekend: after every fifth run-wide workday, resolve a mystery event or
-   casino visit.
-6. Promotion: carry the build forward and enter the next floor.
-
-A surviving non-final project-completion day still proceeds through Night
-before promotion. Completing the project does not discard effects or resources
-that apply that night. Beating the final floor proceeds directly to victory.
-
-After an ordinary surviving day, Night is followed by a Weekend when due and
-then the next morning. After a non-final project completion, resolve Night,
-promotion recovery, any due Weekend, promotion trait claims, and finally the
-next floor. Promotion recovery occurs before the Weekend, while trait claims
-occur afterward.
-
-## Task Cards
-
-Every ordinary task belongs to one of five job Skills:
-
-- Coding;
-- Management;
-- Design;
-- Sales; and
-- Operations.
-
-A task provides base project progress and stress plus a daily effect. Each
-Skill contains ten reusable task cards: four Common, three Uncommon, two Rare,
-and one Legendary, for 50 ordinary Skill cards total. Rarity belongs to the
-card rather than being rolled separately. Cards have no universal rarity
-multiplier or stress tax; each card is balanced around its explicit effect and
-rarity.
-
-Special cards sit outside the Skill roster and ordinary rarity distribution.
-They can be generated only as slots in the standard morning task window,
-including ordinary additional slots and standard task-list rerolls. Card-created
-task windows, guarantees, and other effects cannot newly generate a Special
-card. Each eligible generated slot has a 0.2 percent Special chance. Check slots
-in display order and stop after the first success, allowing at most one Special
-per generated window. Choose uniformly among currently eligible Specials. A
-visible Special may be preserved during its current morning but cannot be
-pinned into a future morning unless its own text allows it. `Rebrand
-Initiative` is the first Special card and leaves the eligible pool after it
-unlocks Brand Strategy.
-
-For clarity, a selected task's direct gains and losses resolve when the player
-confirms it rather than remaining projected until Clock Out. Effects explicitly
-tied to a workday action, Clock Out, or a future day still resolve at their
-stated trigger. Resolve the task's complete immediate package atomically, then
-check for burnout. After that play resolves, immediately update its Skill XP
-and card-progression counters; the resolving card cannot improve itself, but
-later cards played during the same morning use the updated values.
-
-Selecting a primary task is a separate event from playing a card. Every card
-play is complete by default: it resolves base progress, base stress, the
-printed effect, Skill XP, card-progression counters, and card-play triggers.
-Replays and additional plays use that complete procedure but do not repeat the
-morning selection or any primary-only trigger. Resolving only a copied printed
-effect and calculating a Schmoozing Assist are not card plays. An effect may
-explicitly suppress one component of a Complete Play; Automation's additional
-Combo cards are the current exception and grant no Skill XP.
-
-Each independent effect that says to play a card twice adds one Replay.
-Multiple such effects add their Replays rather than multiplying the total play
-count.
-
-Copied effects may contain another copy effect, but every copy branch tracks
-its active Source cards and cannot use the same Source twice. An effect whose
-entire value is explicitly bound to its own card identity cannot be selected
-as a copy Source. `Iteration Pass` is the only current identity-bound ordinary
-effect; `API Integration` instead redirects the Host card's pending Skill XP.
-
-A selection and everything it generates form one ordered resolution chain.
-Finish each card play before starting the next. Reaching the required project
-progress marks the project complete but does not interrupt that chain; remaining
-plays still resolve for their effects and progression, and promotion waits
-until after the workday. Burnout ends the chain and discards everything in it
-that has not begun resolving.
-
-Morning offerings weight all five Skills equally at 20 percent and may show
-more than one card from the same Skill, but never duplicate the same task in
-one offer. A task card can appear again on later workdays. Every completed
-ordinary task grants one XP to its Skill regardless of rarity,
-immediately after that play resolves unless its source explicitly suppresses
-Skill XP.
-
-Every separate window that asks the player to choose a task uses the Morning
-task-card visual language. A Complete Play or future primary choice shows
-stats and effect text. A copied-effect source shows effect text without stats,
-a Schmoozing Assist target shows only the stats used by the Assist, and a
-category-only choice shows only Skill, rarity, and name.
-
-When active run state can change the value of a Morning decision, a compact
-Build Context strip appears above the task offer. It names active delayed
-effects, their selected targets, Delegates, Contacts, and other relevant
-resources before commitment. Concise summaries may use progressive disclosure,
-but complete timing and effect text remains available through hover, keyboard
-focus, tap, the Resume, or the active-effect strip.
-
-Rules-loaded terms in trait text and task-card effects use a consistent
-high-contrast keyword treatment. Hover, keyboard focus, and tap reveal one
-short shared-glossary definition; the same term always uses the same
-definition in the Resume, Promotion, Morning offer, Pinned Task details, and
-separate task pickers.
-
-Pinned Tasks remain separate from the generated offer. Morning shows each pin
-as a compact Skill, name, and rarity row; activating it opens the standard full
-task card before the player selects it. Eye for Detail does not create a new
-Revision pin from a primary task selected through Pinned Tasks. The same task
-can create Revision normally when selected later from the generated offer.
-
-Common cards are simple and dependable, with one short, automatic micro-effect
-that can make each card preferable in a specific situation. Keep that effect
-bounded unless the ledger explicitly approves card-local progression.
-Uncommon cards are stronger or more specialized and may use two short clauses.
-Rare cards offer build-shaping daily effects with a condition, tradeoff, or
-synergy. Legendary cards deliver a dramatic Skill-defining workday without
-guaranteeing a win. Higher rarity raises a card's potential rather than making
-it the automatic choice.
-
-Every card should provide useful standalone value, express its job Skill, and
-offer a higher conditional synergy ceiling. Coding remains the most internally
-synergistic Skill, reflecting its comparatively solitary work fantasy, but
-its effect cards must still offer enough standalone or cross-Skill value to
-create real splash decisions.
-
-The implementation uses Skill-based milestone traits rather than the
-superseded stackable Resume-skill system. See the ledger for exact path effects
-and values.
-
-## Skill Card Identities
-
-- **Coding - Build, Automate, Integrate:** turn prior work into future value,
-  sequence or process additional cards, and hand value between Skills.
-- **Management - Coordinate, Schedule, Amplify:** observe people and the
-  workday schedule, guarantee or rearrange actions, and multiply successful
-  coordination.
-- **Design - Observe, Iterate, Transform:** reveal information before
-  commitment, refine cards or preserved options through repeated work, and
-  copy or convert existing effects into flexible value. Design manipulates
-  card effects and information rather than repeating the underlying schedule.
-- **Sales - Earn, Spend, Network:** generate cash or temporary purchasing
-  power, turn spending into discounts or financing, and convert relationships
-  into economic leverage. Sales money should create choices and tempo rather
-  than function only as a score.
-- **Operations - Reserve, Stabilize, Deliver:** hold resources or work for a
-  later payoff, reroll or replace unreliable outcomes, and convert successful
-  actions into dependable throughput. Operations responds to process
-  reliability and resource flow rather than directly commanding people.
-
-## Workday Actions
-
-The standard day contains five actions, with Lunch fixed in the third slot.
-Espresso can add another action.
-
-A Schedule Entry is an action placed on the workday timeline. Resolving that
-entry once is one Action Resolution, which produces one Outcome and applies
-the relevant action triggers. Repeating an action adds resolutions without
-adding more Schedule Entries. A Coworker Bonus Activation is tracked
-separately from the action or visit that caused it: triggering a bonus twice
-creates two activations, while doubling its strength creates one activation
-with doubled numerical values.
-
-The game generates and tags a Natural Schedule before the primary task is
-resolved. Task, trait, Deal, and other effects then modify it through automatic
-changes and one consolidated Schedule Desk before the entries lock. Schedule
-count effects use that locked timeline. Repeats do not add entries, and actions
-created dynamically during playback do not retroactively change its count.
-Any decision that previews or compares schedules uses the same horizontal
-tracker language as the live Workday: one icon tile per action, source badges,
-and highlighted differences. When multiple schedules are available, stack
-their trackers and let the player select one directly.
-
-Adding an action creates a bonus entry. Replacing one creates a non-natural
-entry in the same position. A runtime conversion preserves the original
-entry's natural origin, while a repeat reuses that entry and its participants
-with a fresh Outcome. Opening actions play first, ordinary bonus additions
-follow the core schedule, and Standard Procedures play last. Actions triggered
-during playback resolve immediately after their parent.
-
-Desk visits, sabotage, passive manager ticks, and similar Workday Events are
-not Schedule Entries or Action Resolutions. They use fixed timeline positions
-so normal, double-speed, and skipped playback always resolve the same order and
-outcomes. An event counts as an action only when an effect explicitly converts
-it into one. The normal daily desk visit resolves after the midpoint Schedule
-Entry, and armed sabotage resolves immediately after that visit.
-
-- Work on Task grants project progress.
-- Lunch resolves a hidden favorable or unfavorable result.
-- Water Cooler grants a task or Home reroll.
-- Office Chat can relieve stress or sour a relationship and cause sabotage.
-- Slumped at Desk adds stress.
-- Team Meeting affects the deadline, progress, or stress and includes coworker
-  participant bonuses.
-- Boss floors inject hostile manager actions.
-
-Playback controls change presentation speed, never game outcomes. One button
-shows the current speed and cycles `1x -> 2x -> 4x`; player-facing 1x uses
-twice the original presentation baseline.
-
-## Stress And Recovery
-
-Stress is the player's health. Positive stress gains are multiplied by floor
-pressure; ordinary recovery is not. Recovery can come from tasks, chats,
-coworkers, Home upgrades, sleep, Lights Out, weekends, and promotions.
-
-Flat stress ignores floor scaling and numerical stress modifiers. Focus may
-still absorb it, and Guardian Angel may still prevent the resulting burnout.
-
-Moodboard generates Focus from actual automatic-sleep, Lights Out, promotion,
-and Weekend recovery. Harmful Weekend outcomes resolve atomically, then Focus
-and Guardian Angel apply before burnout. Traits claimed after that Weekend do
-not affect earlier transition events.
-
-Stress should create route and build pressure without making defensive choices
-mandatory every day.
-
-## Home And Economy
-
-Workdays pay cash and may earn interest. Cash buys permanent Home upgrades,
-larger homes, and outings. Homes increase upgrade capacity and provide
-cumulative bonuses. The night phase deliberately makes recovery, investment,
-and relationship spending compete for attention and resources.
-
-After the morning task chain and all morning spending finish, snapshot the
-cash used for that workday's Reserve Levels and interest. Cash earned later in
-the workday begins earning interest on the following workday. At Clock Out,
-resolve performance effects before conditional rewards, settle income and
-interest before mandatory debts, and pay those debts before creating new
-reserves. On a project-completion night, purchases that can affect only the
-already-completed project are unavailable.
-
-Night is one flexible decision phase presented as the player's current living
-space rather than the office. Each Home uses a flat side-view room composition
-with a shallow patterned floor, a clear baseboard boundary, and furniture
-grounded on that boundary. Clock Out transitions through a sunset and door
-opening into the room; ending the day transitions through sunrise back to the
-office. The sun and moon share one east-to-west arc but never occupy the same
-stretch of it. Screen-right is east and screen-left is west. At each
-transition the departing body completes the western half of the arc and drops
-below the left edge, while the arriving body enters from the right/eastern
-edge and climbs to the resting position the departing body held. The sun sets
-in the west and the moon rises in the east at sunset; the moon sets in the
-west and the sun rises in the east at sunrise. Reduced-motion and automated
-runs bypass presentation timing without changing outcomes.
-
-Generate Home and Deal catalogs at Night start, then open the consolidated
-iPad-style Night Planner unless the player most recently ended Night from the
-room. Its Home Shop, Outings, and Relationships tabs share persistent Stress,
-Lights Out, Finalize Night, and Hide Planner controls. Deal Desk appears as a
-fourth tab only while Sales or another active effect provides a legal Deal
-purchase. Home Shop offers expand across the usable Planner width; three
-offers use three equal columns and an additional visible offer uses a fourth
-column without hiding the purchase controls. The room remains a complete
-optional interface: the iPad opens the full Planner, the computer opens Home
-Shop, the door opens Social tabs for Outings and Relationships, the laptop
-opens Deal Desk when available, the switch selects Lights Out, and the bed
-finalizes Night. Ending Night through the Planner makes the next Night open
-there; using the bed preserves the room preference.
-
-Outings remain independent of the recovery choice. Manual Lights Out and Home
-or Deal purchases are mutually exclusive unless an effect explicitly permits
-both; Moodboard's automatic Lights Out is the current exception. Purchases do
-not end Night automatically. An explicit finalization applies sleep and any
-available Lights Out recovery, expires night-only resources, and advances the
-run. Newly purchased Home effects apply immediately. Repeated effects remain
-separate but do not bypass normal Night limits unless they explicitly add an
-action, purchase, or Outing.
-
-The Planner and room keep Cash, Expense Credit, current Stress, and projected
-post-sleep Stress prominent, including a top Stress bar. Interactive furniture
-follows a stable left-to-right elevation: End Day bed, Night Planner iPad,
-Home Shop computer, Deal laptop, and Social door. Every furniture body stays
-above the baseboard while its feet meet the shared floor edge; the Home name
-remains below that edge. The wall switch selects Lights Out. The moon appears
-through the room window, and Lights Out visibly dims the room without hiding
-its controls. Home capacity appears as accessible visual item slots on a wall
-storage shelf. Occupied slots expose their effect and open a sell confirmation
-through pointer, keyboard, or tap activation. Outing stories briefly fade the
-room to black, then return the player to the same living space.
-
-## Coworkers And Relationships
-
-Coworkers move through the office, talk, join meetings, visit the player, and
-grant relationship-scaled bonuses. Outings improve relationships and unlock
-biography sections. Social systems should create useful build choices while
-remaining character-driven.
-
-Coworker bonuses trigger when the player meets that coworker during the
-Workday, including eligible meetings and visits.
-
-Each non-rival coworker normally has one Standard Bonus Opportunity per
-workday, spent by ordinary Team Meeting participation or the normal daily desk
-visit. Explicit card, trait, and reward effects may create Forced Bonus
-Activations that ignore and do not consume that opportunity. For one meeting
-or visit, overlapping rules set one total activation count rather than adding
-duplicate normal and forced triggers unless an effect explicitly says
-`additional`.
-
-Calculate each complete bonus from current relationship when it activates.
-Strength multipliers affect every numerical component before floor stress
-scaling. Resolve all activations produced by one action or Workday Event
-atomically so playback order cannot create hidden survival differences.
-
-## Managers And Rival
-
-Each floor has a manager modifier. Boss floors also support the rival and inject
-hostile actions. The rival develops a simulated build and progresses every
-workday. Manager rules should change priorities without creating unavoidable
-losses. Delayed effects use the floor and manager active when they resolve
-unless their source explicitly snapshots another value. The completed-floor
-manager remains active through its completion Night, while Weekend events
-ignore manager modifiers unless explicitly stated.
-
-The current manager is visibly represented in the manager office with a
-distinct portrait and color. They remain seated on ordinary floors and use a
-cosmetic office patrol only on boss floors. This patrol is presentation-only:
-it never joins the gameplay cast, reserves space, consumes RNG, or changes
-1x, 2x, 4x, or Skip outcomes.
-
-## Trait Progression
-
-The progression system uses Skill XP rather than random per-skill stacks:
-
-- task offerings use equal Skill weighting while allowing Skill repeats;
-- every completed task grants one Skill XP regardless of rarity;
-- at 3 Skill XP, choose one of the Skill's ordinary visible career paths;
-- the selected ordinary path evolves at 6 and 10 XP;
-- Closing is an exception after it is chosen as a Sales path: it has no 6 or
-  10 XP milestones and develops entirely through its Sales Cycle, Close reward
-  tables, and persistent Closing rewards;
-- later milestones preserve earlier trait effects unless their text explicitly
-  replaces or upgrades a specific effect;
-- ordinary XP milestones and path choices are claimed at promotions;
-- hybrid investment across Skills remains open;
-- each ordinary milestone path has a distinct capstone, while Closing uses its
-  first successful actual Chain 9 Close as its non-XP capstone trigger;
-- only one capstone can be claimed per run across ordinary paths reaching 10
-  XP, Brand Strategy finishing its final Campaign, and Closing completing its
-  first actual Chain 9 Close;
-- Brand Strategy is a hidden exception unlocked only by the Special card
-  `Rebrand Initiative`; it can coexist with an ordinary Design path and
-  advances through named, ordered task Campaigns rather than Design XP;
-- while Brand Strategy is active, the Morning Task Desk shows its Campaign
-  name, requested task and Skill, completed steps, and Campaigns completed;
-- traits create natural cross-system synergies instead of named pair bonuses;
-- trait paths use setup, payoff, and capstone interactions that can become
-  exceptionally strong in the right build without being automatic.
-
-Promotion claims are one staged transaction. The player configures every new
-path and reached milestone, resolves any capstone comparison, and confirms the
-whole batch before any new trait becomes active. Path selection shows only the
-3 XP effect; each later milestone reveals its own description when claimed.
-The final Promotion Review presents one paginated page per Skill, shows only
-milestones earned in that promotion, uses visual milestone cards, and gives a
-new capstone its own prominent card before the player confirms or revises the
-staged batch.
-The first sole capstone candidate reserves the run's capstone provisionally.
-Before confirming Promotion, the player may revise that ordinary reservation
-among every ordinary path newly eligible in the same review. Candidates
-created by one atomic event are compared without using Skill order or
-interface order as a tiebreaker. A confirmed or immediately activated
-capstone remains permanent.
-
-On the compact Resume rail, milestone boxes keep a green outline before they
-are reached, use a highlighted `!` while awaiting Promotion Review, and retain
-a green checkmark after the claim is confirmed. Hovering, focusing, or tapping
-a 3, 6, or 10 XP box reveals the selected path's exact effect at that
-milestone. Before specialization, the box states that no specialization has
-been chosen for that Skill.
-
-Exact approved and implemented-candidate trait effects live in the balance
-ledger.
-
-## Documentation Rule
-
-Use this file for stable gameplay concepts. Use `BALANCE_LEDGER.md` for changing
-numbers, active proposals, decisions, and unresolved questions. Use
-`ARCHIVE_SUPERSEDED.md` only for historical directions that no longer belong in
-active planning.
+OfficeWars is a single-file office autobattler about climbing seven corporate
+floors before Stress, the fixed workweek, or Chad ends the run.
+
+This document contains durable player-facing behavior and mental models.
+Exact values, content tables, decision status, and replacement text belong in
+`BALANCE_LEDGER.md`. Implemented runtime truth remains
+`officewarsautobattler.html`.
+
+## Product Goals
+
+- Keep one standalone HTML file with no required server or build step.
+- Support brief attention without timed or reflex input.
+- Let Workday playback run at 1x, 2x, 4x, or hidden Skip without changing
+  gameplay or gameplay RNG.
+- Pause unattended playback only at authored irreversible political choices.
+- Make project pressure, managers, Chad, coworkers, politics, economy, and
+  Home builds readable.
+- Fit supported player-facing layouts without visible scrollbars. Long content
+  must reflow, condense, or paginate unless a named scrollable surface is
+  explicitly approved.
+- Preserve deterministic reload and headless parity.
+- Target approximately 25-35 percent wins for a skilled player after tuning.
+
+## Implemented Baseline
+
+The current root HTML implements Workday and Office Politics Phases 1-5, Home
+Phase 1, Guided Intern, and the complete gated Cash Jar/Galactic runtime at
+SHA-256
+`816A35B40CD4F36C6CF25CD766BF6FEB94A1D77D885C56947B73F6C4228F52AA`.
+The public mirror and GitHub `main` carry the same bytes as of 2026-10-05.
+
+Implemented systems include:
+
+- Wednesday-Friday Intern and Monday-Friday later floors;
+- fixed project records, Friday locks, two earned overtime days, promotion,
+  Weekend routing, and immediate CEO victory;
+- task cards, fixed Comply/Resist/Negotiate manager packages, deterministic
+  Today's Directive completion, five-state Approval, and Night objectives;
+- pixel-cinematic Workday actions, chronological Project, Relationship, Chad,
+  source-created, and Boss political events;
+- irreversible choices, resource reservation, hidden Skip, results reel, and
+  deterministic restoration;
+- transparent Chad pace, supporter snapshots, direct political subtraction,
+  conversations, and forecast decomposition;
+- seven Project Briefs, favored and adversarial Skills, stakeholders,
+  dilemmas, Overdelivery, expectations, and role rewards;
+- forty-two authored coworker identities, dynamic floor rosters, 0-10
+  Relationship, player/Chad standing, 168 scenes, invitations, traps, loyalty,
+  role votes, and Alumni;
+- Delegation campaigns, Favors, Schmoozing, All Hands, and direct social
+  consumers;
+- path-aware ordinary 3/10/20 progression, exceptional Closing and Brand
+  Strategy progression, the fifty-card roster, Deals, rewards, and Weekends;
+  and
+- seven Homes, 28 available Home items, nine sets, Morning salary, deposits,
+  shop rerolls, Cash-basis sales, held items, Active Buffs, Prepare Tomorrow,
+  Remote Task, and Home/social integrations; and
+- active-run schema 9 plus stable checkpoints for political choices, hidden
+  queues, results, role votes, payouts, Night, Floor Briefing, and tutorial
+  state; and
+- Guided Intern as the sole first-play tutorial: one mandatory deterministic
+  Wednesday-Friday run with 18 Coordinator checkpoints and real carryover.
+
+Cash Jar acquisition remains disabled for ordinary players, but the gated
+runtime implements its lifecycle, all 24 Weekend stories and 96 outcomes,
+Galactic acquisition/events, Timeline, Hivemind, Reality, UI, and persistence.
+Schema 9 remains live and schema 10 remains inactive. Guided Intern is not
+part of the Cash Jar gate.
+
+Headless promotion now awaits Delegation Floor Briefing before Morning. The
+`cash-jar-visible-v1` simulation policy can legally acquire, Keep, Open, and
+settle Cash Jar outcomes using visible information only. It is an evidence
+instrument, not a tuned skilled-player model.
+
+## Run Calendar And Promotion
+
+Intern is the first floor. Every later floor uses a Monday-Friday workweek.
+Completing the project locks promotion after the current atomic resolution
+survives. Chad completing first causes defeat; a same-Clock-Out tie favors the
+player. Earned overtime may extend an unfinished floor through Sunday.
+
+A successful non-final floor resolves:
+
+`Final Clock Out -> Overdelivery payout -> final Night -> pending Night
+directive -> promotion recovery -> Weekend -> Promotion Review -> next floor`
+
+The outgoing manager does not modify Weekend outcomes.
+
+## Morning And Progression
+
+Every ordinary task belongs to Coding, Management, Design, Sales, or
+Operations. A primary is distinct from a Replay, Complete Additional Play,
+copied Printed-Effect Resolution, or Automated Task Resolution.
+
+Only the primary receives primary-only project and manager treatment. Skill XP
+is uncapped. Ordinary paths advance through the active threshold authority.
+Closing advances through Sales Cycles and Chain, while Brand Strategy advances
+through Campaigns. Only one career-path capstone may be owned.
+
+## Workday And Politics
+
+The Workday order is:
+
+1. Reveal the manager directive.
+2. Assign fixed package responses to visible primary packages.
+3. Pay the selected response cost.
+4. Resolve the primary and its immediate chain.
+5. Lock schedule entries, participants, political records, dialogue, and
+   conditional branches.
+6. Save the prepared Workday.
+7. Play ordinary actions and pause at political choices.
+8. Reveal results chronologically.
+9. Continue to Clock Out.
+
+Watching, Skip, reload, and headless execution must preserve gameplay state and
+RNG. Political choices have no timer, Back, edit, or defer path. Costs reserve
+at commitment. Terminal outcomes release later reservations and end the run.
+
+A live political choice owns the central Workday presentation. The day ticker,
+Action Guide, playback controls, and floating current-action card are hidden
+until commitment. The saved event anchor appears inside the decision as a
+before/after action breadcrumb. Normal HUD information remains visible.
+
+## Projects, Chad, Managers, And Coworkers
+
+Every floor owns a Project Brief, favored/adversarial Skill pair, two
+stakeholders, a dilemma deck, and a role contest. Overdelivery rewards excess
+completion but temporarily raises next-floor expectations.
+
+Chad remains throughout the run. His forecast itemizes pace, project size,
+supporters, role rewards, manager effects, bosses, expectations, and direct
+subtraction.
+
+Every manager combines a passive, directive tendencies, fixed task-package
+responses, Approval, and Favorite/Vindictive riders. Directives are
+deterministic office quests rather than manager-odds rolls.
+
+Every floor roster contains Gatekeeper, Wildcard, Pragmatist, Achiever,
+Networker, and Idealist identities. Relationship controls personal scenes and
+loyalty; standing controls political alignment. Loyal coworkers become Alumni
+after retirement and preserve identity, gifts, Network ranks, and permanent
+archetype perks.
+
+## Implemented Home System
+
+Status: **Implemented in schema 9; Cash Jar gated**
+
+Home becomes a supportive build shaper with a deterministic seven-level
+housing ladder:
+
+`Apartment -> Condo -> Townhouse -> Duplex -> House -> Estate -> Penthouse`
+
+### Housing And Shop
+
+- The player deposits Cash toward the next Home during Night.
+- Deposits persist, cannot be withdrawn, and share one move per Night with
+  automatic equity sources.
+- A move immediately changes capacity and comfort; the current catalog keeps
+  its generated rarity until rerolled or replaced.
+- Home level controls active item slots, nightly recovery, and shop rarity
+  odds.
+- The base shop shows three unique-item offers at every Home.
+- Free Home rerolls bank. Paid rerolls escalate each Night and reset the next
+  Night.
+- Items are unique. Selling uses acquisition Cash basis and immediately
+  recomputes sets.
+- Final-charge items disappear. A player-controlled final charge warns which
+  sets will break.
+- The same side-view room evolves through all seven Homes.
+
+Exact deposits, salary, and rarity odds remain Draft tuning values.
+
+### Item And Set Model
+
+The catalog defines 29 ordinary items. Twenty-eight are available; Cash Jar is
+implemented behind its release gate and remains unavailable in ordinary
+schema-9 play.
+
+- 11 Common;
+- 7 Uncommon;
+- 6 Rare; and
+- 5 Legendary.
+
+Items have literal tags and useful standalone effects. Nine simultaneous sets
+shape builds:
+
+- Energy;
+- Financial Foundation;
+- Appliance Suite;
+- Wellness;
+- Connected Home;
+- Hospitality;
+- Networking;
+- Workspace; and
+- Planning.
+
+Flexible sets count tags. Workspace and Planning require four specific
+non-Legendary pieces; Home Office and Personal Assistant are their fifth-piece
+supers. Connected Home passively upgrades every other completed set.
+
+Set completion is derived from currently active items and changes immediately
+after buying, selling, exhausting, destroying, or receiving an item.
+
+### Exceptional Resolution
+
+Automation's purchased Combo cards become `Automated Task Resolution`.
+Automated resolutions keep base PP, printed effects, card-local conditional
+PP, and Automation Combo PP, but grant no Stress, Skill XP, completion
+identity, Codebase, Polish, counters, or Complete Play triggers.
+
+Home Office Remote Task, Planning day plans, set-created actions, cloned
+effects, and other exceptional sources must preserve ancestry, exactly-once
+settlement, and watched/Skip/reload/headless parity.
+
+### Player-Facing Home Language
+
+The player-facing action is `Work`; prose calls it a `Work action`.
+`Work on Task` remains only an internal compatibility alias.
+
+Home cards use a compact three-part model:
+
+1. item name;
+2. `GOOD FOR` set tags; and
+3. one short mechanical effect.
+
+Named buffs and reusable keywords use a dotted underline with the same short
+tooltip on hover, keyboard focus, and tap. Routine UI never exposes internal
+snapshots, settlement markers, ancestry, schemas, or calculation precedence.
+
+The existing HUD effect strip remains the quick view. Selecting a chip or its
+overflow opens the Resume's categorized Active Buffs page. Build Context shows
+only Morning-relevant effects; permanent Home items and sets are grouped.
+
+The compact Resume rail uses one bottom progress footer per Skill: exact
+uncapped XP or Closing Chain on the left, the next gate beside it, and one
+continuous family-colored bar on the right. A 16px family icon marks the next
+milestone and disappears at final completion. Completed Skills use a brighter
+static frame; an active capstone adds a gold star and a one-time,
+reduced-motion-safe acquisition treatment. Detailed 20-square XP tracks and
+milestone tooltips remain in the Resume Book.
+
+## Locked Cash Jar
+
+Status: **Locked; gated implementation verified, release disabled**
+
+`Cash Jar Marked "DO NOT SPEND"` is a unique Financial Foundation Common.
+
+- It appears only in an eligible Home catalog generated while ordinary Cash is
+  `$500` or less.
+- Buying it consumes all ordinary Cash, ignores discounts, credit, financing,
+  and free-purchase effects, and counts as a Home purchase and Cash spend for
+  other systems.
+- Its own purchase cannot break it.
+- It cannot be sold. Only spending ordinary Cash, Weekend Open, or another
+  authored terminal effect removes it.
+- While intact it grants `$25` after Workday salary and before task selection.
+- Any later gross ordinary-Cash outflow breaks and destroys it immediately;
+  Expense Credit and canceled transactions do not.
+- A declined offer may return while still eligible. A purchased, broken, or
+  opened Jar never returns.
+
+### Weekend Cashout
+
+At every eligible Weekend an intact Jar offers:
+
+- `Keep`: gain one Tier, receive no reward, and continue the no-spend
+  challenge; or
+- `Open`: freeze and consume the current ordinary-Cash wallet, destroy the
+  Jar, select the current Tier/band story, and make one irreversible authored
+  choice.
+
+The six Tiers use four Cash bands:
+
+- `$0-499`;
+- `$500-999`;
+- `$1,000-4,999`; and
+- `$5,000+`.
+
+This creates 24 unique story cells. Cash band controls power; Tier primarily
+controls weirdness. Tier 6 / `$5,000+` is the unique Cash Jar capstone.
+
+The Jar event replaces the ordinary mystery Weekend. Floor 3's guaranteed
+Casino follows it. Keep is unavailable when no later non-final Weekend exists.
+Choices reveal labels only; probabilities and outcomes remain hidden until
+commitment.
+
+Stable checkpoints cover Keep/Open, post-Open story choice, and settled
+result. Exact story tables belong in the ledger.
+
+### Planetary Constitution
+
+One Declared-a-Planet outcome grants permanent Galactic laws and replaces
+future mystery Weekends with a beneficial Galactic event deck.
+
+- Twelve stable event identities use a Locked deterministic replacement table.
+- Every event shows two fully described beneficial choices.
+- Draw without replacement, reshuffle after all twelve, and exclude the
+  immediately previous event.
+- Repeated outcomes use event-specific upgrades and Encores.
+- Hostage events resolve after Clock Out and before Night; a real Weekend
+  consumes a due Hostage trigger.
+- Mid-floor rewards begin at their next authored legal boundary.
+- Presentation compresses after twelve actions without changing mechanics,
+  politics, RNG, or Skip parity.
+
+Property Rights turns the active Home portfolio into Workday productivity and
+pay. It snapshots active items before salary, freezes that portfolio through
+the Workday, and applies productivity only to the original selected primary;
+derived task resolutions do not inherit it. Orbital Warehouse counts every
+owned item because those items are active. Exact values and settlement order
+belong in the ledger. Galactic Investment and Galactic Gambler numeric values
+remain Draft.
+
+## Guided Intern
+
+Status: **Implemented**
+
+Every profile must complete one mandatory authored Wednesday-Friday Guided
+Intern before ordinary play. `GI-OPEN` remains one checkpoint but contains
+four automatic Back/Next spotlight steps: the actual Project Progress HUD, the
+Chad race and three-workday calendar, Favored/Adversarial Project Fit, and
+named project stakeholders. Only its final step exposes Clock In. Later
+lessons use a larger dock, short dialogue, a persistent checklist, one-time
+attention cues, and accessible required-action targeting.
+
+One bold, decorative pixel connector links the Coordinator card to the active
+opening target. It refits after step changes, reload, resizing, and text
+scaling, never accepts input, and consumes no gameplay state or RNG.
+
+The deterministic scenario teaches the project race, favored/adversarial
+Skills, manager packages, cinematic Workday choices, Office Politics, Chad
+Openings, Night tradeoffs, completion lock, one Overdelivery tier, Weekend,
+and Promotion Review. Real state carries into Associate.
+
+The Coordinator assumes player competence and explains hidden interactions,
+not obvious labels or generic reassurance. Eighteen checkpoints teach only
+the approved content: three Coding tasks, one Home item, one social target,
+one Home deposit, and the core run loop. The player reviews all three Coding
+paths individually and freely chooses one at graduation.
+
+Opening and lesson copy follows function-first progressive disclosure.
+Project Progress is defined before PP is used. Favored and Adversarial explain
+their purpose in the spotlight, retain exact accessible tooltips, and repeat
+exact consequences only when a relevant Morning task is being confirmed.
+Gatekeeper and Pragmatist appear as work-style descriptors rather than
+guaranteed response rules.
+
+Intern social state follows the floor-local model: Priya can retire as Alumni,
+and Coordinator Approval becomes manager reputation. It is not copied onto the
+new Associate roster.
+
+Guided Intern replaces the removed contextual Orientation. Options can start
+a fresh real Guided replay after the normal active-run replacement warning.
+Completion is committed only after a recoverable Associate Floor Intro exists;
+the Coordinator does not interrupt the first Associate Morning.
+
+The opening walkthrough replaces opening Show Me with Back, Next, `1/4`
+progress, and one final Clock In. Its optional persisted `openingStep` defaults
+to the first step for older saves and changes no gameplay RNG. Later Show Me
+resolves the next legal action, including the next incomplete step in
+multi-action Night and Promotion lessons. It scrolls, focuses, and labels that
+target without changing gameplay or RNG. Repeat is not part of the interface.
+The Guided Floor Intro keeps the compact Coordinator card away from the
+highlighted target and has no internal scrollbar at supported desktop,
+scaled-text, or short-landscape layouts.
+
+During Guided political choices, the full Coordinator dock is replaced by a
+compact instruction and Show Me strip inside the decision pane. Wrong-choice
+feedback remains inline. The ordinary dock returns after commitment while the
+Action Guide remains closed.
+
+Elsewhere the dock stays full-size at the bottom unless it would cover a live
+control; then it collapses to one line, at the top when that covers fewer
+controls. The Show Me marker avoids the dock and other controls. Morning
+carries its own Office Politics button because the HUD copy sits under the
+Morning overlay.
+
+## Persistence, UI, And Accessibility
+
+Home and Cash Jar records are serializable before presentation. Reload preserves generated
+offers, transactions, held items, mastery, plans, Remote Task, Home Setup,
+active buffs, Cash Jar choices/outcomes, Galactic events, and exactly-once
+settlement.
+
+Home and Cash Jar UI support desktop and short landscape, keyboard-focusable/touch
+tooltips, reduced-motion-compatible transitions, and 200-percent text without
+horizontal overflow in the verified surfaces. Formal screen-reader execution
+and broad human evidence remain Not Run. Routine effects stay concise; exact
+formulas and precedence remain in the ledger or optional accessible details.
+
+The supported interface uses authored pages instead of visible scrollbars for
+long content. Morning separates tasks from context and pins; Resume pages paths
+and categorized buffs; Clock Out separates summary, carryover, and source log;
+and Help, schedules, politics, inventories, Action Guide, and result reels page
+their long-form content. Responsive refit state is presentation-only and
+consumes no gameplay RNG.
+
+## Documentation Boundary
+
+- `GAME_DESIGN.md`: stable behavior and player mental models.
+- `BALANCE_LEDGER.md`: exact values, tables, status, and recovery gaps.
+- `HANDOFF.md` and `PROJECT_STATUS.md`: current implementation and evidence.
+- `ARCHIVE_SUPERSEDED.md`: discarded directions only.
+- Dated patch notes and verification reports: evidence for their named
+  snapshots, never current design authority.

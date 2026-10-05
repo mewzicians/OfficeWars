@@ -32,8 +32,14 @@ Game SHA-256:
 
 ## Visual Evidence
 
-- `.visual-desktop-trait-keywords.png`
-- `.visual-landscape-trait-keywords.png`
+Both captures were written by `.officewars-visual-capture.py` for this check.
+Neither is retained: they are absent from the workspace and were not among the
+files moved into the dated quarantine on 2026-08-24, so they predate that
+sweep. The five verifier commands above all still exist and remain the
+reproducible evidence for this record.
+
+- `.visual-desktop-trait-keywords.png` - not retained
+- `.visual-landscape-trait-keywords.png` - not retained
 
 No focused or automated release blocker remains. Structural balance
 simulation was not rerun because the only gameplay change removes a

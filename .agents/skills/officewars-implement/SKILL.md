@@ -40,7 +40,7 @@ Before editing, trace the change through every affected surface:
 - morning, Workday, Clock Out, Night, Weekend, Promotion, and result UI;
 - descriptions, tooltips, forecasts, legends, How to Play, and tutorial copy;
 - simulations, fixtures, browser checks, and verification evidence;
-- active documentation, rollout handoff, public mirror, manifests, and ZIP.
+- active documentation, rollout handoff, public mirror, and manifests.
 
 Use the map to find required edits, not to expand the approved design.
 
@@ -88,7 +88,8 @@ Blocked and preserve exact hashes or seeds for meaningful evidence.
 - Update project status, handoff, patch notes, and verification evidence as
   appropriate.
 - Synchronize mapped root files to the rollout and public mirrors.
-- Refresh manifests, hashes, and the public ZIP after release-package changes.
+- Refresh manifests and hashes after release-package changes. Do not build a
+  release ZIP unless the user asks for a single-file handoff.
 - Use `$officewars-qa-cleanup` for broad synchronization or stale-document
   cleanup and `$officewars-full-verification` for exhaustive ship readiness.
 

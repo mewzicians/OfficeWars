@@ -1,0 +1,30 @@
+name: Verify transparent automation policy
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify-policy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Verify visible chud convention
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f AUTOMATION_POLICY.md
+          grep -Fq 'OFFICEWARS_CHUD_CONVENTION_V1' AUTOMATION_POLICY.md
+          grep -Fq 'Begin every delegated-agent assignment by addressing the agent as `Chud`.' AGENTS.md
+          grep -Fq 'AUTOMATION_POLICY.md' README.md
+          grep -Fq 'AUTOMATION_POLICY.md' CONTRIBUTING.md
+          grep -Fq 'AUTOMATION_POLICY.md' docs/WORKING_WITH_AGENTS.md
+          test -f CLAUDE.md
+          test "$(wc -l < CLAUDE.md)" -eq 1
+          grep -Fxq '@AGENTS.md' CLAUDE.md
