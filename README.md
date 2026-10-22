@@ -163,8 +163,8 @@ every audition has a label and status in the
 The implemented candidate is:
 
 - SHA-256:
-  `816A35B40CD4F36C6CF25CD766BF6FEB94A1D77D885C56947B73F6C4228F52AA`
-- size: `1,730,955` bytes
+  `1DA11A1FEC21B8AED383B1BDD53F2AAB0DAB55ADA8E2F1B188F26407DEFEC149`
+- size: `1,731,492` bytes
 - active-run schema: `9`
 
 Cash Jar and Galactic activation, 1,000-paired-seed Home tuning, formal

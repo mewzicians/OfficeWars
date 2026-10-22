@@ -5950,6 +5950,16 @@ body.ow-political-decision-focus #day-playback-controls,
 body.ow-political-decision-focus .cinematic-main-pane {
   display:none!important;
 }
+/* The wrap-up reel owns the screen as Clock Out does: the finished day's chrome and the HUD wait behind it. */
+body:has(#workday-stage.results-active) #day-ticker,
+body:has(#workday-stage.results-active) #day-action-legend,
+body:has(#workday-stage.results-active) #day-playback-controls,
+body:has(#workday-stage.results-active) #run-hud,
+body:has(#workday-stage.results-active) #project-hud,
+body:has(#workday-stage.results-active) #rival-hud,
+body:has(#workday-stage.results-active) #player-hud {
+  display:none!important;
+}
 .cinematic-main-pane {
   position:absolute;
   inset:0;

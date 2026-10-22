@@ -1,6 +1,6 @@
 # OfficeWars Game Design
 
-Last updated: 2026-09-23
+Last updated: 2026-10-22
 
 ## Purpose
 
@@ -32,8 +32,10 @@ Exact values, content tables, decision status, and replacement text belong in
 The current root HTML implements Workday and Office Politics Phases 1-5, Home
 Phase 1, Guided Intern, and the complete gated Cash Jar/Galactic runtime at
 SHA-256
-`816A35B40CD4F36C6CF25CD766BF6FEB94A1D77D885C56947B73F6C4228F52AA`.
-The public mirror and GitHub `main` carry the same bytes as of 2026-10-05.
+`1DA11A1FEC21B8AED383B1BDD53F2AAB0DAB55ADA8E2F1B188F26407DEFEC149`.
+The public mirror and GitHub `main` carry this candidate as of 2026-10-22.
+The balance ledger and some agent guidance on GitHub are older versions; the
+ledger there still names `816A35B4`.
 
 Implemented systems include:
 
@@ -126,6 +128,10 @@ A live political choice owns the central Workday presentation. The day ticker,
 Action Guide, playback controls, and floating current-action card are hidden
 until commitment. The saved event anchor appears inside the decision as a
 before/after action breadcrumb. Normal HUD information remains visible.
+
+The Office Politics wrap-up owns the screen as Clock Out does: the day
+ticker, Action Guide, playback controls, and HUD stay hidden while the
+results reel is open, live or restored.
 
 ## Projects, Chad, Managers, And Coworkers
 

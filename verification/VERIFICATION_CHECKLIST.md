@@ -1,14 +1,14 @@
 # OfficeWars Verification Checklist
 
-Last updated: 2026-10-05
+Last updated: 2026-10-22
 
 ## Status Boundary
 
 Root gated candidate:
 
 - SHA-256:
-  `816A35B40CD4F36C6CF25CD766BF6FEB94A1D77D885C56947B73F6C4228F52AA`
-- size: `1,730,955` bytes
+  `1DA11A1FEC21B8AED383B1BDD53F2AAB0DAB55ADA8E2F1B188F26407DEFEC149`
+- size: `1,731,492` bytes
 - active-run schema: 9
 - Cash Jar target schema: 10, inactive
 - Cash Jar public gate: disabled
@@ -18,11 +18,16 @@ complete gated Cash Jar/Galactic runtime. Cash Jar has 24 stories, 48 choices,
 96 unique outcomes, and 96 registered handlers. Ten Locked Galactic laws are
 available; Investment and Galactic Gambler remain Draft and unavailable.
 
-The public mirror and GitHub `main` carry the same bytes as of 2026-10-05.
+The public mirror and GitHub `main` carry this candidate as of 2026-10-22.
+The balance ledger and some agent guidance on GitHub are older versions; the
+ledger there still names `816A35B4`.
 
 Evidence states are `Pass`, `Fail`, `Not Run`, and `Blocked`.
 
-Current Guided reachability evidence:
+Current Office Politics wrap-up evidence:
+`verification/RESULTS_REEL_CHROME_REPAIR_2026-10-22_1DA11A1F.md`.
+
+Prior Guided reachability evidence:
 `verification/GUIDED_REACHABILITY_BLOCKERS_2026-10-05_816A35B4.md`.
 
 Prior Resume rail footer and Guided connector evidence:
@@ -162,8 +167,8 @@ applicable, and page errors.
 | Skilled automated balance target | 1,000 seeds, 0 wins, no Floor 6/7 reach | Fail against 25-35% target; policy-limited |
 | Player-legal Cash Jar policy | 300 runs, 90 acquisitions, 29 outcomes, 0 breaks/errors, exact paired replay | Pass instrument |
 | High-tier Cash Jar balance | Tier 3 target produced no Opens; later tiers unexercised | Not Run |
-| Root/private public-boundary inventory | Root 126, mirror 122; difference is exactly the four private records | Pass |
-| Public mirror equals gated candidate | Public HTML is `816A35B4`, equal to root; Cash Jar gate disabled | Pass |
+| Root/private public-boundary inventory | Root 127, mirror 123; difference is exactly the four private records | Pass |
+| Public mirror equals gated candidate | Mirror HTML is `1DA11A1F`, equal to root; Cash Jar gate disabled; GitHub `main` carries the same HTML | Pass |
 | Release ZIP | Not requested and not built | Not Run |
 
 ## Release Verdict

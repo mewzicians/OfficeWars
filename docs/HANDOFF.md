@@ -1,6 +1,6 @@
 # OfficeWars Current Handoff
 
-Last updated: 2026-10-05
+Last updated: 2026-10-22
 
 ## Current Root Candidate
 
@@ -8,8 +8,8 @@ The standalone root HTML implements Workday and Office Politics Phases 1-5,
 Home Phase 1, Guided Intern, and the complete gated Cash Jar/Galactic runtime.
 
 - SHA-256:
-  `816A35B40CD4F36C6CF25CD766BF6FEB94A1D77D885C56947B73F6C4228F52AA`
-- Size: `1,730,955` bytes
+  `1DA11A1FEC21B8AED383B1BDD53F2AAB0DAB55ADA8E2F1B188F26407DEFEC149`
+- Size: `1,731,492` bytes
 - Active-run schema: 9
 - Cash Jar target schema: 10, inactive
 - Cash Jar public gate: disabled
@@ -19,8 +19,9 @@ Cash Jar remains gated and unobtainable in ordinary runs, but the root
 candidate contains 24 stories, 48 choices, 96 outcomes, 96 handlers, ten
 available Locked Galactic laws, and the twelve-event Galactic deck.
 
-The public mirror and GitHub `main` carry the same bytes as of 2026-10-05,
-with the Cash Jar gate still disabled.
+The public mirror and GitHub `main` carry this candidate as of 2026-10-22.
+The balance ledger and some agent guidance on GitHub are older versions; the
+ledger there still names `816A35B4`. The Cash Jar gate is still disabled.
 
 ## Verification
 
@@ -31,7 +32,11 @@ Phase 1-5, Home item/set coverage, advanced interaction chains, cinematic
 Workday, Guided Intern 47/47, persistence, full simulation execution, and
 smoke.
 
-Current Guided reachability repair (Morning Office Politics entry, CONFIRM
+Current Office Politics wrap-up repair (the day ticker, playback controls,
+and HUD no longer cover the results reel):
+`verification/RESULTS_REEL_CHROME_REPAIR_2026-10-22_1DA11A1F.md`.
+
+Prior Guided reachability repair (Morning Office Politics entry, CONFIRM
 PROMOTION, dock and Show Me fit):
 `verification/GUIDED_REACHABILITY_BLOCKERS_2026-10-05_816A35B4.md`.
 
@@ -122,9 +127,19 @@ Run a human first-session Guided Intern and ordinary responsive playtest, then i
 the legal strategy policy with enough survival quality to measure wins and
 Tier 3-6 outcomes. Do not tune from the current zero-win policies.
 
+## Music
+
+Music work is tracked outside this gameplay handoff:
+`docs/music/officewars/README.md` for direction and approvals, and
+`docs/music/officewars/MUSIC_CATALOG.md` for every audition's label, status,
+and folder. This handoff does not duplicate music chronology.
+
 ## Distribution
 
-The gated candidate was published on 2026-10-05 with Cash Jar disabled.
+The gated candidate `816A35B4` was published on 2026-10-05 with Cash Jar
+disabled. On 2026-10-22 the README was updated, then the wrap-up repair
+candidate was published without the balance ledger, which stays
+unpublished by the user's choice.
 Publish again only on an explicit user push decision. Cash Jar activation is
 not ready. Do not enable the gate, activate schema 10, or build a release ZIP
 until the release blockers are resolved and a separate activation decision is

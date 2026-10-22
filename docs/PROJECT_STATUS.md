@@ -1,12 +1,12 @@
 # OfficeWars Project Status
 
-Snapshot date: 2026-10-05
+Snapshot date: 2026-10-22
 
 ## Gated Development Candidate
 
 - SHA-256:
-  `816A35B40CD4F36C6CF25CD766BF6FEB94A1D77D885C56947B73F6C4228F52AA`
-- Size: `1,730,955` bytes
+  `1DA11A1FEC21B8AED383B1BDD53F2AAB0DAB55ADA8E2F1B188F26407DEFEC149`
+- Size: `1,731,492` bytes
 - Active-run schema: 9
 - Cash Jar target schema: 10, inactive
 - Cash Jar public gate: disabled
@@ -27,6 +27,7 @@ events.
 | Timeline, Hivemind, and Reality | Pass, timing suites repeated |
 | Cash Jar keyboard, reload, responsive, reduced motion, 200% text | Pass |
 | Guided Intern journey, four-step opening spotlight, concise wording, Show Me, replay, reload, accessibility, parity | Pass: 47/47 |
+| Office Politics wrap-up: day ticker, playback controls, and HUD hidden while the results reel is open | Pass: no-scroll 354/354 with the new wrap-up check, which fails 14 surfaces on `816A35B4`; live and restored reels match |
 | Guided reachability: Morning Office Politics entry, CONFIRM PROMOTION, dock and Show Me fit | Pass: 364/364 at six viewports and 200% text, two pre-existing residuals pinned; Guided 47/47, no-scroll, persistence, smoke |
 | Resume rail footer, five family markers, final/capstone states, Guided connector | Pass: focused Phase 5, Guided 47/47, visual, no-scroll, persistence, core/UI, and smoke |
 | Political decision focus, inline context, Guided strip, restoration | Pass: ordinary and Guided desktop, short landscape, reduced motion, 200% text, watched, Skip, and reload |
@@ -44,8 +45,9 @@ events.
 | 28-item / nine-set forced matrix | Pass: 28/28 items and 9/9 sets |
 
 See
-`verification/GUIDED_REACHABILITY_BLOCKERS_2026-10-05_816A35B4.md`
-for current candidate evidence. The Resume rail evidence remains
+`verification/RESULTS_REEL_CHROME_REPAIR_2026-10-22_1DA11A1F.md`
+for current candidate evidence. The Guided reachability evidence remains
+`verification/GUIDED_REACHABILITY_BLOCKERS_2026-10-05_816A35B4.md`. The Resume rail evidence remains
 `verification/RESUME_RAIL_FOOTER_FAMILY_MARKERS_2026-09-23_0B220B29.md`. The prior Guided wording evidence remains
 `verification/GUIDED_INTERN_SPOTLIGHT_WORDING_2026-09-23_5181B41F.md`.
 The political focus
@@ -81,8 +83,10 @@ Draft and unavailable.
 
 ## Distribution Boundary
 
-The public mirror and GitHub `main` carry this candidate as of 2026-10-05,
-with the Cash Jar gate still disabled. The root has 126 verification records
-and the mirror has 122, a difference of exactly the four private records. No
+The public mirror and GitHub `main` carry this candidate as of 2026-10-22.
+The balance ledger and some agent guidance on GitHub are older versions; the
+ledger there still names `816A35B4`. The Cash Jar gate is still
+disabled. The root has 127 verification records and the mirror has 123, a
+difference of exactly the four private records. No
 release ZIP was built. High-tier Cash Jar balance and the separate Cash Jar
 activation decision remain open.
